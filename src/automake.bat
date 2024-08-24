@@ -42,7 +42,7 @@ if "%~1"=="clean" (
 @echo %CC%: free_queue.cpp -Llib -I../include -Iinclude -pthread %EMCCFLAGS% -o %JS_WASM_JS_FILE%
 @call %CC% free_queue.cpp -Llib -I../include -Iinclude -pthread %EMCCFLAGS% -o %JS_WASM_JS_FILE%
 
-@type %JS_FILE_PART% >> %JS_FILE%
+rem @type %JS_FILE_PART% >> %JS_FILE%
 
 if exist %JS_FILE% (
 	@echo Copy existing file: %DIR%\%JS_FILE% %INSTALLDIR%\%JS_FILE% /Y

@@ -16,11 +16,16 @@ set DIR=%cd%
 @call cmd /C "%EMSCRIPTENDIR:~0,2% && cd %EMSCRIPTENDIR% && emsdk_env.bat && %DIR:~0,2% && cd %DIR% && automake.bat clean"
 cd ..
 
-if exist examples\src\free-queue (
-    @rmdir /S /Q examples\src\free-queue
-)
+rem if exist examples\src\free-queue (
+rem     @rmdir /S /Q examples\src\free-queue
+rem )
 
 cd examples
+
+set SOURCEDIR=src\free-queue
+set KEEPFILE=free-queue.js
+
+for %%a in ( "%SOURCEDIR%\*" ) do if /i not "%%~nxa"=="%KEEPFILE%" @del "%%a"
 
 if exist node_modules (
     @rmdir /S /Q node_modules
@@ -33,3 +38,5 @@ if exist dist (
 cd ..
 
 @echo Whole project is clean...
+
+exit /b 0
