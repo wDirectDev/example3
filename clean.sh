@@ -5,8 +5,8 @@
 
 export BUILDDIR=build
 
-if -d $BUILDDIR ]; then
-    rmdir -p ./$BUILDDIR
+if [ -d $BUILDDIR ]; then
+    rm -r -d ./$BUILDDIR
 fi
 
 cd src
@@ -26,11 +26,11 @@ export KEEPFILE=free-queue.js
 find $SOURCEDIR -type f -not -name $KEEPFILE -delete
 
 if [ -d ./node_modules ]; then
-    rmdir -p ./node_modules
+    rm -r -d ./node_modules
 fi
 
 if [ -d ./dist ]; then
-    rmdir -p ./dist
+    rm -r -d ./dist
 fi
 
 cd ..

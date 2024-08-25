@@ -8,10 +8,8 @@ export EMCCFLAGS="-s MODULARIZE=1 -s EXPORT_ES6=1 -s SINGLE_FILE=0 -s TOTAL_MEMO
 
 export BUILDDIR=build
 
-if [ ! -d $BUILDDIR ]; then
+if [ ! -d ./$BUILDDIR ]; then
     mkdir -p ./$BUILDDIR
-else
-    rm -f ./$BUILDIR/*.*
 fi
 
 cd src
@@ -19,7 +17,7 @@ export DIR=`pwd`
 sh ./build.sh
 cd ..
 
-if [ ! -d ./examples/src/free-queue ]; then 
+if [ ! -d ./examples/src/free-queue ]; then
     mkdir ./examples/src/free-queue
 fi
 

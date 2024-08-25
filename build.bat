@@ -12,8 +12,6 @@ set EMCCFLAGS=-s MODULARIZE=1 -s EXPORT_ES6=1 -s SINGLE_FILE=0 -s TOTAL_MEMORY=2
 
 if not exist %BUILDDIR% (
     @mkdir %BUILDDIR%
-) else (
-    @del build\*.* /F /Q
 )
 
 cd src
