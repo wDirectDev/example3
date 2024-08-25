@@ -36,3 +36,5 @@ fi
 cd ..
 
 echo Whole project is clean...
+
+exit 0

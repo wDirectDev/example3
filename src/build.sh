@@ -8,3 +8,5 @@ rm --force *.wasm
 
 export DIR=`pwd`
 sh ./automake.sh
+
+exit 0

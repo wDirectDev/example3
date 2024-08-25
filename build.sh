@@ -33,3 +33,5 @@ npm run build:webpack
 npm run start:webpack
 
 cd ..
+
+exit 0
