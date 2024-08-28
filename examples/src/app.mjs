@@ -1,4 +1,60 @@
+
+import { wDApplication } from './renderer.mjs';
+import { wDSound } from './sound.mjs';
+
+globalThis["loadfile"] = function( nameoffile ) {
+	try {
+		const binary = new wDSound();
+		return binary.loadSoundData( nameoffile );
+	}
+	catch( e ) 
+	{
+		console.log( "exception: " + e );
+		throw( e );
+	}	
+};
+
+globalThis["appinit"] = function() {
+	try {
+
+		const renderer = new wDApplication();
+
+		renderer.check();
+		const canvas = renderer.getCanvas();
+
+		const devicePixelRatio = window.devicePixelRatio;
+
+		canvas.width = window.innerWidth;
+
+		/////////////////////////////////////////////////////////////////////////////////////////
+		// canvas.width = Math.max( canvas.clientWidth * devicePixelRatio, _width );
+		// canvas.height = Math.max( canvas.clientHeight * devicePixelRatio, height );
+		/////////////////////////////////////////////////////////////////////////////////////////
+		
+		/////////////////////////////////////////////////////////////////////////////////////////
+		// 4:3  &&  16:9  &&  26:9
+		/////////////////////////////////////////////////////////////////////////////////////////
+		// canvas.height = canvas.width * 3 / 4;  
+		canvas.height = canvas.width * 9 / 25;  
+
+		canvas.height = canvas.height * devicePixelRatio;
+		canvas.width = canvas.width * devicePixelRatio;
+
+		/////////////////////////////////////////////////////////////////////////////////////////
+		// console.log("set width: " + canvas.width + "; set height: " + canvas.height);
+		/////////////////////////////////////////////////////////////////////////////////////////
+		
+		return { ready: renderer.start() };
+	} 
+	catch( e ) 
+	{
+		console.log( "exception: " + e );
+		throw( e );
+	}
+};
+
 try {
+
     globalThis["isPlaybackInProgress"] = false;
 
     globalThis["startplayback"] = async function()
