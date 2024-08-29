@@ -18,7 +18,7 @@ export class wDBox extends wDObject
     async init() 
     {
 	    let instance = this.getInstance();
-	    this.borders = new wDLine( instance );
+	    this.borders = new wDNativeLine( instance );
 	    await this.borders.init();
         this.setDuty( false );
     }

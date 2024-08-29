@@ -27,10 +27,10 @@ export class wDSpline extends wDObject
         this.border = new wDBox( instance );
         await this.border.init();
 
-        this.axis = new wDLine( instance );
+        this.axis = new wDNativeLine( instance );
         await this.axis.init();
 
-        this.discretlines = new wDLine( instance );
+        this.discretlines = new wDNativeLine( instance );
         await this.discretlines.init();
 
         this.fontsize = instance.getCanvasHeight() / 38.0;

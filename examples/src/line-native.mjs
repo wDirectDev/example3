@@ -231,20 +231,20 @@ export class wDNativeLine extends wDObject
 //
 //////////////////////////////
 
-            vb[ii++] = instance.calcX( vX2 - Xh );
-            vb[ii++] = instance.calcY( vY2 + Yh ); // 1 1
+            vb[ii++] = instance.getScaledX( vX2 - Xh );
+            vb[ii++] = instance.getScaledY( vY2 + Yh ); // 1 1
 
-            vb[ii++] = instance.calcX( vX2 + Xh );
-            vb[ii++] = instance.calcY( vY2 - Yh ); // 1 0
+            vb[ii++] = instance.getScaledX( vX2 + Xh );
+            vb[ii++] = instance.getScaledY( vY2 - Yh ); // 1 0
 
-            vb[ii++] = instance.calcX( vX1 + Xh );
-            vb[ii++] = instance.calcY( vY1 - Yh ); // 0 0
+            vb[ii++] = instance.getScaledX( vX1 + Xh );
+            vb[ii++] = instance.getScaledY( vY1 - Yh ); // 0 0
 
             for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
             for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
 
-            vb[ii++] = instance.calcX( vX1 - Xh );
-            vb[ii++] = instance.calcY( vY1 + Yh ); // 0 1
+            vb[ii++] = instance.getScaledX( vX1 - Xh );
+            vb[ii++] = instance.getScaledY( vY1 + Yh ); // 0 1
         }
 
 	    return vb;
@@ -347,13 +347,14 @@ export class wDNativeLine extends wDObject
 		    this.setShaderBindGroup( shaderBindGroup );
         }
 
-	    let lines = this.getLinesCount();
+	    let count = this.getLinesCount();
         
         instance.passEncoder.setBindGroup( 0, shaderBindGroup );
         instance.passEncoder.setVertexBuffer( 0, vertexBuffer );
         instance.passEncoder.setVertexBuffer( 1, fragUVBuffer );
         instance.passEncoder.setVertexBuffer( 2, colorsBuffer );
-        instance.passEncoder.draw( 6 * lines, 1, 0, 0 );
+        instance.passEncoder.draw( 6 * count, 1, 0, 0 );
+
         this.resetDuty();
     }
 };
