@@ -10,7 +10,7 @@ return `
             <input type="radio" class="audio-newkind__radio" id="cats-radio" name="radio-selection" value="https://ice1.somafm.com/deepspaceone-128-aac">
             <label for="cats-radio"><span></span>Cats Radio</label>
         </form>
-        <canvas id="oscilloscope"></canvas>
+<!--        <canvas id="oscilloscope"></canvas>        -->
         <button class="audio-newkind__btn" id="start">Start Audio</button>
     </div>
 </template>`

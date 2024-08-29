@@ -39,7 +39,7 @@ class WorkletBasicProcessor extends AudioWorkletProcessor
 
 			if ( this.queue != undefined ) {
 				const r = this.queue.push( dataArray, bufferSize );
-				console.debug( "processor: queue.push [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
+				// console.log( "processor: queue.push [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
 				// this.queue.printAvailableReadAndWrite();
 			}
 

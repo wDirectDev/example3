@@ -77,17 +77,21 @@ const drawOscilloscope = () => {
     const bufferSize = RENDER_QUANTUM;
     let r = 0;
 
-    CONFIG.audio.waveform = [2];
-    CONFIG.audio.waveform[0] = new Float64Array(bufferSize);
-    CONFIG.audio.waveform[1] = new Float64Array(bufferSize);
+   // CONFIG.audio.waveform = [2];
+    //CONFIG.audio.waveform[0] = new Float64Array(bufferSize);
+    //CONFIG.audio.waveform[1] = new Float64Array(bufferSize);
 
-    if ( window["queue"] != undefined ) {
-        r = window["queue"].pull( CONFIG.audio.waveform, bufferSize );
-	console.debug( "draw: queue.pull [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
-    }
+    //if ( globalThis["queue"] != undefined ) {
+    //    r = globalThis["queue"].pull( CONFIG.audio.waveform, bufferSize );
+	//    console.log( "draw: queue.pull [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
+    //}
 
     if ( r != 0 ) {
 
+        globalThis["renderBuffer"] = [2];
+        globalThis["renderBuffer"][0] = new Float64Array(CONFIG.audio.waveform[0]);
+        globalThis["renderBuffer"][1] = new Float64Array(CONFIG.audio.waveform[1]);
+/*
         CONFIG.html.scope.canvas.width = CONFIG.audio.waveform[0].length
         CONFIG.html.scope.canvas.height = 200
         CONFIG.html.scope.context.clearRect(0, 0, CONFIG.html.scope.canvas.width, CONFIG.html.scope.canvas.height)
@@ -125,11 +129,11 @@ const drawOscilloscope = () => {
         CONFIG.html.scope.context.strokeStyle = '#FA5769'
         CONFIG.html.scope.context.lineWidth = 2
         CONFIG.html.scope.context.stroke()
-
+*/
     }
 
-    if ( CONFIG.player.isPlaying == true ) 
-        window.requestAnimationFrame(drawOscilloscope)
+    //if ( CONFIG.player.isPlaying == true ) 
+    //    window.requestAnimationFrame(drawOscilloscope)
 }
 
 const ctx = async (CONFIG) => {
@@ -143,8 +147,8 @@ const ctx = async (CONFIG) => {
 
     CONFIG.audio.processorNode = new AudioWorkletNode(CONFIG.audio.ctx, 'radio-processor', {
         processorOptions: {
-            queue: window["queue"],
-            instance: window["instance"]
+            queue: globalThis["queue"],
+            instance: globalThis["instance"]
         },
         numberOfInputs: 1,
         numberOfOutputs: 1,
@@ -214,17 +218,21 @@ export default async () => {
                                         
                     if (CONFIG.player.isPlaying) {
                         CONFIG.html.button.start.textContent = "Start Audio";
+                        
                         CONFIG.player.isPlaying = false;
+                        globalThis["isPlaybackInProgress"] = CONFIG.player.isPlaying;
 
                         await CONFIG.stream.song.pause();
                         CONFIG.audio.ctx.suspend();
                     } else {
                         CONFIG.html.button.start.textContent = "Stop Audio";
+                        
                         CONFIG.player.isPlaying = true;
+                        globalThis["isPlaybackInProgress"] = CONFIG.player.isPlaying;
 
                         await ctx(CONFIG);
                         await newAudio(CONFIG);
-                        drawOscilloscope();
+                       // drawOscilloscope();
                     }
                     
                 } )

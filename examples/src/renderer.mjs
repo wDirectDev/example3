@@ -516,61 +516,83 @@ export class wDApplication
         let thickness = 2;
         let pluginId = 0;
 
-        if ( window["goniometer"] == "goniometer-on" ) {
+        if ( globalThis["goniometer"] == "goniometer-on" ) {
             pluginId = pluginId | 1;
         }
+    
+        if ( globalThis["queue"] != undefined ) {
+            let bufferSize = 2000;
 
+            let _b = [2];
+            _b[0] = new Float64Array(bufferSize);
+            _b[1] = new Float64Array(bufferSize);
+
+            let r = globalThis["queue"].pull( _b, bufferSize );
+            if ( r == true )
+            {
+                globalThis["renderBuffer"] = new Float64Array(bufferSize * 2);
+                for ( let i = 0; i < bufferSize; i++ ) {
+                    globalThis["renderBuffer"][i * 2 + 0] = _b[0][i];
+                    globalThis["renderBuffer"][i * 2 + 1] = _b[1][i];
+                }
+            }
+            //console.debug( "draw: queue.pull [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
+        }
+    
+    /*
 /*      
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Any other plugin ( 1;2;4;8;16;32;64;128;256 )
         /////////////////////////////////////////////////////////////////////////////////////////////////
-        if ( window["go1"] == "go1-on" ) {
+        if ( globalThis["go1"] == "go1-on" ) {
             pluginId = pluginId | 2;
         }
 */        
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
-        // Цвета...
+        // Цвета... #5661FA #FA5769
         /////////////////////////////////////////////////////////////////////////////////////////////////
         let _colors = [
-            { from: [ 1.0, 0.0, 0.0, 1.0 ], to: [ 1.0, 0.0, 0.0, 1.0 ] },
-            { from: [ 0.0, 1.0, 0.0, 1.0 ], to: [ 0.0, 1.0, 0.0, 1.0 ] },
+            { from: [ 1.0, 1.0, 0.0, 1.0 ], to: [ 1.0, 1.0, 0.0, 1.0 ] },
+            { from: [ 0.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 1.0, 1.0, 1.0 ] },
         ];
+
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Если воспроизведение аудио происходит
         /////////////////////////////////////////////////////////////////////////////////////////////////
-        if ( window["isPlaybackInProgress"] )
+        if ( globalThis["isPlaybackInProgress"] )
         {
+            // console.log("isPlaybackInProgress: "+globalThis["isPlaybackInProgress"]);
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Тип воспроизведения audio или osc
             /////////////////////////////////////////////////////////////////////////////////////////////
-            if ( window["inputtype"] == "audio" || window["inputtype"] == "osc" ) 
+            if ( globalThis["inputType"] == "audio" || globalThis["inputType"] == "osc" ) 
             {
-                let _nameoffile = window["nameoffile"];
+                let _nameoffile = globalThis["nameoffile"];
                 if ( window.isExist( _nameoffile ) > 0 ) {
                     if ( window.isPlaying() > 0 ) {      
                         /////////////////////////////////////////////////////////////////////////////////
                         // number of channels
                         /////////////////////////////////////////////////////////////////////////////////
                         let _channels = window.getchannelscount( _nameoffile );
-                        window["channels"] = _channels;
+                        globalThis["channels"] = _channels;
                         /////////////////////////////////////////////////////////////////////////////////
-                        // samplerate of the file
+                        // sampleRate of the file
                         /////////////////////////////////////////////////////////////////////////////////
-                        let _samplerate = window.getsamplerate( _nameoffile );
-                        window["samplerate"] = _samplerate;
+                        let _sampleRate = window.getsampleRate( _nameoffile );
+                        globalThis["sampleRate"] = _sampleRate;
                         /////////////////////////////////////////////////////////////////////////////////
                         // frames of the file
-                        let _countofframes = window["samplerate"] / 25;
+                        let _countofframes = globalThis["sampleRate"] / 25;
                         /////////////////////////////////////////////////////////////////////////////
                         // speed test... single allocation
                         let _memptr = window.malloc( _countofframes * _channels * SIZE_OF_DOUBLE );
                         if ( _memptr > 0 ) {
 
-                            let _framescount = window.getdatabuffer( _nameoffile, _memptr, window["frameoffset"], _countofframes );                              
+                            let _framescount = window.getdatabuffer( _nameoffile, _memptr, globalThis["frameoffset"], _countofframes );                              
                             if ( _framescount > 0 ) {                                
-                                window["render-buffer"] = window.copy( _memptr, _countofframes * _channels * SIZE_OF_DOUBLE );
-                                window["frameoffset"] = _framescount;
+                                globalThis["renderBuffer"] = window.copy( _memptr, _countofframes * _channels * SIZE_OF_DOUBLE );
+                                globalThis["frameoffset"] = _framescount;
                             } else {
                                 window.stopplayback();
                             }
@@ -584,19 +606,19 @@ export class wDApplication
             ////////////////////////////////////////////////////////////////////////////////////
             // Удерживать картинку графика
             ////////////////////////////////////////////////////////////////////////////////////
-            if ( window["hold-chart"] == true ) {
+            if ( globalThis["holdChart"] == true ) {
                 ////////////////////////////////////////////////////////////////////////////////
                 // Удерживать картинку определенного блока памяти
                 ////////////////////////////////////////////////////////////////////////////////
-                if ( window["hold-buffer"] == undefined ) {
-                    window["hold-buffer"] = new Float64Array( window["render-buffer"] );
+                if ( globalThis["holdBuffer"] == undefined ) {
+                    globalThis["holdBuffer"] = new Float64Array( globalThis["renderBuffer"] );
                 }
             }
             ////////////////////////////////////////////////////////////////////////////////////
             // Не удерживать картинку графика
             ////////////////////////////////////////////////////////////////////////////////////                                
             else {
-                window["hold-buffer"] = undefined;
+                globalThis["holdBuffer"] = undefined;
             }
             ////////////////////////////////////////////////////////////////////////////////////
             // Если плагин гониометра включен
@@ -605,7 +627,7 @@ export class wDApplication
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Рисование системы координат с графиком...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                await this.spline.drawData( this, null, window["channels"], window["rendertype"], 1, 1, window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], thickness, _colors );
+                await this.spline.drawData( this, null, globalThis["channels"], globalThis["renderType"], 1, 1, globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Установление начальных параметров...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////                
@@ -613,27 +635,32 @@ export class wDApplication
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Если стерео ( 2 канала ), рисование системы координат гониометра и графика задержанного блока памяти...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                if ( window["rendertype"] == "stereo" && window["channels"] == 2 && window["hold-chart"] == true && window["hold-buffer"] != null && window["hold-buffer"] != undefined ) {
-                    await this.goniometer.draw( this, window["hold-buffer"], window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
+                if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["holdChart"] == true && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined ) {
+                    await this.goniometer.draw( this, globalThis["holdBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 } 
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Если стерео ( 2 канала ), рисование системы координат гониометра и текущего блока памяти...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                else if ( window["rendertype"] == "stereo" && window["channels"] == 2 && window["render-buffer"] != null && window["render-buffer"] != undefined ){
-                    await this.goniometer.draw( this, window["render-buffer"], window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
+                else if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["renderBuffer"] != null && globalThis["renderBuffer"] != undefined ){
+                    await this.goniometer.draw( this, globalThis["renderBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 }
             } 
+
+            //console.log("holdChart: "+globalThis["holdChart"]);
+            //console.log("holdBuffer: "+(globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined));
+            //console.log("renderBuffer: "+(globalThis["renderBuffer"] != null && globalThis["renderBuffer"] != undefined));
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Если плагинов больше нет - рисование по умолчанию...
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             if ( pluginId == 0 ) {
-                if ( window["hold-chart"] == true && window["hold-buffer"] != null && window["hold-buffer"] != undefined) {
-                    await this.spline.drawData( this, window["hold-buffer"], window["channels"], window["rendertype"], window["samplerate"], window["volumerate"], window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], thickness, _colors );
-                } else if ( window["render-buffer"] != null && window["render-buffer"] != undefined ){
-                    await this.spline.drawData( this, window["render-buffer"], window["channels"], window["rendertype"], window["samplerate"], window["volumerate"], window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], thickness, _colors );
+                if ( globalThis["holdChart"] == true && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined) {
+                    await this.spline.drawData( this, globalThis["holdBuffer"], globalThis["channels"], globalThis["renderType"], globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
+                } else if ( globalThis["renderBuffer"] != null && globalThis["renderBuffer"] != undefined ){
+
+                    await this.spline.drawData( this, globalThis["renderBuffer"], globalThis["channels"], globalThis["renderType"], globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
                 } else {
-                    await this.spline.drawData( this, null, null, "stereo", window["samplerate"], window["volumerate"], window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], thickness, _colors );        
+                    await this.spline.drawData( this, null, null, "stereo", globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );        
                 }
             } 
         }
@@ -642,16 +669,16 @@ export class wDApplication
         ////////////////////////////////////////////////////////////////////////////////////
         else {
             if ( pluginId == 0 ) {
-                if ( window["hold-chart"] == true && window["hold-buffer"] != null && window["hold-buffer"] != undefined) {
-                    await this.spline.drawData( this, window["hold-buffer"], window["channels"], window["rendertype"], window["samplerate"], window["volumerate"], window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], thickness, _colors );
+                if ( globalThis["holdChart"] == true && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined) {
+                    await this.spline.drawData( this, globalThis["holdBuffer"], globalThis["channels"], globalThis["renderType"], globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
                 } else {
-                    await this.spline.drawData( this, null, null, "stereo", window["samplerate"], window["volumerate"], window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], thickness, _colors );        
+                    await this.spline.drawData( this, null, null, "stereo", globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );        
                 }
             } else if ( pluginId & 1 == 1 ) {
-                await this.spline.drawData( this, null, window["channels"], window["rendertype"], 1, 1, window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], thickness, _colors );
+                await this.spline.drawData( this, null, globalThis["channels"], globalThis["renderType"], 1, 1, globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
                 this.goniometer.set( sBW + sW / 2.0, sBW + sH / 2.0, sH / 2.0 - 2.0 * sBW, thickness );
-                if ( window["rendertype"] == "stereo" && window["channels"] == 2 && window["hold-chart"] == true && window["hold-buffer"] != null && window["hold-buffer"] != undefined ) {
-                    await this.goniometer.draw( this, window["hold-buffer"], window["kdX"], window["kdY"], window["zoomX"], window["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
+                if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["holdChart"] == true && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined ) {
+                    await this.goniometer.draw( this, globalThis["holdBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 } 
             }
         }

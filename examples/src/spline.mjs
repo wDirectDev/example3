@@ -33,7 +33,7 @@ export class wDSpline extends wDObject
         this.discretlines = new wDLine( instance );
         await this.discretlines.init();
 
-        this.fontsize = instance.getCanvasHeight() / 42.0;
+        this.fontsize = instance.getCanvasHeight() / 38.0;
 
         this.labels = [];
 
@@ -511,8 +511,7 @@ export class wDSpline extends wDObject
     async arrayDraw( instance, _object, _channels, _nchannel, _rateofsamples, _volumescale, x, y, width, height, kdX, kdY, zoomX, zoomY, _t, _colors ) 
     {
         let _new_object = _object;
-
- /*
+/*
         for( let ii = 0; ii < 60; ii++ ) {
             for ( let j = 0; j < _object.length; j = j + _channels) {
                 if ( _object.length - j <= 2 ) break;
@@ -522,6 +521,7 @@ export class wDSpline extends wDObject
             }
         }
 */
+
         let _width = width - instance.getBorderWidth() * 2.0;
         let _height = height - instance.getBorderWidth() * 2.0;
 

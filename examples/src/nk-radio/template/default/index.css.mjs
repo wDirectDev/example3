@@ -4,7 +4,6 @@ return`
 .audio-newkind__form {
   max-width: 100%;
   font-family: 'Roboto', sans-serif;
-  color: black;
 }
 
 .audio-newkind__radio + label:hover {
@@ -52,7 +51,6 @@ return`
   font-family: 'Oleo Script', cursive;
   font-size: 2.5em;
   text-align: center;
-  color: black;
 }
 
 .audio-newkind__btn {

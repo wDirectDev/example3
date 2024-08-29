@@ -20,19 +20,19 @@ export class wDPoint extends wDObject
         this.setColorsBuffer( null );
         this.setVertexBuffer( null );
         this.setFragUVBuffer( null );
-	    this.setUniformShaderLocation( null ); 
-	    this.setShaderBindGroup( null );
+        this.setUniformShaderLocation( null ); 
+        this.setShaderBindGroup( null );
     }  
     async init() 
     {
-	    let instance = this.getInstance();
+        let instance = this.getInstance();
         this.setVertexBuffer( null );
         this.setFragUVBuffer( null );
         this.setColorsBuffer( null );
-	    this.setShaderBindGroup( null );
-	    this.setUniformShaderLocation( 
-		    this.setUniformShaderFlag( instance.device, 0 ) 
-	    );
+        this.setShaderBindGroup( null );
+        this.setUniformShaderLocation( 
+            this.setUniformShaderFlag( instance.device, 0 ) 
+        );
         this.setDuty();
     }
     getPointsArrayCount()
@@ -77,7 +77,6 @@ export class wDPoint extends wDObject
         if ( this.fragUVBuffer != null ) {
             this.fragUVBuffer.destroy();
         }
-
         this.fragUVBuffer = fragUV;
     }
     getFragUVBuffer()
@@ -89,7 +88,6 @@ export class wDPoint extends wDObject
         if ( this.colorsBuffer != null ) {
             this.colorsBuffer.destroy();
         }
-
         this.colorsBuffer = colors;
     }
     getColorsBuffer() 
@@ -104,6 +102,7 @@ export class wDPoint extends wDObject
 
         let _dpa = this.getPointsArray();
         let _count = this.getPointsArrayCount();
+//        let vb = new Float32Array( 6 * _count );
         let vb = new Float32Array( 12 * _count );
         let ii = 0;
         for ( let i = 0; i < _count; i++ )        
@@ -146,6 +145,7 @@ export class wDPoint extends wDObject
             vb[ii++] = instance.getScaledOffsetY( Yv + Yt ); // 1 0 (1)
             vb[ii++] = instance.getScaledOffsetX( Xv - Xt ); // 0 0 (2)
             vb[ii++] = instance.getScaledOffsetY( Yv + Yt ); // 0 0 (2)
+
             vb[ii++] = instance.getScaledOffsetX( Xv + Xt ); // 1 1 (0)
             vb[ii++] = instance.getScaledOffsetY( Yv - Yt ); // 1 1 (0)
             vb[ii++] = instance.getScaledOffsetX( Xv - Xt ); // 0 0 (2)
@@ -162,6 +162,7 @@ export class wDPoint extends wDObject
     {   
         let _count = this.getPointsArrayCount();
         let fb = new Float32Array( 12 * _count );
+//        let fb = new Float32Array( 6 * _count );
         let ii = 0;
         for (let i = 0; i < _count; i++ )        
         {	
@@ -187,6 +188,7 @@ export class wDPoint extends wDObject
     {        
         let _count = this.getPointsArrayCount();
         let cb = new Float32Array( 24 * _count );
+//        let cb = new Float32Array( 12 * _count );
         let ii = 0;
         let _da = this.getPointsArray();
         for (let i = 0; i < _count; i++ ) {
