@@ -525,11 +525,14 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         //this.pointsline.append( 90, 40, 90, 100, 1, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 0.0, 1.0, 1.0 ] } );
         //this.pointsline.draw( this );
 
+        let thickness = 1;
+        let pluginId = 0;
+
         ////////////////////////////////////////////////////////////////////////////////
         // Load config from file...
         // let object = window.getDrawParams.call();
         ////////////////////////////////////////////////////////////////////////////////
-        this.spline.set( sBW, sBW, sW, sH );
+        this.spline.set( sBW, sBW, sW, sH, thickness, 4 );
 
         let iW = 100 * this.color * 4;
         let iH = 100 * this.color * 4;
@@ -537,8 +540,14 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         let iX = sBW + ( sW - iW ) / 2.0;
         let iY = sBW + ( sH - iH ) / 2.0;
 
-        let thickness = 2;
-        let pluginId = 0;
+/*      
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        // Any other plugin ( 1;2;4;8;16;32;64;128;256 )
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        if ( globalThis["go1"] == "go1-on" ) {
+            pluginId = pluginId | 2;
+        }
+*/    
 
         if ( globalThis["goniometer"] == "goniometer-on" ) {
             pluginId = pluginId | 1;
@@ -562,17 +571,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
             }
             //console.debug( "draw: queue.pull [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
         }
-    
-    /*
-/*      
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-        // Any other plugin ( 1;2;4;8;16;32;64;128;256 )
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-        if ( globalThis["go1"] == "go1-on" ) {
-            pluginId = pluginId | 2;
-        }
-*/        
-
+ 
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Цвета... #5661FA #FA5769
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -592,7 +591,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
             /////////////////////////////////////////////////////////////////////////////////////////////
             if ( globalThis["inputType"] == "audio" || globalThis["inputType"] == "osc" ) 
             {
-                let _nameoffile = globalThis["nameoffile"];
+                let _nameoffile = globalThis["nameOfFile"];
                 if ( window.isExist( _nameoffile ) > 0 ) {
                     if ( window.isPlaying() > 0 ) {      
                         /////////////////////////////////////////////////////////////////////////////////
@@ -613,10 +612,10 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                         let _memptr = window.malloc( _countofframes * _channels * SIZE_OF_DOUBLE );
                         if ( _memptr > 0 ) {
 
-                            let _framescount = window.getdatabuffer( _nameoffile, _memptr, globalThis["frameoffset"], _countofframes );                              
+                            let _framescount = window.getdatabuffer( _nameoffile, _memptr, globalThis["frameOffset"], _countofframes );                              
                             if ( _framescount > 0 ) {                                
                                 globalThis["renderBuffer"] = window.copy( _memptr, _countofframes * _channels * SIZE_OF_DOUBLE );
-                                globalThis["frameoffset"] = _framescount;
+                                globalThis["frameOffset"] = _framescount;
                             } else {
                                 window.stopplayback();
                             }
@@ -630,7 +629,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
             ////////////////////////////////////////////////////////////////////////////////////
             // Удерживать картинку графика
             ////////////////////////////////////////////////////////////////////////////////////
-            if ( globalThis["holdChart"] == true ) {
+            if ( globalThis["holdChart"] == "holdchart-on" ) {
                 ////////////////////////////////////////////////////////////////////////////////
                 // Удерживать картинку определенного блока памяти
                 ////////////////////////////////////////////////////////////////////////////////
@@ -659,7 +658,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Если стерео ( 2 канала ), рисование системы координат гониометра и графика задержанного блока памяти...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["holdChart"] == true && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined ) {
+                if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["holdChart"] == "holdchart-on" && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined ) {
                     await this.goniometer.draw( this, globalThis["holdBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 } 
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -678,7 +677,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
             // Если плагинов больше нет - рисование по умолчанию...
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             if ( pluginId == 0 ) {
-                if ( globalThis["holdChart"] == true && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined) {
+                if ( globalThis["holdChart"] == "holdchart-on" && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined) {
                     await this.spline.drawData( this, globalThis["holdBuffer"], globalThis["channels"], globalThis["renderType"], globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
                 } else if ( globalThis["renderBuffer"] != null && globalThis["renderBuffer"] != undefined ){
 
@@ -693,7 +692,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         ////////////////////////////////////////////////////////////////////////////////////
         else {
             if ( pluginId == 0 ) {
-                if ( globalThis["holdChart"] == true && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined) {
+                if ( globalThis["holdChart"] == "holdchart-on" && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined) {
                     await this.spline.drawData( this, globalThis["holdBuffer"], globalThis["channels"], globalThis["renderType"], globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
                 } else {
                     await this.spline.drawData( this, null, null, "stereo", globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );        
@@ -701,7 +700,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
             } else if ( pluginId & 1 == 1 ) {
                 await this.spline.drawData( this, null, globalThis["channels"], globalThis["renderType"], 1, 1, globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
                 this.goniometer.set( sBW + sW / 2.0, sBW + sH / 2.0, sH / 2.0 - 2.0 * sBW, thickness );
-                if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["holdChart"] == true && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined ) {
+                if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["holdChart"] == "holdchart-on" && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined ) {
                     await this.goniometer.draw( this, globalThis["holdBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 } 
             }

@@ -68,75 +68,6 @@
 			globalThis["audioElement"].pause();
 		}
 */
-
-		globalThis["onFreeQueueInitialize"] = function() 
-		{
-			const GetFreeQueueThreads = globalThis["Module"].cwrap('GetFreeQueueThreads','number',[ '' ]);
-			const GetFreeQueuePointers = globalThis["Module"].cwrap('GetFreeQueuePointers','number',[ 'number', 'string' ]);
-			const PrintQueueInfo = globalThis["Module"].cwrap('PrintQueueInfo','',[ 'number' ]);
-			const CreateFreeQueue = globalThis["Module"].cwrap('CreateFreeQueue','number',[ 'number', 'number' ]);
-			const PrintQueueAddresses = globalThis["Module"].cwrap('PrintQueueAddresses','',[ 'number' ]);
-			globalThis["instance"] = GetFreeQueueThreads();
-			const bufferLengthPtr = GetFreeQueuePointers( globalThis["instance"], "buffer_length" );
-			const channelCountPtr = GetFreeQueuePointers( globalThis["instance"], "channel_count" );
-			const statePtr = GetFreeQueuePointers( globalThis["instance"], "state" );
-			const channelDataPtr = GetFreeQueuePointers( globalThis["instance"], "channel_data" );
-			const pointers = new Object();
-			pointers.memory = globalThis["Module"].HEAPU8;
-			pointers.bufferLengthPointer = bufferLengthPtr;
-			pointers.channelCountPointer = channelCountPtr;
-			pointers.statePointer = statePtr;
-			pointers.channelDataPointer = channelDataPtr;
-			globalThis["queue"] = FreeQueue.fromPointers( pointers );
-			if ( globalThis["queue"] != undefined ) globalThis["queue"].printAvailableReadAndWrite();
-//			globalThis.onApplicationInit();
-		};
-
-		globalThis["Module"].onRuntimeInitialized = function()
-		{ 
-
-			///////////////////////////////////////////////////////////////////////////////////////
-			// FreeQueue initialization
-			///////////////////////////////////////////////////////////////////////////////////////
-
-			globalThis["queue"] = undefined;
-			globalThis["instance"] = undefined;
-
-			globalThis["Module"].callMain("");
-
-			globalThis.onFreeQueueInitialize();
-
-			///////////////////////////////////////////////////////////////////////////////////////
-			// default variables...
-			///////////////////////////////////////////////////////////////////////////////////////
-
-			globalThis["channels"] = 2;
-
-			globalThis["isPlaybackInProgress"] = false;
-			globalThis["goniometer"] = "goniometer-off";
-
-			globalThis["inputType"] = "default"; // "audio"; // "osc"
-
-			globalThis["kdX"] = 500;
-			globalThis["kdY"] = 10;
-			globalThis["zoomX"] = 100;
-			globalThis["zoomY"] = 100;
-
-			globalThis["holdBuffer"] = undefined;
-			globalThis["holdChart"] = false;
-
-			globalThis["renderBuffer"] = undefined;
-			globalThis["renderType"] = "stereo";
-
-                        globalThis["inputType"] = "default";
-
-			globalThis["sampleRate"] = 44100;
-			globalThis["volumeRate"] = 1.0;
-			
-			globalThis["nameoffile"] = "";
-
-			///////////////////////////////////////////////////////////////////////////////////////
-		};
 /*
 		const t1 = globalThis.document.getElementById("startTest1");
 		t1.addEventListener( "click", async (e) => {
@@ -195,6 +126,73 @@
 			}
 		});
 */
+
+		globalThis["Module"].onRuntimeInitialized = function()
+		{ 
+			///////////////////////////////////////////////////////////////////////////////////////
+			// FreeQueue initialization
+			///////////////////////////////////////////////////////////////////////////////////////
+
+			globalThis["queue"] = undefined;
+			globalThis["instance"] = undefined;
+
+			globalThis["Module"].callMain("");
+
+			globalThis.onFreeQueueInitialize();
+
+			///////////////////////////////////////////////////////////////////////////////////////
+			// default variables...
+			///////////////////////////////////////////////////////////////////////////////////////
+
+			globalThis["channels"] = 2;
+
+			globalThis["isPlaybackInProgress"] = false;
+			
+			globalThis["goniometer"] = "goniometer-off";
+			globalThis["holdChart"] = "holdchart-off";
+
+			globalThis["inputType"] = "default"; // "audio"; // "osc"
+			globalThis["renderType"] = "stereo";
+			
+			globalThis["kdX"] = 500;
+			globalThis["kdY"] = 10;
+			globalThis["zoomX"] = 100;
+			globalThis["zoomY"] = 100;
+
+			globalThis["holdBuffer"] = undefined;
+			globalThis["renderBuffer"] = undefined;
+
+			globalThis["sampleRate"] = 44100;
+			globalThis["volumeRate"] = 1.0;
+			
+			globalThis["nameOfFile"] = "";
+			globalThis["frameOffset"] = 0;
+
+			///////////////////////////////////////////////////////////////////////////////////////
+		};
+		
+		globalThis["onFreeQueueInitialize"] = function() 
+		{
+			const GetFreeQueueThreads = globalThis["Module"].cwrap('GetFreeQueueThreads','number',[ '' ]);
+			const GetFreeQueuePointers = globalThis["Module"].cwrap('GetFreeQueuePointers','number',[ 'number', 'string' ]);
+			const PrintQueueInfo = globalThis["Module"].cwrap('PrintQueueInfo','',[ 'number' ]);
+			const CreateFreeQueue = globalThis["Module"].cwrap('CreateFreeQueue','number',[ 'number', 'number' ]);
+			const PrintQueueAddresses = globalThis["Module"].cwrap('PrintQueueAddresses','',[ 'number' ]);
+			globalThis["instance"] = GetFreeQueueThreads();
+			const bufferLengthPtr = GetFreeQueuePointers( globalThis["instance"], "buffer_length" );
+			const channelCountPtr = GetFreeQueuePointers( globalThis["instance"], "channel_count" );
+			const statePtr = GetFreeQueuePointers( globalThis["instance"], "state" );
+			const channelDataPtr = GetFreeQueuePointers( globalThis["instance"], "channel_data" );
+			const pointers = new Object();
+			pointers.memory = globalThis["Module"].HEAPU8;
+			pointers.bufferLengthPointer = bufferLengthPtr;
+			pointers.channelCountPointer = channelCountPtr;
+			pointers.statePointer = statePtr;
+			pointers.channelDataPointer = channelDataPtr;
+			globalThis["queue"] = FreeQueue.fromPointers( pointers );
+			if ( globalThis["queue"] != undefined ) globalThis["queue"].printAvailableReadAndWrite();
+//			globalThis.onApplicationInit();
+		};
 	</script>
 </head>
 <body>

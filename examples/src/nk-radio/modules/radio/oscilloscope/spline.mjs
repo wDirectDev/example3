@@ -9,6 +9,7 @@ export class wDSpline extends wDObject
     constructor( instance, x, y, _width, _height, _weight = 1 ) 
     {
         super( instance, x, y, _width, _height, _weight );
+        this.setBorderThickness( 1 );
     }  
 
     destroy()
@@ -18,6 +19,16 @@ export class wDSpline extends wDObject
         this.axis.destroy();
         this.discretlines.destroy();
         this.resetDuty();
+    }
+
+    getBorderThickness() 
+    {
+        return this.borderthickness;
+    }
+
+    setBorderThickness( _t ) 
+    {
+        this.borderthickness = _t;
     }
 
     async init() 
@@ -43,7 +54,7 @@ export class wDSpline extends wDObject
         this.setDuty();
     }
 
-    set( x, y, _width = -1, _height = -1, _thickness = -1 )
+    set( x, y, _width = -1, _height = -1, _thickness = -1, _borderthickness = -1 )
     {
         if ( this.getX() != x ) {
             this.setX( x );
@@ -68,6 +79,12 @@ export class wDSpline extends wDObject
         if ( _thickness != -1 ) { 
             if ( this.getThickness() != _thickness ) {
                 this.setThickness( _thickness );
+                this.setDuty();
+            }
+        }
+        if ( _borderthickness != -1 ) { 
+            if ( this.getBorderThickness() != _borderthickness ) {
+                this.setBorderThickness( _borderthickness );
                 this.setDuty();
             }
         }
@@ -98,7 +115,7 @@ export class wDSpline extends wDObject
 
     async borderDraw( instance, x, y, _width, _height, _t = 1, _colors = [ { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 1.0, 1.0, 1.0, 1.0 ] } ] ) 
     {
-        this.border.set( x, y, _width, _height, _t );
+        this.border.set( x, y, _width, _height, this.getBorderThickness() );
 
         this.defaultcolor += this.itcolor;
 
