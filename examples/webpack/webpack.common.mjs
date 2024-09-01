@@ -23,12 +23,12 @@ export default {
 //        filename: 'index.html',
 //        template: './src/index.template'
 //      }),
-      new RemoveWebpackPlugin({
-        before: {
-          log: false,
-          include: [ 'dist' ]
-        }
-      }),
+//      new RemoveWebpackPlugin({
+//        before: {
+//          log: false,
+//          include: [ 'dist' ]
+//        }
+//      }),
       new CopyWebpackPlugin({ 
 	      patterns: [
           { from: path.resolve(__dirname, 'src', 'index.html'), to: path.resolve(__dirname, 'dist', 'index.html') },

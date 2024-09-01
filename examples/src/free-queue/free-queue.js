@@ -60,9 +60,9 @@ class FreeQueue {
     }
   }
 
-  static fromSource(queueSource)
+  static fromObject(object)
   {
-    return Object.setPrototypeOf(queueSource, FreeQueue.prototype);
+    return Object.setPrototypeOf(object, FreeQueue.prototype);
   }
 
   /**

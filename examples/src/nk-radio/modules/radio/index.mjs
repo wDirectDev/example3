@@ -1,7 +1,8 @@
 import Assets from "./assets.js";
-import isEmpty from "../isEmpty/index.mjs";
 
 import FreeQueue from "../../../free-queue/free-queue.js";
+import Application from "./oscilloscope/index.mjs";
+
 import { getConstant } from "./constants.js";
 
 const { RENDER_QUANTUM, FRAME_SIZE } = getConstant( "radio" );
@@ -47,6 +48,9 @@ const CONFIG = {
     },
     web: {
         crossOrigin: 'anonymous'
+    },
+    application: {
+        instance: undefined
     }
 }
 
@@ -72,10 +76,12 @@ const newAudio = async (CONFIG) => {
 }
 
 const drawOscilloscope = () => {
-    CONFIG.html.scope.context = CONFIG.html.scope.canvas.getContext('2d')
 
-    const bufferSize = RENDER_QUANTUM;
-    let r = 0;
+   CONFIG.application.instance.start();
+//    CONFIG.html.scope.context = CONFIG.html.scope.canvas.getContext('2d')
+
+//    const bufferSize = RENDER_QUANTUM;
+//    let r = 0;
 
    // CONFIG.audio.waveform = [2];
     //CONFIG.audio.waveform[0] = new Float64Array(bufferSize);
@@ -86,11 +92,10 @@ const drawOscilloscope = () => {
 	//    console.log( "draw: queue.pull [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
     //}
 
-    if ( r != 0 ) {
-
-        globalThis["renderBuffer"] = [2];
-        globalThis["renderBuffer"][0] = new Float64Array(CONFIG.audio.waveform[0]);
-        globalThis["renderBuffer"][1] = new Float64Array(CONFIG.audio.waveform[1]);
+//    if ( r != 0 ) {
+//        globalThis["renderBuffer"] = [2];
+//        globalThis["renderBuffer"][0] = new Float64Array(CONFIG.audio.waveform[0]);
+//        globalThis["renderBuffer"][1] = new Float64Array(CONFIG.audio.waveform[1]);
 /*
         CONFIG.html.scope.canvas.width = CONFIG.audio.waveform[0].length
         CONFIG.html.scope.canvas.height = 200
@@ -130,7 +135,7 @@ const drawOscilloscope = () => {
         CONFIG.html.scope.context.lineWidth = 2
         CONFIG.html.scope.context.stroke()
 */
-    }
+//    }
 
     //if ( CONFIG.player.isPlaying == true ) 
     //    window.requestAnimationFrame(drawOscilloscope)
@@ -178,11 +183,36 @@ const ctx = async (CONFIG) => {
 }
 
 const init = (self) => {
-    CONFIG.html.scope.canvas = self['this']['shadowRoot'].querySelector('#oscilloscope')
+    CONFIG.html.scope.canvas = self['this']['shadowRoot'].querySelector('#gfx')
     CONFIG.html.button.start = self['this']['shadowRoot'].querySelector('#start')
+
     CONFIG.html.button.radios.this = self['this']['shadowRoot'].querySelectorAll('input[name="radio-selection"]')
-    CONFIG.html.button.radios.length = CONFIG.html.button.radios.this.length;
-    CONFIG.player.isPlaying = false;
+    CONFIG.html.button.radios.length = CONFIG.html.button.radios.this.length
+
+    CONFIG.player.isPlaying = false
+
+    CONFIG.application.instance = new Application()
+    let r = CONFIG.application.instance.check()
+    if ( r ) {
+        const wgerr = self['this']['shadowRoot'].querySelector('#error')
+        wgerr.style.display = 'none'
+        const wgfx = CONFIG.html.scope.canvas
+        wgfx.style.display = 'block'
+        CONFIG.application.instance.setCanvas( wgfx )
+    } else {
+        const wgerr = self['this']['shadowRoot'].querySelector('#error')
+        wgerr.style.display = 'none'
+        const wgfx = CONFIG.html.scope.canvas
+	wgfx.style.display = 'none'
+        throw('Your browser does`t support WebGPU or it is not enabled.')
+    }
+    const canvas = CONFIG.application.instance.getCanvas()
+    const scale = window.devicePixelRatio
+
+    canvas.width = window.innerWidth
+    canvas.height = canvas.width * 9 / 54
+    canvas.height = canvas.height * scale
+    canvas.width = canvas.width * scale
 }
 
 export default async () => {
@@ -197,6 +227,8 @@ export default async () => {
                     }
                 }
 
+		drawOscilloscope();
+
                 CONFIG.stream.song = new Audio(CONFIG.stream.source)
 
                 for (let i = 0, max = CONFIG.html.button.radios.length; i < max; i++) {
@@ -204,10 +236,15 @@ export default async () => {
                         if (CONFIG.player.isPlaying) {
                             await CONFIG.stream.song.pause()
                             CONFIG.html.button.start.textContent = "Start Audio"
-                            CONFIG.player.isPlaying = !CONFIG.player.isPlaying
+
+                            CONFIG.player.isPlaying = false
+                            globalThis["isPlaybackInProgress"] = CONFIG.player.isPlaying;
+
                             CONFIG.stream.path = event.target.value
                             if(CONFIG.audio.ctx) {
                                 CONFIG.player.isPlaying = !CONFIG.player.isPlaying
+                                globalThis["isPlaybackInProgress"] = CONFIG.player.isPlaying;
+
                                 await newAudio(CONFIG)
                             }
                         }
@@ -232,7 +269,6 @@ export default async () => {
 
                         await ctx(CONFIG);
                         await newAudio(CONFIG);
-                       // drawOscilloscope();
                     }
                     
                 } )

@@ -45,15 +45,15 @@ const nkRadio = class extends HTMLElement
   constructor () {
     super()
     props(this)
-      .then(component => template(component))
-      .then(async component => {
-        let radio = new (await modules())(component)
+	.then(component => template(component))
+	.then(async component => {
+	        let radio = new (await modules())(component)
       })
   }
 }
 
 if (customElements.get("nk-radio") === undefined) {
   customElements.define("nk-radio", nkRadio );
-};
+}
 
 export default { nkRadio }

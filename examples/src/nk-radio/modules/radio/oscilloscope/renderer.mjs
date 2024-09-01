@@ -1,4 +1,3 @@
-import { mat4, vec3 } from 'wgpu-matrix';
 import { wDCircle } from './circle.mjs';
 import { wDLine } from './line.mjs';
 import { wDNativeLine } from './line-native.mjs';
@@ -9,9 +8,9 @@ import { wDLabel } from './label.mjs';
 import { wDImage } from './image.mjs';
 import { wDGoniometer } from './goniometer.mjs';
 
-import vertexShaderWgslCode from './shaders/shader.vert.wgsl'
-import fragmentShaderWgslCode from './shaders/shader.frag.wgsl'
-import computeShaderWgslCode from './shaders/blur.compute.wgsl'
+// import vertexShaderWgslCode from 'shaders/shader.vert.wgsl'
+// import fragmentShaderWgslCode from 'shaders/shader.frag.wgsl'
+// import computeShaderWgslCode from 'shaders/blur.compute.wgsl'
 
 export class wDApplication
 {
@@ -221,17 +220,9 @@ export class wDApplication
     {
         try {
             if ( navigator.gpu != null && navigator.gpu != undefined ) {
-                const wgerr = document.getElementById('error');
-                wgerr.style.display = 'none';
-                const wgfx = document.getElementById('gfx');
-                wgfx.style.display = 'block';
-                this.setCanvas( wgfx );
+		return true;
             } else {
-                const wgerr = document.getElementById('error');
-                wgerr.style.display = 'block';
-                const wgfx = document.getElementById('gfx');
-                wgfx.style.display = 'none';
-                throw('Your browser does`t support WebGPU or it is not enabled.');
+		return false;
             }
         } catch ( e ) {
             throw( e );
@@ -262,7 +253,24 @@ export class wDApplication
                 layout: 'auto',
                 vertex: {
                         module: this.device.createShaderModule({
-                            code: vertexShaderWgslCode
+                            code: `
+
+struct fragmentEntry { 
+    @builtin(position) outPosition: vec4<f32>,
+    @location(0) outFragUV : vec2<f32>,
+    @location(1) outColor : vec4<f32>,
+}
+
+@vertex
+fn main( @location(0) inPosition: vec2<f32>, @location(1) inFragUV : vec2<f32>, @location(2) inColor : vec4<f32> ) -> fragmentEntry {
+    var vertex: fragmentEntry;
+    vertex.outPosition = vec4<f32>(inPosition, 0.0, 1.0);
+    vertex.outFragUV = inFragUV;
+    vertex.outColor = inColor;
+    return vertex;
+}
+
+`
                         }),
                         entryPoint: 'main',
                         buffers: [
@@ -296,7 +304,23 @@ export class wDApplication
                 },
                 fragment: {
                     module: this.device.createShaderModule({
-                        code: fragmentShaderWgslCode
+                        code: `
+
+@group(0) @binding(0) var <uniform> bindShaderFlag : u32;
+@group(1) @binding(0) var bindSampler : sampler;
+@group(1) @binding(1) var bindTexture : texture_2d<f32>;
+
+@fragment
+fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -> @location(0) vec4<f32> 
+{
+    var color: vec4<f32> = inColor;
+    if ( bindShaderFlag == u32( 10 ) ) {
+        color = textureSample( bindTexture, bindSampler, inFragUV );
+    }
+    return color;
+}
+
+`
                     }),
                     entryPoint: 'main',
                     targets: [{
