@@ -81,7 +81,17 @@ export class wDApplication
     {
         return this.calcRY( cy );
     }
+
+    getScaledPixelOffsetX( _cx )
+    {
+        return ( _cx * this.getScaledPixelX() - 1.0 );
+    }
     
+    getScaledPixelOffsetY( _cy )
+    {
+        return ( 1.0 - _cy * this.getScaledPixelY() );
+    }
+
     getScaledOffsetX( _cx )
     {
         return ( _cx - 1.0 );
@@ -94,12 +104,12 @@ export class wDApplication
 
     getScaledX( cx )
     {
-        return ( cx * this.getScaledPixelX() - 1.0 );
+        return ( cx * this.getScaledPixelX() );
     }
 
     getScaledY( cy )
     {
-        return ( 1.0 - cy * this.getScaledPixelY() );
+        return ( cy * this.getScaledPixelY() );
     }
 
     getScaledPixelX()
@@ -412,8 +422,8 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         //this.label = new wDLabel( this, 'lighter', 10, 'Segoe UI Light', 0, 0, 128, 128 );
         //await this.label.init();
 
-        this.pointsline = new wDLine( this );
-        await this.pointsline.init();
+        this.edgeline = new wDNativeLine( this );
+        await this.edgeline.init();
 
         this.circle = new wDCircle( this );
         await this.circle.init();
@@ -527,6 +537,10 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
 
         let thickness = 1;
         let pluginId = 0;
+
+        this.edgeline.append( 20, 20, 100, 100, 10, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 0.0, 1.0, 1.0 ] } );
+        this.edgeline.append( 20, 100, 100, 20, 10, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 0.0, 1.0, 1.0 ] } );
+        //this.edgeline.draw( this );
 
         ////////////////////////////////////////////////////////////////////////////////
         // Load config from file...

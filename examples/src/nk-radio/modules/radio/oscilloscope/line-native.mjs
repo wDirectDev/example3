@@ -134,131 +134,154 @@ export class wDNativeLine extends wDObject
     {
         let instance = this.getInstance();
 
-        let lines = this.getLines();
-        let count = this.getLinesCount();
+        let _lines = this.getLines();
+        let _count = this.getLinesCount();
 
-        let vb = new Float32Array( 12 * count );
+        let vb = new Float32Array( 12 * _count );
         let ii = 0;
 
-    	for ( let i = 0; i < count; i++ )        
+    	for ( let i = 0; i < _count; i++ )        
     	{
-            let vX1 = lines[ i ].x1;
-            let vY1 = lines[ i ].y1;
-            let vX2 = lines[ i ].x2;
-            let vY2 = lines[ i ].y2;
-
-            let vW = lines[ i ].thickness;
-	
+            let vX1 = _lines[ i ].x1;
+            let vY1 = _lines[ i ].y1; 
+            let vX2 = _lines[ i ].x2;
+            let vY2 = _lines[ i ].y2;
+            let THv = _lines[ i ].thickness;
+            let Xt = THv * instance.getScaledPixelX() / 2.0;
+            let Yt = THv * instance.getScaledPixelY() / 2.0;
             let vY = vY2 - vY1;
             let vX = vX2 - vX1;
-
             let Xf = 0.0;
             let Yf = 0.0;
-
             if ( vX > 0 && vY >= 0 ) { 
                 //////////////////////////////////
                 // To right; right down;
                 //////////////////////////////////
                 if ( vY == 0 ) {
-                    Yf = vW;
+                    Yf = Yt;
                     Xf = 0.0;
                 } else {
-                    let alpha = Math.atan2( Math.abs(vY), Math.abs(vX) );
-
-                    Yf = -Math.sin( Math.PI - alpha ) * vW;
-                    Xf = Math.cos( Math.PI - alpha ) * vW;
-
-//                    Yf = ( Math.sin( Math.PI - alpha ) * vW < vW ) ? -vW : -( Math.cos( Math.PI - alpha ) * vW );
-//                    Xf = ( Math.cos( Math.PI - alpha ) * vW < vW ) ? vW : ( Math.cos( Math.PI - alpha ) * vW );
+                    let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
+                    Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
+                    Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
                 }
+                //////////////////////////////
+                //        
+                // (0;0) 2---------1 (1;0)
+                //       |         |
+                // (0;1) 3---------0 (1;1)
+                //
+                //////////////////////////////
+                vb[ii++] = vX2 - Xf;
+                vb[ii++] = vY2 + Yf; // 1 1
+                vb[ii++] = vX2 + Xf;
+                vb[ii++] = vY2 - Yf; // 1 0
+                vb[ii++] = vX1 + Xf;
+                vb[ii++] = vY1 - Yf; // 0 0
+                for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
+                for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
+                vb[ii++] = vX1 - Xf;
+                vb[ii++] = vY1 + Yf; // 0 1
             } else if ( vX >= 0 && vY < 0 ) { 
 		        //////////////////////////////////
 		        // To up; right up;
 		        //////////////////////////////////
                 if ( vX == 0 ) {              
                     Yf = 0.0;  
-                    Xf = vW;   
+                    Xf = Xt;   
                 } else {
-                    let alpha = Math.atan2( Math.abs(vY), Math.abs(vX) );
-
-                    Yf = Math.sin( Math.PI - alpha ) * vW;
-                    Xf = Math.cos( Math.PI - alpha ) * vW;
-
-//                    Yf = ( Math.sin( Math.PI - alpha ) * vW < vW ) ? vW : ( Math.cos( Math.PI - alpha ) * vW );
-//                    Xf = ( Math.cos( Math.PI - alpha ) * vW < vW ) ? vW : ( Math.cos( Math.PI - alpha ) * vW );
+                    let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
+                    Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
+                    Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
                 }
+                //////////////////////////////
+                //        
+                // (0;0) 2---------1 (1;0)
+                //       |         |
+                // (0;1) 3---------0 (1;1)
+                //
+                //////////////////////////////
+                vb[ii++] = vX2 + Xf;
+                vb[ii++] = vY2 - Yf; // 1 1
+                vb[ii++] = vX2 - Xf;
+                vb[ii++] = vY2 - Yf; // 1 0
+                vb[ii++] = vX1 - Xf;
+                vb[ii++] = vY1 - Yf; // 0 0
+                for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
+                for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
+                vb[ii++] = vX1 + Xf;
+                vb[ii++] = vY1 + Yf; // 0 1                
            } else if ( vX < 0 && vY <= 0 ) {
                 //////////////////////////////////
                 // To left; left up;
                 //////////////////////////////////
                 if ( vY == 0 ) {
-                    Yf = vW;
+                    Yf = Yt;
                     Xf = 0.0;
                 } else {
-                    let alpha = Math.atan2( Math.abs(vY), Math.abs(vX) );
-
-                    Yf = -Math.sin( Math.PI - alpha ) * vW;
-                    Xf = Math.cos( Math.PI - alpha ) * vW;
-
-//                    Yf = ( Math.sin( Math.PI - alpha ) * vW < vW ) ? -vW : -( Math.cos( Math.PI - alpha ) * vW );
-//                    Xf = ( Math.cos( Math.PI - alpha ) * vW < vW ) ? vW : ( Math.cos( Math.PI - alpha ) * vW );
+                    let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
+                    Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
+                    Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
                 }
+                //////////////////////////////
+                //        
+                // (0;0) 2---------1 (1;0)
+                //       |         |
+                // (0;1) 3---------0 (1;1)
+                //
+                //////////////////////////////
+                vb[ii++] = vX2 + Xf;
+                vb[ii++] = vY2 - Yf; // 1 1
+                vb[ii++] = vX2 - Xf;
+                vb[ii++] = vY2 + Yf; // 1 0
+                vb[ii++] = vX1 - Xf;
+                vb[ii++] = vY1 + Yf; // 0 0
+                for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
+                for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
+                vb[ii++] = vX1 + Xf;
+                vb[ii++] = vY1 - Yf; // 0 1                
            } else if ( vX <= 0 && vY > 0 ) {
-		//////////////////////////////////
-		// To down; left down;
-		//////////////////////////////////
+                //////////////////////////////////
+                // To down; left down;
+                //////////////////////////////////
                 if ( vX == 0 ) {
-                    Xf = vW;
+                    Xf = Xt;
                     Yf = 0.0;
                 } else {
-                    let alpha = Math.atan2( Math.abs(vY), Math.abs(vX) );
-                    Yf = Math.sin( Math.PI - alpha ) * vW;
-                    Xf = Math.cos( Math.PI - alpha ) * vW;
-
-//                    Yf = ( Math.sin( Math.PI - alpha ) * vW < vW ) ? vW : ( Math.cos( Math.PI - alpha ) * vW );
-//                    Xf = ( Math.cos( Math.PI - alpha ) * vW < vW ) ? vW : ( Math.cos( Math.PI - alpha ) * vW );
+                    let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
+                    Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
+                    Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
                 }
+                //////////////////////////////
+                //        
+                // (0;0) 2---------1 (1;0)
+                //       |         |
+                // (0;1) 3---------0 (1;1)
+                //
+                //////////////////////////////
+                vb[ii++] = vX2 - Xf;
+                vb[ii++] = vY2 - Yf; // 1 1
+                vb[ii++] = vX2 + Xf;
+                vb[ii++] = vY2 + Yf; // 1 0
+                vb[ii++] = vX1 + Xf;
+                vb[ii++] = vY1 + Yf; // 0 0
+                for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
+                for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
+                vb[ii++] = vX1 - Xf;
+                vb[ii++] = vY1 - Yf; // 0 1                
             }
-
-            let Xh = Xf / 2.0;
-            let Yh = Yf / 2.0;
-
-//////////////////////////////
-//        
-// (0;0) 2---------1 (1;0)
-//       |         |
-// (0;1) 3---------0 (1;1)
-//
-//////////////////////////////
-
-            vb[ii++] = instance.getScaledX( vX2 - Xh );
-            vb[ii++] = instance.getScaledY( vY2 + Yh ); // 1 1
-
-            vb[ii++] = instance.getScaledX( vX2 + Xh );
-            vb[ii++] = instance.getScaledY( vY2 - Yh ); // 1 0
-
-            vb[ii++] = instance.getScaledX( vX1 + Xh );
-            vb[ii++] = instance.getScaledY( vY1 - Yh ); // 0 0
-
-            for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
-            for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
-
-            vb[ii++] = instance.getScaledX( vX1 - Xh );
-            vb[ii++] = instance.getScaledY( vY1 + Yh ); // 0 1
         }
-
 	    return vb;
     }
 
     getFragUV()
     {   
-        let lines = this.getLines();
-        let count = this.getLinesCount();
+        let _count = this.getLinesCount();
 
-        let fb = new Float32Array( 12 * count );
+        let fb = new Float32Array( 12 * _count );
         let ii = 0;
 
-        for (let j = 0; j < count; j++ )        
+        for (let j = 0; j < _count; j++ )        
         {	
             fb[ii++] = 1.0;
             fb[ii++] = 1.0;
@@ -305,9 +328,14 @@ export class wDNativeLine extends wDObject
     {
 	    this.clearLines();
     }
+    appendscaled( x1, y1, x2, y2, _t = 1, _colors = { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 1.0, 1.0, 1.0, 1.0 ] } )
+    {
+	    this.appendLine( { 'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2, 'thickness': _t, 'colors': _colors } );
+    }
     append( x1, y1, x2, y2, _t = 1, _colors = { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 1.0, 1.0, 1.0, 1.0 ] } )
     {
-	    this.appendLine( { 'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2, 'thickness': _t, 'colors' : _colors } );
+        let instance = this.getInstance();
+	    this.appendLine( { 'x1': instance.getScaledPixelOffsetX(x1), 'y1': instance.getScaledPixelOffsetY(y1), 'x2': instance.getScaledPixelOffsetX( x2 ), 'y2': instance.getScaledPixelOffsetY(y2), 'thickness': _t, 'colors' : _colors } );
     }
     async draw( instance ) 
     {
