@@ -19,7 +19,7 @@ export class wDGoniometer extends wDObject
     {
 	    let instance = this.getInstance();
 
-        this.line = new wDLine( instance );
+        this.line = new wDNativeLine( instance );
         await this.line.init();
     }
 
@@ -76,31 +76,29 @@ export class wDGoniometer extends wDObject
 
         this.line.clear();
 
-        let radius = this.getRadius();
+        let _radius = this.getRadius();
         let _t = this.getThickness();	
 
-        let cX = radius * kX / kdX;
-        let cY = radius * kY / kdY;
-
+        let cX = _radius * kX / kdX;
+        let cY = _radius * kY / kdY;
         let x0 = this.getX();
         let y0 = this.getY();
-
         let i_len = ( _object.length % 2 == 0 ) ? _object.length : _object.length - 1;
         let i_index = 0;
-        for ( ; i_index < ( i_len / 2 ); i_index = i_index + 2 ) 
+        let x1 = _object[ i_index * 2 + 0 ] * _radius;
+        let y1 = _object[ i_index * 2 + 1 ] * _radius;
+        for ( ; i_index < ( i_len / 2 ); i_index++ ) 
         {
-            let x1 = _object[ i_index * 2 + 0 ] * radius;
-            let y1 = _object[ i_index * 2 + 1 ] * radius;
-    
-            let x2 = _object[ i_index * 2 + 2 ] * radius;
-            let y2 = _object[ i_index * 2 + 3 ] * radius;
-
+            let x2 = _object[ i_index * 2 + 0 ] * _radius;
+            let y2 = _object[ i_index * 2 + 1 ] * _radius;
             this.line.append( x0 + x1, y0 + y1, x0 + x2, y0 + y2, _t, { from: color, to: color } );
+            x1 = x2;
+            y1 = y2;
         }
 
-        let count = this.line.getLinesCount();
+        let _count = this.line.getLinesCount();
 
-        if( count != 0 ) await this.line.draw( instance );
+        if( _count != 0 ) await this.line.draw( instance );
 
         ///////////////////////////////////////////////////////////////////////
         // let count = this.vertex.getPointsArrayCount();

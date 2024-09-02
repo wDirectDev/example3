@@ -22,7 +22,7 @@ export class wDNativeLine extends wDObject
         this.setColorsBuffer( null );
         this.setVertexBuffer( null );
         this.setFragUVBuffer( null );
-	    this.setUniformShaderLocation( null ); 
+	    this.setUniformShaderLocationFlag( null ); 
 	    this.setShaderBindGroup( null );
     }  
     async init() 
@@ -32,9 +32,7 @@ export class wDNativeLine extends wDObject
         this.setFragUVBuffer( null );
         this.setColorsBuffer( null );
 	    this.setShaderBindGroup( null );
-	    this.setUniformShaderLocation( 
-		    this.setUniformShaderFlag( instance.device, 0 ) 
-	    );
+	    this.setUniformShaderLocationFlag( instance.device, 0 );
         this.resetDuty();
     }
     getLinesCount()
@@ -132,10 +130,10 @@ export class wDNativeLine extends wDObject
     }
     getVertex()
     {
-        let instance = this.getInstance();
-
         let _lines = this.getLines();
         let _count = this.getLinesCount();
+
+        let instance = this.getInstance();
 
         let vb = new Float32Array( 12 * _count );
         let ii = 0;
@@ -146,24 +144,29 @@ export class wDNativeLine extends wDObject
             let vY1 = _lines[ i ].y1; 
             let vX2 = _lines[ i ].x2;
             let vY2 = _lines[ i ].y2;
+
             let THv = _lines[ i ].thickness;
-            let Xt = THv * instance.getScaledPixelX() / 2.0;
-            let Yt = THv * instance.getScaledPixelY() / 2.0;
+
+            let Xt = THv * instance.getScaledSizeOfPixelX() / 2.0;
+            let Yt = THv * instance.getScaledSizeOfPixelY() / 2.0;
+            
             let vY = vY2 - vY1;
             let vX = vX2 - vX1;
+
             let Xf = 0.0;
             let Yf = 0.0;
+
+            let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
+            Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
+            Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
+
             if ( vX > 0 && vY >= 0 ) { 
                 //////////////////////////////////
-                // To right; right down;
+                //console.log ( "Right; right down;" );
                 //////////////////////////////////
                 if ( vY == 0 ) {
                     Yf = Yt;
                     Xf = 0.0;
-                } else {
-                    let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
-                    Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
-                    Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
                 }
                 //////////////////////////////
                 //        
@@ -172,27 +175,23 @@ export class wDNativeLine extends wDObject
                 // (0;1) 3---------0 (1;1)
                 //
                 //////////////////////////////
-                vb[ii++] = vX2 - Xf;
-                vb[ii++] = vY2 + Yf; // 1 1
-                vb[ii++] = vX2 + Xf;
-                vb[ii++] = vY2 - Yf; // 1 0
-                vb[ii++] = vX1 + Xf;
-                vb[ii++] = vY1 - Yf; // 0 0
+                vb[ii++] = instance.getScaledOffsetX( vX2 - Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY2 + Yf ); // 1 1
+                vb[ii++] = instance.getScaledOffsetX( vX2 + Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY2 - Yf ); // 1 0
+                vb[ii++] = instance.getScaledOffsetX( vX1 + Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY1 - Yf ); // 0 0
                 for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
                 for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
-                vb[ii++] = vX1 - Xf;
-                vb[ii++] = vY1 + Yf; // 0 1
+                vb[ii++] = instance.getScaledOffsetX( vX1 - Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY1 + Yf ); // 0 1
             } else if ( vX >= 0 && vY < 0 ) { 
 		        //////////////////////////////////
-		        // To up; right up;
+		        //console.log ( "Up; right up;" );
 		        //////////////////////////////////
                 if ( vX == 0 ) {              
                     Yf = 0.0;  
                     Xf = Xt;   
-                } else {
-                    let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
-                    Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
-                    Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
                 }
                 //////////////////////////////
                 //        
@@ -201,27 +200,23 @@ export class wDNativeLine extends wDObject
                 // (0;1) 3---------0 (1;1)
                 //
                 //////////////////////////////
-                vb[ii++] = vX2 + Xf;
-                vb[ii++] = vY2 - Yf; // 1 1
-                vb[ii++] = vX2 - Xf;
-                vb[ii++] = vY2 - Yf; // 1 0
-                vb[ii++] = vX1 - Xf;
-                vb[ii++] = vY1 - Yf; // 0 0
+                vb[ii++] = instance.getScaledOffsetX( vX2 + Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY2 + Yf ); // 1 1
+                vb[ii++] = instance.getScaledOffsetX( vX2 - Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY2 - Yf ); // 1 0
+                vb[ii++] = instance.getScaledOffsetX( vX1 - Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY1 - Yf ); // 0 0
                 for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
                 for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
-                vb[ii++] = vX1 + Xf;
-                vb[ii++] = vY1 + Yf; // 0 1                
+                vb[ii++] = instance.getScaledOffsetX( vX1 + Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY1 + Yf ); // 0 1                
            } else if ( vX < 0 && vY <= 0 ) {
                 //////////////////////////////////
-                // To left; left up;
+                //console.log ( "Left; left up;" );
                 //////////////////////////////////
                 if ( vY == 0 ) {
                     Yf = Yt;
                     Xf = 0.0;
-                } else {
-                    let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
-                    Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
-                    Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
                 }
                 //////////////////////////////
                 //        
@@ -230,27 +225,23 @@ export class wDNativeLine extends wDObject
                 // (0;1) 3---------0 (1;1)
                 //
                 //////////////////////////////
-                vb[ii++] = vX2 + Xf;
-                vb[ii++] = vY2 - Yf; // 1 1
-                vb[ii++] = vX2 - Xf;
-                vb[ii++] = vY2 + Yf; // 1 0
-                vb[ii++] = vX1 - Xf;
-                vb[ii++] = vY1 + Yf; // 0 0
+                vb[ii++] = instance.getScaledOffsetX( vX2 + Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY2 - Yf ); // 1 1
+                vb[ii++] = instance.getScaledOffsetX( vX2 - Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY2 + Yf ); // 1 0
+                vb[ii++] = instance.getScaledOffsetX( vX1 - Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY1 + Yf ); // 0 0
                 for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
                 for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
-                vb[ii++] = vX1 + Xf;
-                vb[ii++] = vY1 - Yf; // 0 1                
+                vb[ii++] = instance.getScaledOffsetX( vX1 + Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY1 - Yf ); // 0 1                
            } else if ( vX <= 0 && vY > 0 ) {
                 //////////////////////////////////
-                // To down; left down;
+                //console.log ( "Left; left down;" );
                 //////////////////////////////////
                 if ( vX == 0 ) {
                     Xf = Xt;
                     Yf = 0.0;
-                } else {
-                    let alpha = Math.atan( Math.abs(vY) / Math.abs(vX) );
-                    Yf = Math.sin( Math.PI / 2.0 - alpha ) * Yt;
-                    Xf = Math.cos( Math.PI / 2.0 - alpha ) * Xt;
                 }
                 //////////////////////////////
                 //        
@@ -259,16 +250,16 @@ export class wDNativeLine extends wDObject
                 // (0;1) 3---------0 (1;1)
                 //
                 //////////////////////////////
-                vb[ii++] = vX2 - Xf;
-                vb[ii++] = vY2 - Yf; // 1 1
-                vb[ii++] = vX2 + Xf;
-                vb[ii++] = vY2 + Yf; // 1 0
-                vb[ii++] = vX1 + Xf;
-                vb[ii++] = vY1 + Yf; // 0 0
+                vb[ii++] = instance.getScaledOffsetX( vX2 - Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY2 - Yf ); // 1 1
+                vb[ii++] = instance.getScaledOffsetX( vX2 + Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY2 + Yf ); // 1 0
+                vb[ii++] = instance.getScaledOffsetX( vX1 + Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY1 + Yf ); // 0 0
                 for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 0 * 2 + k + i * 12 ];
                 for ( let k = 0; k < 2; k++ ) vb[ii++] = vb[ 2 * 2 + k + i * 12 ];
-                vb[ii++] = vX1 - Xf;
-                vb[ii++] = vY1 - Yf; // 0 1                
+                vb[ii++] = instance.getScaledOffsetX( vX1 - Xf );
+                vb[ii++] = instance.getScaledOffsetY( vY1 - Yf ); // 0 1                
             }
         }
 	    return vb;
@@ -300,43 +291,52 @@ export class wDNativeLine extends wDObject
 
     getColors()
     {
-        let lines = this.getLines();
-        let count = this.getLinesCount();
+        let _lines = this.getLines();
+        let _count = this.getLinesCount();
 
-        let cb = new Float32Array( 24 * count );
+        let cb = new Float32Array( 24 * _count );
 	    let ii = 0;
 	
-        for (let i = 0; i < count; i++ )        
+        for (let i = 0; i < _count; i++ )        
         {
-            let colors = lines[i].colors;
-            for ( let k = 0; k < 4; k++ ) cb[ii++] = colors.to[k];
-            for ( let k = 0; k < 4; k++ ) cb[ii++] = colors.to[k];
-            for ( let k = 0; k < 4; k++ ) cb[ii++] = colors.from[k];
+            let _colors = _lines[i].colors;
+            for ( let k = 0; k < 4; k++ ) cb[ii++] = _colors.to[ k ];
+            for ( let k = 0; k < 4; k++ ) cb[ii++] = _colors.to[ k ];
+            for ( let k = 0; k < 4; k++ ) cb[ii++] = _colors.from[ k ];
             for ( let k = 0; k < 4; k++ ) cb[ii++] = cb[ 0 * 4 + k + i * 24];
             for ( let k = 0; k < 4; k++ ) cb[ii++] = cb[ 2 * 4 + k + i * 24 ];
-            for ( let k = 0; k < 4; k++ ) cb[ii++] = colors.from[k];
+            for ( let k = 0; k < 4; k++ ) cb[ii++] = _colors.from[ k ];
         }
 
         return cb;
+    }
+
+    lines()
+    {
+        return this.getLines();
     }
 
     count()
     {
         return this.getLinesCount();
     }
+
     clear()
     {
 	    this.clearLines();
     }
+    
     appendscaled( x1, y1, x2, y2, _t = 1, _colors = { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 1.0, 1.0, 1.0, 1.0 ] } )
     {
 	    this.appendLine( { 'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2, 'thickness': _t, 'colors': _colors } );
     }
+
     append( x1, y1, x2, y2, _t = 1, _colors = { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 1.0, 1.0, 1.0, 1.0 ] } )
     {
         let instance = this.getInstance();
-	    this.appendLine( { 'x1': instance.getScaledPixelOffsetX(x1), 'y1': instance.getScaledPixelOffsetY(y1), 'x2': instance.getScaledPixelOffsetX( x2 ), 'y2': instance.getScaledPixelOffsetY(y2), 'thickness': _t, 'colors' : _colors } );
+	    this.appendLine( { 'x1': instance.getScaledX(x1), 'y1': instance.getScaledY(y1), 'x2': instance.getScaledX( x2 ), 'y2': instance.getScaledY(y2), 'thickness': _t, 'colors' : _colors } );
     }
+
     async draw( instance ) 
     {
         let flag = this.isDuty();

@@ -84,12 +84,12 @@ export class wDApplication
 
     getScaledPixelOffsetX( _cx )
     {
-        return ( _cx * this.getScaledPixelX() - 1.0 );
+        return ( _cx * this.getScaledSizeOfPixelX() - 1.0 );
     }
     
     getScaledPixelOffsetY( _cy )
     {
-        return ( 1.0 - _cy * this.getScaledPixelY() );
+        return ( 1.0 - _cy * this.getScaledSizeOfPixelY() );
     }
 
     getScaledOffsetX( _cx )
@@ -104,20 +104,20 @@ export class wDApplication
 
     getScaledX( cx )
     {
-        return ( cx * this.getScaledPixelX() );
+        return ( cx * this.getScaledSizeOfPixelX() );
     }
 
     getScaledY( cy )
     {
-        return ( cy * this.getScaledPixelY() );
+        return ( cy * this.getScaledSizeOfPixelY() );
     }
 
-    getScaledPixelX()
+    getScaledSizeOfPixelX()
     {
         return 2.0 / this.getCanvasWidth();
     }
 
-    getScaledPixelY()
+    getScaledSizeOfPixelY()
     {
         return 2.0 / this.getCanvasHeight();
     }
@@ -364,7 +364,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                 minFilter: 'nearest'   // nearest | linear
             });
 
-            this.nullTexture = this.device.createTexture({
+            this.texture = this.device.createTexture({
                 size: [ 1, 1, 1 ],
                 format: 'rgba8unorm',
                 usage:
@@ -429,7 +429,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         await this.circle.init();
 
         this.color = 0.0;
-        this.color_step = 0.01;
+        this.colorStep = 0.01;
     }
     setTextureBindGroup( group )
     {
@@ -495,10 +495,10 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                     },
                     {
                         binding: 1,
-                        resource: this.nullTexture.createView( {
+                        resource: this.texture.createView( {
                             baseMipLevel: 0,
                             mipLevelCount: 1
-                        } ) ,
+                        } )
                     }
                 ]
 	        } );
@@ -510,13 +510,13 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         this.passEncoder.setBindGroup( 0, shaderBindGroup );
         this.passEncoder.setBindGroup( 1, textureBindGroup );
 
-        this.color += this.color_step;
+        this.color += this.colorStep;
 
         if ( this.color >= 1.0 ) {
-            this.color_step = -0.01;
+            this.colorStep = -0.01;
             this.color = 1.0;
         } else if ( this.color < 0 ) {
-            this.color_step = +0.01;
+            this.colorStep = +0.01;
             this.color = 0;
         }
 
@@ -529,18 +529,24 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         let sW = this.getCanvasWidth( false );
         let sH = this.getCanvasHeight( false );
 
-        //this.pointsline.clear();
-        //this.pointsline.append( 40, 40, 60, 60, 1, { from: [ 1.0, 0.0, 0.0, 1.0 ], to: [ 0.0, 1.0, 0.0, 1.0 ] } );
-        //this.pointsline.append( 90, 40, 90, 40, 1, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 1.0, 0.0, 0.0, 1.0 ] } );
-        //this.pointsline.append( 90, 40, 90, 100, 1, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 0.0, 1.0, 1.0 ] } );
-        //this.pointsline.draw( this );
-
-        let thickness = 1;
+        let thickness = 2;
         let pluginId = 0;
-
+/*
+        this.edgeline.clear();
         this.edgeline.append( 20, 20, 100, 100, 10, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 0.0, 1.0, 1.0 ] } );
         this.edgeline.append( 20, 100, 100, 20, 10, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 0.0, 1.0, 1.0 ] } );
-        //this.edgeline.draw( this );
+
+        this.edgeline.append( 120, 120, 40, 40, 10, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 0.0, 1.0, 1.0 ] } );
+        this.edgeline.append( 120, 40, 40, 120, 10, { from: [ 1.0, 1.0, 1.0, 1.0 ], to: [ 0.0, 0.0, 1.0, 1.0 ] } );
+
+        this.edgeline.draw( this );
+*/
+
+//        this.point.append(30,30,10,[ 1.0, 1.0, 1.0, 1.0 ]);
+//        this.point.draw( this );
+
+//        this.circle.set( 100, 100, 30, thickness);
+//        this.circle.draw( this );
 
         ////////////////////////////////////////////////////////////////////////////////
         // Load config from file...
@@ -568,7 +574,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         }
     
         if ( globalThis["queue"] != undefined ) {
-            let bufferSize = 2000;
+            let bufferSize = globalThis["sampleRate"] / 25;
 
             let _b = [2];
             _b[0] = new Float64Array(bufferSize);
@@ -682,10 +688,6 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                     await this.goniometer.draw( this, globalThis["renderBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 }
             } 
-
-            //console.log("holdChart: "+globalThis["holdChart"]);
-            //console.log("holdBuffer: "+(globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined));
-            //console.log("renderBuffer: "+(globalThis["renderBuffer"] != null && globalThis["renderBuffer"] != undefined));
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Если плагинов больше нет - рисование по умолчанию...

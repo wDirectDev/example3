@@ -31,7 +31,7 @@ export class wDLabel extends wDObject
         this.setFragUVBuffer( null );
         this.setPositionBuffer( null );
         this.setTextureImage( null );
-        this.createUniformShaderLocationFlag( instance.device, 10 );
+        this.setUniformShaderLocationFlag( instance.device, 10 );
         this.setDuty();
     }
     set( fs, x, y, _width = -1, _height = -1 )

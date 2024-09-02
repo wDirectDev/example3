@@ -23,7 +23,7 @@ export class wDImage extends wDObject
         this.setTextureImage( null );
         this.setTextureBindGroup( null );
         this.setShaderBindGroup( null );
-        this.createUniformShaderLocationFlag( instance.device, 10 );
+        this.setUniformShaderLocationFlag( instance.device, 10 );
         this.setTextureImage( 
             await this.loadTextureImage( instance.device, this.getURL() )
         );

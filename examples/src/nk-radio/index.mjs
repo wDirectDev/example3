@@ -40,8 +40,7 @@ const template = (component) => {
   })
 }
 
-const nkRadio = class extends HTMLElement
-{
+const nkRadio = class extends HTMLElement {
   constructor () {
     super()
     props(this)

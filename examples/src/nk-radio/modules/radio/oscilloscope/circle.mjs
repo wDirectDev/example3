@@ -64,6 +64,8 @@ export class wDCircle extends wDObject
         {
             this.vertex.clear();
 
+            let instance = this.getInstance();
+            
             let r = this.getRadius();
             let _t = this.getThickness();	
 
@@ -196,8 +198,8 @@ export class wDCircle extends wDObject
             }
         }
 
-        let count = this.vertex.getPointsArrayCount();
-        if ( count != 0 ) await this.vertex.draw( instance );
+        let _count = this.vertex.count();
+        if ( _count != 0 ) await this.vertex.draw( instance );
 
         this.resetDuty();
     }

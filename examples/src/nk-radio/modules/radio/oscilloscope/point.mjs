@@ -30,26 +30,28 @@ export class wDPoint extends wDObject
         this.setFragUVBuffer( null );
         this.setColorsBuffer( null );
         this.setShaderBindGroup( null );
-        this.setUniformShaderLocation( 
-            this.setUniformShaderFlag( instance.device, 0 ) 
-        );
+        this.setUniformShaderLocationFlag( instance.device, 0 );
         this.setDuty();
     }
     getPointsArrayCount()
     {
-	    return this.pointsarray.length;
+	return this.pointsarray.length;
     }
-    getPointsArray() {
+    getPointsArray() 
+    {
     	return this.pointsarray;
     }
-    setPointsArray( _pointsarray ) {
+    setPointsArray( _pointsarray ) 
+    {
     	this.pointsarray = _pointsarray;
         this.setDuty();
     }
-    clearPointsArray() {
+    clearPointsArray() 
+    {
 	    this.setPointsArray( [] );
     }
-    appendPointToArray( point ) {
+    appendPointToArray( point ) 
+    {
     	this.pointsarray.push( point );
         this.setDuty();
     }
@@ -96,23 +98,24 @@ export class wDPoint extends wDObject
     }
     getVertex()
     {
-        let instance = this.getInstance();
-
         // const gyp = Math.floor( Math.sqrt( Math.abs( instance.getScaledPixelX() ) * Math.abs( instance.getScaledPixelX() ) + Math.abs( instance.getScaledPixelY() ) * Math.abs( instance.getScaledPixelY() ) ) );
 
         let _dpa = this.getPointsArray();
         let _count = this.getPointsArrayCount();
 //        let vb = new Float32Array( 6 * _count );
+
+        let instance = this.getInstance();
+
         let vb = new Float32Array( 12 * _count );
         let ii = 0;
         for ( let i = 0; i < _count; i++ )        
         {
-            let Xv = _dpa[ i ].x * instance.getScaledPixelX();
-            let Yv = _dpa[ i ].y * instance.getScaledPixelY();
+            let Xv = _dpa[ i ].x;
+            let Yv = _dpa[ i ].y;
             let THv = _dpa[ i ].thickness;
 
-            let Xt = THv * instance.getScaledPixelX() / 2.0;
-            let Yt = THv * instance.getScaledPixelY() / 2.0;
+            let Xt = THv * instance.getScaledSizeOfPixelX() / 2.0;
+            let Yt = THv * instance.getScaledSizeOfPixelY() / 2.0;
           
 /*            
             let ang = Math.PI / 4.0;
@@ -188,7 +191,6 @@ export class wDPoint extends wDObject
     {        
         let _count = this.getPointsArrayCount();
         let cb = new Float32Array( 24 * _count );
-//        let cb = new Float32Array( 12 * _count );
         let ii = 0;
         let _da = this.getPointsArray();
         for (let i = 0; i < _count; i++ ) {
@@ -203,14 +205,25 @@ export class wDPoint extends wDObject
         return cb;
     }
 
+    points()
+    {
+	return this.getPointsArray();        
+    }
+
     clear()
     {
 	    this.clearPointsArray();
     }
 
-    append( x, y, _t = 1, _color = [ 1.0, 1.0, 1.0, 1.0 ] )
+    appendscaled( x, y, _t = 1, _color = [ 1.0, 1.0, 1.0, 1.0 ] )
     {
 	    this.appendPointToArray( { 'x': x, 'y': y, 'thickness': _t, 'color' : _color } );
+    }
+
+    append( x, y, _t = 1, _color = [ 1.0, 1.0, 1.0, 1.0 ] )
+    {
+        let instance = this.getInstance();
+	    this.appendPointToArray( { 'x': instance.getScaledX(x), 'y': instance.getScaledY(y), 'thickness': _t, 'color' : _color } );
     }
 
     count()

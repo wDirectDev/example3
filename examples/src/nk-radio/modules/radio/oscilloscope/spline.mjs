@@ -491,34 +491,34 @@ export class wDSpline extends wDObject
         let instance = this.getInstance();
         if ( _vdp == true ) {
             this.discretlines.appendscaled( 
-                _sc_bx - instance.getScaledPixelX(), 
-                _sc_by - instance.getScaledPixelY(),
-                _sc_bx + instance.getScaledPixelX(), 
-                _sc_by - instance.getScaledPixelY(),
+                _sc_bx - instance.getScaledSizeOfPixelX(), 
+                _sc_by - instance.getScaledSizeOfPixelY(),
+                _sc_bx + instance.getScaledSizeOfPixelX(), 
+                _sc_by - instance.getScaledSizeOfPixelY(),
                 _t, 
                 _dcolor
             );
             this.discretlines.appendscaled( 
-                _sc_bx - instance.getScaledPixelX(), 
-                _sc_by + instance.getScaledPixelY(),
-                _sc_bx + instance.getScaledPixelX(), 
-                _sc_by + instance.getScaledPixelY(),
+                _sc_bx - instance.getScaledSizeOfPixelX(), 
+                _sc_by + instance.getScaledSizeOfPixelY(),
+                _sc_bx + instance.getScaledSizeOfPixelX(), 
+                _sc_by + instance.getScaledSizeOfPixelY(),
                 _t, 
                 _dcolor
             );
             this.discretlines.appendscaled( 
-                _sc_bx - instance.getScaledPixelX(), 
-                _sc_by - instance.getScaledPixelY(),
-                _sc_bx - instance.getScaledPixelX(), 
-                _sc_by + instance.getScaledPixelY(),
+                _sc_bx - instance.getScaledSizeOfPixelX(), 
+                _sc_by - instance.getScaledSizeOfPixelY(),
+                _sc_bx - instance.getScaledSizeOfPixelX(), 
+                _sc_by + instance.getScaledSizeOfPixelY(),
                 _t, 
                 _dcolor
             );
             this.discretlines.appendscaled( 
-                _sc_bx + instance.getScaledPixelX(), 
-                _sc_by - instance.getScaledPixelY(),
-                _sc_bx + instance.getScaledPixelX(), 
-                _sc_by + instance.getScaledPixelY(),
+                _sc_bx + instance.getScaledSizeOfPixelX(), 
+                _sc_by - instance.getScaledSizeOfPixelY(),
+                _sc_bx + instance.getScaledSizeOfPixelX(), 
+                _sc_by + instance.getScaledSizeOfPixelY(),
                 _t, 
                 _dcolor
             );                                        
@@ -546,12 +546,12 @@ export class wDSpline extends wDObject
         let _x = x + instance.getBorderWidth();
         let _y = y + instance.getBorderWidth();
 
-        let _framescount = _object.length / _channels;
+        let _framescount = _new_object.length / _channels;
 
         let kX = zoomX / 100.0;
         let kY = zoomY / 100.0;
 
-        let _vdp = true;
+        let _vdp = false;
 
         let _rs_bx = undefined;
         let _rs_by = undefined;
@@ -573,13 +573,13 @@ export class wDSpline extends wDObject
         // Step in pixels with scale on x and y axis
         ///////////////////////////////////////////////////////////////////
         let _cX = kX * _width / kdX;
-        let _centX = _x + _width / 2.0;
+        let _centX = instance.getScaledX( _x + _width / 2.0 );
 
         for ( let i = 0; i < kdX / 2; i++ )
         {
             /////////////////////////////////////////////////
             // x and y: one step to right side in radians
-            let _rs_ex = _ix_center + i * _ix_step ;
+            let _rs_ex = _ix_center + i * _ix_step;
             let _rs_ey = _new_object[ _channels * _rs_ex + _nchannel ] * _height / height;
 
             /////////////////////////////////////////////////
@@ -596,11 +596,11 @@ export class wDSpline extends wDObject
                 continue;
             }
 
-            let _sc_rs_bx = instance.getScaledOffsetX ( instance.getScaledX( _centX ) + instance.getScaledX ( _i_last_bi * _cX ) );
-            let _sc_rs_by = _rs_by * kY; 
+            let _sc_rs_bx = _centX + instance.getScaledX ( _i_last_bi * _cX );
+            let _sc_rs_by = instance.getScaledOffsetY( _rs_by * kY ); 
 
-            let _sc_rs_ex = instance.getScaledOffsetX ( instance.getScaledX(_centX) + instance.getScaledX ( i * _cX ) );
-            let _sc_rs_ey = _rs_ey * kY; 
+            let _sc_rs_ex = _centX + instance.getScaledX ( i * _cX );
+            let _sc_rs_ey = instance.getScaledOffsetY( _rs_ey * kY ); 
 
             this.discretlines.appendscaled( 
                 _sc_rs_bx, 
@@ -616,11 +616,11 @@ export class wDSpline extends wDObject
                 await this.drawScalePoint( _vdp, _sc_rs_ex, _sc_rs_ey, _t, _colors[ _nchannel ]  );
             }
         
-            let _sc_ls_bx = instance.getScaledOffsetX ( instance.getScaledX(_centX) - instance.getScaledX( _i_last_bi * _cX ) );
-            let _sc_ls_by = _ls_by * kY;
+            let _sc_ls_bx = _centX - instance.getScaledX( _i_last_bi * _cX );
+            let _sc_ls_by = instance.getScaledOffsetY( _ls_by * kY );
 
-            let _sc_ls_ex = instance.getScaledOffsetX ( instance.getScaledX(_centX) - instance.getScaledX ( i * _cX ) );
-            let _sc_ls_ey = _ls_ey * kY; 
+            let _sc_ls_ex = _centX - instance.getScaledX( i * _cX );
+            let _sc_ls_ey = instance.getScaledOffsetY( _ls_ey * kY ); 
 
             this.discretlines.appendscaled( 
                 _sc_ls_bx, 
@@ -634,6 +634,7 @@ export class wDSpline extends wDObject
                 await this.drawScalePoint( _vdp, _sc_ls_bx, _sc_ls_by, _t, _colors[ _nchannel ]  );
                 await this.drawScalePoint( _vdp, _sc_ls_ex, _sc_ls_ey, _t, _colors[ _nchannel ]  );
             }
+            
             _rs_bx = _rs_ex;
             _rs_by = _rs_ey;
             _ls_bx = _ls_ex;

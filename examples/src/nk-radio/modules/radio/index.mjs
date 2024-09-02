@@ -10,9 +10,7 @@ const { RENDER_QUANTUM, FRAME_SIZE } = getConstant( "radio" );
 const nkMemory = window.document.querySelector( "nk-memory" );
 
 let audioContext = null;
-
 let toggleButton = null;
-let isPlaying = false;
 
 const CONFIG = {
     audio: {
@@ -143,7 +141,7 @@ const drawOscilloscope = () => {
 
 const ctx = async (CONFIG) => {
     if( !CONFIG.audio.ctx ) {
-        CONFIG.audio.ctx = new window.AudioContext;
+        CONFIG.audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
         await CONFIG.audio.ctx.audioWorklet.addModule(new URL('./radio-processor.mjs', import.meta.url).pathname);
     }
 
@@ -201,16 +199,17 @@ const init = (self) => {
         CONFIG.application.instance.setCanvas( wgfx )
     } else {
         const wgerr = self['this']['shadowRoot'].querySelector('#error')
-        wgerr.style.display = 'none'
+        wgerr.style.display = 'block'
         const wgfx = CONFIG.html.scope.canvas
-	wgfx.style.display = 'none'
+	    wgfx.style.display = 'none'
         throw('Your browser does`t support WebGPU or it is not enabled.')
     }
+
     const canvas = CONFIG.application.instance.getCanvas()
     const scale = window.devicePixelRatio
 
     canvas.width = window.innerWidth
-    canvas.height = canvas.width * 9 / 54
+    canvas.height = canvas.width * 1 / 4
     canvas.height = canvas.height * scale
     canvas.width = canvas.width * scale
 }

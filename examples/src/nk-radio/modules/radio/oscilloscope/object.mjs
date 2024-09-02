@@ -74,7 +74,7 @@ export class wDObject
     {
 	    this.height = _h;
     }
-    createUniformShaderLocationFlag( device, shaderFlag = 0 )
+    setUniformShaderLocationFlag( device, shaderFlag = 0  )
     {
         if ( device == null ) {
             this.setUniformShaderLocation( null );
@@ -83,7 +83,7 @@ export class wDObject
                 this.setUniformShaderFlag( device, shaderFlag ) 
             );
         }
-    }    
+    }
     setUniformShaderLocation( _uniform )
     {
 	    if ( this.uniformShaderLocation != null ) 
