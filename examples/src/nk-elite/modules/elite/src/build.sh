@@ -27,4 +27,4 @@ export DIR=`pwd`
 sh ./build.sh
 cd ..
 
-cp build/*.* ../../elite/bin
+cp build/*.* ../../elite/build
