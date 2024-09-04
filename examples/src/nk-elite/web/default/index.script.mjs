@@ -2,7 +2,7 @@ export default () => {
 return  `
 
 <javascript-template>
-	import initWasmElite from "./nk-elite/modules/elite/bin/nk-elite.asm.js"
+	import initWasmElite from "./nk-elite/modules/elite/build/nk-elite.asm.js"
 	globalThis["LEliteTG"] = {
 		preRun:[],
 		postRun:[],
@@ -13,7 +13,12 @@ return  `
 			console.error("printErr: " + e);
 		},
 		canvas:function(){
-			return document.getElementById("canvas");
+			let e = document.getElementById("canvas");
+			e.addEventListener("webglcontextlost", function(e){
+				alert("WebGL context lost. You will need to reload the page.");
+				e.preventDefault();
+			})
+			return e;
 		}(),
 		setStatus:function(e){
 			if ( e != "" ) console.debug("LEliteTG: " + e);

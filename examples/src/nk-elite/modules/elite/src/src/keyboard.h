@@ -117,6 +117,7 @@ extern int kbd_space_pressed;
 extern char old_key[];
 
 
+int kbd_check_keys();
 int kbd_keyboard_startup (void);
 int kbd_keyboard_shutdown (void);
 void kbd_poll_keyboard (void);

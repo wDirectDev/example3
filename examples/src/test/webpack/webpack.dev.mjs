@@ -1,1 +1,0 @@
-import{merge as e}from"webpack-merge";import o from"./webpack.common.mjs";import m from"./webpack.server.mjs";export default e(o,m,{mode:"development",watchOptions:{ignored:"**/node_modules"}});

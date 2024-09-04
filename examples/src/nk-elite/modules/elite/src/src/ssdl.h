@@ -122,11 +122,22 @@
 #define IMG_BLAKE		10
 #define IMG_NUM_OF		11
 
+#define PIXEL_FORMAT SDL_PIXELFORMAT_ARGB8888
+
+extern int wnd_width;
+extern int wnd_height;
+extern int wnd_fullscreen;
+extern double wnd_scale;
+
+extern SDL_Texture	*sdl_tex;
+extern SDL_Window	*sdl_win;
+extern SDL_Renderer	*sdl_ren;
 
 extern int  sdl_last_key_pressed;
 
-extern int  init_sdl ( void );
+extern int  start_sdl ( void );
 extern void handle_sdl_events ( void );
+int decode_keysym ( SDL_Keycode sym );
 
 extern int  gfx_graphics_startup (void);
 //extern void gfx_graphics_shutdown (void);

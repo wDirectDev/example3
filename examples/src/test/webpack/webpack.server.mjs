@@ -1,1 +1,0 @@
-import r from"path";export default{devServer:{headers:{"Cross-Origin-Embedder-Policy":"require-corp","Cross-Origin-Opener-Policy":"same-origin"},hot:!1,static:{directory:r.join("./public","dist")},compress:!0,port:7355},watchOptions:{ignored:/node_modules/}};

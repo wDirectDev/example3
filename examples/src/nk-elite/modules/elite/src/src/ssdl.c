@@ -34,11 +34,16 @@
 #include "sound.h"
 #include "file.h"
 
-static SDL_Texture	*sdl_tex = NULL;
-static SDL_Window	*sdl_win = NULL;
-static SDL_Renderer	*sdl_ren = NULL;
+SDL_Texture		*sdl_tex = NULL;
+SDL_Window		*sdl_win = NULL;
+SDL_Renderer	*sdl_ren = NULL;
 
 #define MAX_POLYS	100
+
+int wnd_width = 800;
+int wnd_height = 600;
+int wnd_fullscreen = 0;
+double wnd_scale = 1.0;
 
 static int start_poly;
 static int total_polys;
@@ -55,10 +60,6 @@ struct poly_data
 };
 
 static struct poly_data poly_chain[MAX_POLYS];
-
-
-#define PIXEL_FORMAT SDL_PIXELFORMAT_ARGB8888
-
 
 #define RGBA_PARAM(col)				the_palette_r[col],the_palette_g[col],the_palette_b[col],0xFF
 
@@ -84,14 +85,6 @@ Uint8 the_palette_r[0x100];
 Uint8 the_palette_g[0x100];
 Uint8 the_palette_b[0x100];
 //Uint32 the_palette32[0x100];
-
-#ifdef RES_512_512
-#	define	SCREEN_W	512
-#	define	SCREEN_H	512
-#else
-#	define	SCREEN_W	800
-#	define	SCREEN_H	600
-#endif
 
 static struct {
 	SDL_Texture *tex;
@@ -202,51 +195,33 @@ static ETNK_INLINE fixed fixdiv ( fixed x, fixed y ) {
 	} else
 		return ftofix(fixtof(x) / fixtof(y));
 }
+
 #define fmul(x,y)	fixmul(x,y)
 #define fdiv(x,y)	fixdiv(x,y)
 
 int gfx_graphics_startup (void)
 {
-	//PALETTE the_palette;
-	//int rv;
+	int status = 0;
+
+    #ifdef __EMSCRIPTEN__
+	wnd_scale = emscripten_get_device_pixel_ratio();
+	emscripten_get_canvas_size( &wnd_width, &wnd_height, &wnd_fullscreen);
+	#else
+	wnd_width = 512;
+	wnd_height = 512;
+	wnd_fullscreen = 0;
+	wnd_scale = 1.0;
+	#endif
 
 	sdl_win = SDL_CreateWindow(
 		OUR_WINDOW_TITLE,
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		SCREEN_W, SCREEN_H,
+		wnd_width, wnd_height,
 		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_INPUT_FOCUS
 	);
-#if 0
 
-#ifdef ALLEGRO_WINDOWS	
-#ifdef RES_512_512
-	rv = set_gfx_mode(GFX_DIRECTX_OVL, 512, 512, 0, 0);
-	if (rv != 0)
-		rv = set_gfx_mode(GFX_DIRECTX_WIN, 512, 512, 0, 0);
-
-	if (rv != 0)
-		rv = set_gfx_mode(GFX_GDI, 512, 512, 0, 0);
-
-	if (rv == 0)
-		set_display_switch_mode (SWITCH_BACKGROUND);
-#else
- 	rv = set_gfx_mode(GFX_DIRECTX, 800, 600, 0, 0);
-	
-	if (rv != 0)
-		rv = set_gfx_mode(GFX_GDI, 800, 600, 0, 0);
-#endif
-
-#else
-	rv = set_gfx_mode(prefer_window ?
-			    GFX_AUTODETECT_WINDOWED : GFX_AUTODETECT,
-			  800, 600, 0, 0);
-#endif
-#endif
-
-//	if (rv != 0) {
 	if (!sdl_win) {
-		//set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
 		ERROR_WINDOW("Unable to open window: %s", SDL_GetError());
 		return 1;
 	}
@@ -256,7 +231,13 @@ int gfx_graphics_startup (void)
 		ERROR_WINDOW("Cannot create renderer: %s", SDL_GetError());
 		return 1;
 	}
-	SDL_RenderSetLogicalSize(sdl_ren, SCREEN_W, SCREEN_H);
+
+	status = SDL_RenderSetLogicalSize(sdl_ren, 800, 800);
+	if ( status ) {
+		ERROR_WINDOW("Cannot set render logical size: %s", SDL_GetError());
+		return 1;
+	}
+
 	SDL_PixelFormat *pixfmt = SDL_AllocFormat(PIXEL_FORMAT);
 	if (!pixfmt) {
 		ERROR_WINDOW("Cannot allocate pixel format: %s", SDL_GetError());
@@ -280,7 +261,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 #endif
-	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, SCREEN_W, SCREEN_H);
+	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, 800, 800);
 	if (!sdl_tex) {
 		ERROR_WINDOW("Cannot create texture: %s", SDL_GetError());
 		return 1;
@@ -289,7 +270,8 @@ int gfx_graphics_startup (void)
 		ERROR_WINDOW("Cannot set render target: %s", SDL_GetError());
 		return 1;
 	}
-	SDL_SetRenderDrawColor(sdl_ren, 0,0,0,0xFF);
+
+	SDL_SetRenderDrawColor(sdl_ren, 0xFF, 0, 0, 0xFF);
 	SDL_RenderClear(sdl_ren);
 
 	for (int a = 0; a < IMG_NUM_OF; a++)
@@ -361,7 +343,8 @@ int gfx_graphics_startup (void)
 	gfx_draw_line (0, 0, 0, 384);
 	gfx_draw_line (0, 0, 511, 0);
 	gfx_draw_line (511, 0, 511, 384);
-	//gfx_draw_scanner();
+	gfx_draw_line (511, 0, 511, 384);
+	gfx_draw_scanner();
 
 
 #if 0
@@ -417,8 +400,6 @@ void gfx_update_screen (void)
 	//SDL_RenderClear(sdl_ren);
 	// FIXME:
 	// more sane framerate control
-
-    //
 
 }
 
@@ -1050,7 +1031,7 @@ static void shutdown_sdl ( void )
 	SDL_Quit();
 }
 
-int init_sdl ( void )
+int start_sdl ( void )
 {
     if (SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         printf("SDL_Init() failed: %s\n", SDL_GetError());
@@ -1148,7 +1129,7 @@ static const struct {
 };
 
 
-static int decode_keysym ( SDL_Keycode sym )
+int decode_keysym ( SDL_Keycode sym )
 {
 	for (int i = 0; keydefs[i].sdl; i++) {
 		if (sym == keydefs[i].sdl)
@@ -1187,9 +1168,7 @@ void handle_sdl_events ( void )
 						} else {
 							key[game_code] = 0;
 						}
-					} /*else {
-						puts("KEY IS NOT MAPPED");
-					} */
+					} 
 				}
 				break;
 		}

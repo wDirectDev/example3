@@ -74,10 +74,10 @@ static void audio_callback ( void *userdata, Uint8 *stream, int len )
 
 
 
-void snd_sound_startup (void)
+int snd_sound_startup (void)
 {
+	int rc = 0;
 	play_sfx_request = -1;
-	// Init audio
 	SDL_AudioSpec audio_want;
 	SDL_memset(&audio_want, 0, sizeof(audio_want));
 	audio_want.freq = 22050;
@@ -92,20 +92,21 @@ void snd_sound_startup (void)
 			// Go for the audio ...
 			SDL_PauseAudioDevice(audio);
 	} else {
-		char _msg[ 1024 ];
-		sprintf( _msg, "AUDIO: Cannot open audio ( %s ).\n", SDL_GetError() );
-		puts( _msg );
+		printf( "AUDIO: Cannot open audio ( %s ).\n", SDL_GetError() );
+		rc = 1;
 	}
+	return rc;
 }
  
 
-void snd_sound_shutdown (void)
+int snd_sound_shutdown (void)
 {
 	if (audio) {
-		puts("AUDIO: closing");
+		printf("AUDIO: closing");
 		SDL_PauseAudioDevice(audio);
 		SDL_CloseAudioDevice(audio);
 	}
+	return 0;
 }
 
 

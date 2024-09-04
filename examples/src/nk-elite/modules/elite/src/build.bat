@@ -21,7 +21,7 @@ set EMCCFLAGS=-O3 ^
 -s MODULARIZE=1 ^
 -s EXPORT_ES6=1 ^
 -s EXPORTED_RUNTIME_METHODS=['callMain','ccall','cwrap'] ^
--s SINGLE_FILE=1 ^
+-s SINGLE_FILE=0 ^
 -s EXPORT_NAME=LEliteTG ^
 -s INVOKE_RUN=0
 
@@ -30,4 +30,4 @@ set DIR=%cd%
 @call cmd /C "%EMSCRIPTENDIR:~0,2% && cd %EMSCRIPTENDIR% && emsdk_env.bat && %DIR:~0,2% && cd %DIR% && build.bat"
 cd ..
 
-@copy build\*.* ..\..\elite\bin /Y
+@copy build\*.* ..\..\elite\build /Y

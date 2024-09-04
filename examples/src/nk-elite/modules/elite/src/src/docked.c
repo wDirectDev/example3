@@ -84,10 +84,6 @@ void draw_fuel_limit_circle (int cx, int cy)
 	gfx_draw_line (cx - cross_size, cy, cx + cross_size, cy);
 }
 
-
-
-
-
 int calc_distance_to_planet (struct galaxy_seed from_planet, struct galaxy_seed to_planet)
 {
 	int dx,dy;

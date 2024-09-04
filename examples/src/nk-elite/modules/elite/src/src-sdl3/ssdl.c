@@ -229,7 +229,7 @@ int gfx_graphics_startup (void)
 	sdl_win = SDL_CreateWindow(
 		OUR_WINDOW_TITLE,
 		SCREEN_W, SCREEN_H,
-		SDL_WINDOW_INPUT_FOCUS
+		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_INPUT_FOCUS
 	);
 
 	if (!sdl_win) {

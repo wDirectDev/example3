@@ -1214,37 +1214,7 @@ void load_commander_screen (void)
 
 void run_first_intro_screen (void)
 {
-	current_screen = SCR_INTRO_ONE;
 
-	//snd_play_midi (SND_ELITE_THEME, TRUE);
-	//FIXME: no midi
-
-	initialise_intro1();
-#ifdef HACKING
-	identify = 0;
-#endif
-
-	for (;;)
-	{
-		update_intro1();
-
-		gfx_update_screen();
-
-		kbd_poll_keyboard();
-
-		if (kbd_y_pressed)
-		{
-			snd_stop_midi();	
-			load_commander_screen();
-			break;
-		}
-		
-		if (kbd_n_pressed)
-		{ 
-			snd_stop_midi();	
-			break;
-		}
-	} 
 
 }
 
@@ -1252,33 +1222,7 @@ void run_first_intro_screen (void)
 
 void run_second_intro_screen (void)
 {
-	current_screen = SCR_INTRO_TWO;
-	
-	//snd_play_midi (SND_BLUE_DANUBE, TRUE);
-	//FIXME: no midi
 
-#ifdef HACKING
-	identify = 0;
-#endif
-	initialise_intro2();
-
-	flight_speed = 3;
-	flight_roll = 0;
-	flight_climb = 0;
-
-	for (;;)
-	{
-		update_intro2();
-
-		gfx_update_screen();
-
-		kbd_poll_keyboard();
-
-		if (kbd_space_pressed) 
-			break;
-	} 
-
-	snd_stop_midi();
 }
 
 
@@ -1375,43 +1319,160 @@ void info_message (char *message)
 
 int main ( int argc, char *argv[] )
 {
-	if ( init_sdl() )
-		return 1;
+	static int w_h = 0;
+	static int w_w = 0;
+
+	if ( start_sdl() ) return 1;
 
 	/* Read configuration, it also applies default values, if no config can be read */
 	read_config_file();
 
-	if ( gfx_graphics_startup() )
-		return 1;
+	if ( gfx_graphics_startup() ) return 1;
 	
 	/* Start the sound system... */
-	snd_sound_startup();
+	if ( snd_sound_startup() ) printf( "AUDIO: we will continue without a sounds\n" );
 
 	/* Do any setup necessary for the keyboard... */
-	kbd_keyboard_startup();
+	// #pragma deprecated(kbd_keyboard_startup)
+	// if ( kbd_keyboard_startup() ) printf( "KEYBOARD: event watcher failed\n" );
 	
 	finish = 0;
 	auto_pilot = 0;
 	
+	unsigned int parts = 1;
+	unsigned int startup_part = 0;
+
 	while (!finish)
 	{
-		game_over = 0;	
-		initialise_game();
-		dock_player();
+		unsigned int change = 0;
 
-		update_console();
+		if ( (w_h != wnd_height) || ( w_h == 0 ) ) change = 1;
+		if ( (w_w != wnd_width) || ( w_w == 0 ) ) change = 1;
 
-		current_screen = SCR_FRONT_VIEW;
-		run_first_intro_screen();
-		run_second_intro_screen();
+		if ( change == 1 ) {
+			w_h = wnd_height;
+			w_w = wnd_width;
 
-		old_cross_x = -1;
-		old_cross_y = -1;
+    		#ifdef __EMSCRIPTEN__			
+			SDL_SetWindowSize(sdl_win, wnd_width, wnd_height );
+			#endif			
 
-		dock_player ();
-		display_commander_status ();
+			printf( "width: %d; height: %d; fullscreen: %d; scale: %f\n", wnd_width, wnd_height, wnd_fullscreen, wnd_scale);			
+			change = 0;
+		}
+
+		if ( parts == 1 ) {
+			game_over = 0;	
+
+			initialise_game();
+			dock_player();
+
+			///////////////////////////////////////
+			// draw window star ship panel
+			update_console();
+			current_screen = SCR_FRONT_VIEW;
+
+			startup_part = 0;
+			parts = 2;
+			continue;
+		}
+		else if ( parts == 2 ) 
+		{
+			///////////////////////////////////////////////////////////////
+			// intro 1
+			///////////////////////////////////////////////////////////////
+			if ( startup_part == 0 )
+			{
+				current_screen = SCR_INTRO_ONE;
+
+				//snd_play_midi (SND_ELITE_THEME, TRUE);
+				//FIXME: no midi
+
+				initialise_intro1();
+
+			#ifdef HACKING
+				identify = 0;
+			#endif
+				startup_part = 1;
+				continue;
+			}
+			else if ( startup_part == 1 )
+			{
+				update_intro1();
+				
+				gfx_update_screen();
+				
+				handle_sdl_events();
+				int key_pressed = kbd_check_keys();
+
+				if (kbd_y_pressed) {
+					snd_stop_midi();	
+					load_commander_screen();
+					startup_part = 0xffff;
+				}
+				
+				if (kbd_n_pressed) { 
+					snd_stop_midi();	
+					startup_part = 0xffff;
+				}
+				continue;
+			}
+			startup_part = 0;
+			parts = 3;
+			continue;
+		}
+		else if ( parts == 3 ) {
+			///////////////////////////////////////////////////////////////
+			// intro 2
+			///////////////////////////////////////////////////////////////
+			if ( startup_part == 0 ) {
+
+				current_screen = SCR_INTRO_TWO;
 		
-		while (!game_over)
+				//snd_play_midi (SND_BLUE_DANUBE, TRUE);
+				//FIXME: no midi
+
+			#ifdef HACKING
+				identify = 0;
+			#endif
+				initialise_intro2();
+
+				flight_speed = 3;
+				flight_roll = 0;
+				flight_climb = 0;
+
+				startup_part = 1;
+				continue;
+			}
+			else if ( startup_part == 1 )
+			{
+				update_intro2();
+
+				gfx_update_screen();
+
+				handle_sdl_events();
+				int key_pressed = kbd_check_keys();
+
+				if (kbd_space_pressed) {
+					snd_stop_midi();	
+					startup_part = 0xffff;
+				}			
+				continue;
+			} 
+			startup_part = 0;
+			parts = 4;
+			continue;
+		}
+		else if ( parts == 4 ) {			
+			old_cross_x = -1;
+			old_cross_y = -1;
+			dock_player ();
+			display_commander_status ();
+			startup_part = 0;
+			parts = 5;
+			continue;
+		}
+		else if ( parts == 5 && !game_over )
 		{
 			//snd_update_sound();
 			gfx_update_screen();
@@ -1422,30 +1483,18 @@ int main ( int argc, char *argv[] )
 
 			handle_flight_keys ();
 
-			if (game_paused)
-				continue;
-				
-			if (message_count > 0)
-				message_count--;
+			if (game_paused) continue;
+			if (message_count > 0) message_count--;
 
-			if (!rolling)
-			{
-				if (flight_roll > 0)
-					decrease_flight_roll();
-			
-				if (flight_roll < 0)
-					increase_flight_roll();
+			if (!rolling) {
+				if (flight_roll > 0) decrease_flight_roll();
+				if (flight_roll < 0) increase_flight_roll();
 			}
 
-			if (!climbing)
-			{
-				if (flight_climb > 0)
-					decrease_flight_climb();
-
-				if (flight_climb < 0)
-					increase_flight_climb();
+			if (!climbing) {
+				if (flight_climb > 0) decrease_flight_climb();
+				if (flight_climb < 0) increase_flight_climb();
 			}
-
 
 			if (!docked)
 			{
@@ -1555,10 +1604,15 @@ int main ( int argc, char *argv[] )
 
 				draw_cross (old_cross_x, old_cross_y);
 			}
-		}
-
-		if (game_over < 2)		
+			continue;
+		} 
+		else if ( parts == 5 && game_over < 2 ) 
+		{
 			run_game_over_screen();
+			startup_part = 0;
+			parts = 1;
+			continue;
+		}
 	}
 
 	return 0;

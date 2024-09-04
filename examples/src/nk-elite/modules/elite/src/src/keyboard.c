@@ -100,30 +100,60 @@ static int poll_keyboard ( void )
 	return 0;	// success
 }
 
+int keyboard_handle(void *userdata, SDL_Event *event) {
+		switch (event->type) {
+			case SDL_QUIT:
+				exit(0);	// FIXME: do it nicer ....
+			case SDL_KEYUP:
+			case SDL_KEYDOWN:
+				 printf("KEY: scan=%s[#%d] sym=%s[#%d] event=%s repeated=%d\n",
+					SDL_GetScancodeName(event->key.keysym.scancode),
+					event->key.keysym.scancode,
+					SDL_GetKeyName(event->key.keysym.sym),
+					event->key.keysym.sym,
+					event->key.state == SDL_PRESSED ? "DOWN": "UP",
+					event->key.repeat
+				);
+				if (!event->key.repeat) {
+					int game_code = decode_keysym(event->key.keysym.sym);
+					//printf("KEY_MAP=%d\n", game_code);
+					if (game_code >= 0) {
+						if (event->key.state == SDL_PRESSED) {
+							key[game_code] = 1;
+							sdl_last_key_pressed = game_code;
+						} else {
+							key[game_code] = 0;
+						}
+					} 
+				}
+				break;
+		}
 
+	return 0;
+}
 
 int kbd_keyboard_startup (void)
 {
-	/* set_keyboard_rate(2000, 2000); */
+	SDL_AddEventWatch(keyboard_handle, NULL);
 	return 0;
 }
 
 int kbd_keyboard_shutdown (void)
 {
+	SDL_DelEventWatch(keyboard_handle, NULL);
 	return 0;
 }
 
-void kbd_poll_keyboard (void)
+int kbd_check_keys()
 {
 	int i;
-	poll_keyboard();
+
 	for (i = 0; i < KEY_MAX; i++) {
-	  if (!key[i])
-	    continue;
+	  if (!key[i]) continue;
 	  key[i] = 1;
-	  if (key[i] && old_key[i])
-	    key[i] |= 2;
+	  if (key[i] && old_key[i]) key[i] |= 2;
 	}
+
 	memcpy(old_key, key, KEY_MAX);
 
 	kbd_F1_pressed = key[KEY_F1];
@@ -177,6 +207,23 @@ void kbd_poll_keyboard (void)
 	kbd_backspace_pressed = key[KEY_BACKSPACE];
 	kbd_space_pressed = key[KEY_SPACE];
 
+	int rc = 0;
+	if (sdl_last_key_pressed) {
+		rc = key[sdl_last_key_pressed];
+		sdl_last_key_pressed = 0;
+	}
+
+	return rc;
+}
+
+void kbd_poll_keyboard (void)
+{
+	poll_keyboard();
+
+	kbd_check_keys();
+
+    ///////////////////////////////////
+	// last key
 	while (keypressed())
 		readkey();
 }

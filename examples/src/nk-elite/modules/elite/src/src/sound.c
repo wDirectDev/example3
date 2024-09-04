@@ -25,9 +25,7 @@
 #include "file.h"
 
 #define NUM_SAMPLES 14
-
 #define SILENCE	0x80
-
 
 static const char *sample_filenames[NUM_SAMPLES] = {
 	"launch.wav", "crash.wav", "dock.wav", "gameover.wav", "pulse.wav", "hitem.wav", "explode.wav", "ecm.wav", "missile.wav", "hyper.wav", "incom1.wav", "incom2.wav", "beep.wav", "boop.wav"
@@ -37,7 +35,6 @@ static const Uint8 *sample_p[NUM_SAMPLES];
 static       int    sample_s[NUM_SAMPLES];
 
 static SDL_AudioDeviceID audio = 0;
-
 static int play_sfx_request = -1;
 
 static void audio_callback ( void *userdata, Uint8 *stream, int len )
@@ -59,7 +56,7 @@ static void audio_callback ( void *userdata, Uint8 *stream, int len )
 				playing_pos++;
 				if (playing_pos >= playing_end) {
 					playing_pos = NULL;
-					puts("AUDIO: end of sample");
+					printf("AUDIO: end of sample");
 				}
 			} else {
 				stream[i] = SILENCE;
@@ -68,12 +65,10 @@ static void audio_callback ( void *userdata, Uint8 *stream, int len )
 	}
 }
 
-
-
-void snd_sound_startup (void)
+int snd_sound_startup (void)
 {
+	int status = 1;
 	play_sfx_request = -1;
-	// Init audio
 	SDL_AudioSpec audio_want, audio_got;
 	SDL_memset(&audio_want, 0, sizeof(audio_want));
 	audio_want.freq = 22050;
@@ -87,7 +82,7 @@ void snd_sound_startup (void)
 		if (audio_want.freq != audio_got.freq || audio_want.format != audio_got.format || audio_want.channels != audio_got.channels) {
 			SDL_CloseAudioDevice(audio);    // forget audio, if it's not our expected format :(
 			audio = 0;
-			fprintf(stderr, "Audio parameter mismatches\n");
+			printf("AUDIO: Audio parameter mismatches\n");
 		} else {
 			printf("AUDIO: initialized (#%d), %d Hz, %d channels, %d buffer sample size.\n", audio, audio_got.freq, audio_got.channels, audio_got.samples);
 			// Load samples ... well, get the references/sizes from memory :)
@@ -95,36 +90,39 @@ void snd_sound_startup (void)
 				datafile_select(sample_filenames[i], &sample_p[i], &sample_s[i]);
 			// Go for the audio ...
 			SDL_PauseAudioDevice(audio, 0);
-		}
-	} else
-		fprintf(stderr, "Cannot open audio: %s\n", SDL_GetError());
+			status = 0;
+		}		
+	} else  {
+		printf("AUDIO: Cannot open audio: %s\n", SDL_GetError());
+	}
+	return status;
 }
- 
 
-void snd_sound_shutdown (void)
+int snd_sound_shutdown (void)
 {
 	if (audio) {
 		puts("AUDIO: closing");
 		SDL_PauseAudioDevice(audio, 1);
 		SDL_CloseAudioDevice(audio);
 	}
+	return 0;
 }
-
 
 void snd_play_sample (int sample_no)
 {
 	play_sfx_request = sample_no;
 }
 
-
-
 void snd_play_midi (int midi_no, int repeat)
 {
-	puts("FIXME: snd_play_midi() not implemented");
+	//////////////////////////////////////////////////////////////////////////
+	// Mix_Music *music = Mix_LoadMUS(“sndTrack.mid”);
+    // assert(music); // simple check for NULL.
+    // Mix_PlayMusic(music, -1); // NB: -1 loops music
+	printf("TODO: snd_play_midi() not implemented\n");
 }
-
 
 void snd_stop_midi (void)
 {
-	puts("FIXME: snd_stop_midi() not implemented");
+	printf("TODO: snd_stop_midi() not implemented\n");
 }

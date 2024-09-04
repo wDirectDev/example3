@@ -4,7 +4,8 @@
 
 CC	=	gcc
 RM	=	@del
-WRES	=	windres
+WRES	=	@windres
+ECHO	=	@echo
 
 LIBS	=	-lSDL3 -lkernel32 -lgdi32 -lcomdlg32 -luser32 -lole32 -lddraw -ldxguid -lwinmm -ldsound -ldinput
 CFLAGS	=	-s -mwindows -O2 -funroll-loops -Wall -I../external/SDL3/include -I../external/SDL3/include/SDL3 
@@ -20,6 +21,7 @@ newkind.exe: $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o newkind.exe
 
 clean:
+	$(ECHO) nk-elite project: clean completed...
 	$(RM) $(OBJS) newkind.exe
 
 

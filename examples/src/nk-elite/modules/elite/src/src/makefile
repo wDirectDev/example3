@@ -1,10 +1,9 @@
 #
 # Makefile for Elite - The New Kind.
 #
-
 CC	=	gcc
 RM	=	@del
-WRES	=	windres
+WRES	=	@windres
 ECHO	=	@echo
 
 LIBS	=	-lSDL2 -lkernel32 -lgdi32 -lcomdlg32 -luser32 -lole32 -lddraw -ldxguid -lwinmm -ldsound -ldinput
@@ -21,7 +20,7 @@ newkind.exe: $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o newkind.exe
 
 clean:
-	$(ECHO) PROJECT: Clean source
+	$(ECHO) nk-elite project: clean completed...
 	$(RM) $(OBJS) newkind.exe
 
 

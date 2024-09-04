@@ -37,8 +37,8 @@
 #define SND_ELITE_THEME 0
 #define SND_BLUE_DANUBE 1
 
-void snd_sound_startup (void);
-void snd_sound_shutdown (void);
+int snd_sound_startup (void);
+int snd_sound_shutdown (void);
 void snd_play_sample (int sample_no);
 void snd_play_midi (int midi_no, int repeat);
 void snd_stop_midi (void);

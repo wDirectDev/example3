@@ -1,1 +1,0 @@
-import{merge as o}from"webpack-merge";import m from"./webpack.common.mjs";export default o(m,{mode:"production"});
