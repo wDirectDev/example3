@@ -12,5 +12,4 @@ newkind.exe
 unpack/
 test.c
 .vscode/
-datafilebank.c
 .idea/
