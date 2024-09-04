@@ -381,7 +381,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                 }]          
             };
 
-            this.setBorderWidth( 10.0 );
+            this.setBorderWidth( 0.0 );
         }
         catch (e)
         {
@@ -464,10 +464,10 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         );
 
         this.passEncoder.setScissorRect(
-            this.getBorderWidth() - 1,
-            this.getBorderWidth() - 1,
-            this.getCanvasWidth( false ) + 2,
-            this.getCanvasHeight( false ) + 2,
+            this.getBorderWidth(),
+            this.getBorderWidth(),
+            this.getCanvasWidth( false ),
+            this.getCanvasHeight( false )
         );
 
         let shaderBindGroup = this.getShaderBindGroup();

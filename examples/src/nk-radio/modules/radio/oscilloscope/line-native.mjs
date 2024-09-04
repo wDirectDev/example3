@@ -132,12 +132,9 @@ export class wDNativeLine extends wDObject
     {
         let _lines = this.getLines();
         let _count = this.getLinesCount();
-
         let instance = this.getInstance();
-
         let vb = new Float32Array( 12 * _count );
         let ii = 0;
-
     	for ( let i = 0; i < _count; i++ )        
     	{
             let vX1 = _lines[ i ].x1;
@@ -186,9 +183,9 @@ export class wDNativeLine extends wDObject
                 vb[ii++] = instance.getScaledOffsetX( vX1 - Xf );
                 vb[ii++] = instance.getScaledOffsetY( vY1 + Yf ); // 0 1
             } else if ( vX >= 0 && vY < 0 ) { 
-		        //////////////////////////////////
-		        //console.log ( "Up; right up;" );
-		        //////////////////////////////////
+	        //////////////////////////////////
+	        //console.log ( "Up; right up;" );
+	        //////////////////////////////////
                 if ( vX == 0 ) {              
                     Yf = 0.0;  
                     Xf = Xt;   

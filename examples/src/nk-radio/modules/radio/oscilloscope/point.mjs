@@ -102,7 +102,6 @@ export class wDPoint extends wDObject
 
         let _dpa = this.getPointsArray();
         let _count = this.getPointsArrayCount();
-//        let vb = new Float32Array( 6 * _count );
 
         let instance = this.getInstance();
 
@@ -116,23 +115,6 @@ export class wDPoint extends wDObject
 
             let Xt = THv * instance.getScaledSizeOfPixelX() / 2.0;
             let Yt = THv * instance.getScaledSizeOfPixelY() / 2.0;
-          
-/*            
-            let ang = Math.PI / 4.0;
-
-            let dyy = Yw * Math.sin( ang );
-            let dxx = Xw * Math.sin( Math.PI / 2.0 - ang );
-
-            // let rrx = 2.0 * dxx;
-            // let b = Math.atan( dxx / ( 3.0 * dyy ) );
-            // let rr = dyy * Math.tan( b );
-
-            let dbb = Math.max( dyy, dxx );
-            let dss = Math.min( dyy, dxx );
-
-            let css = dbb * 2.0 / 3.0;
-            let cbb = 2.0 * dss;                    
-*/
 
 //////////////////////////////
 //        
@@ -165,7 +147,6 @@ export class wDPoint extends wDObject
     {   
         let _count = this.getPointsArrayCount();
         let fb = new Float32Array( 12 * _count );
-//        let fb = new Float32Array( 6 * _count );
         let ii = 0;
         for (let i = 0; i < _count; i++ )        
         {	

@@ -12,14 +12,14 @@ export class wDBox extends wDObject
 
     destroy()
     {
-	    this.borders.destroy();
+        this.borders.destroy();
     }
 
     async init() 
     {
-	    let instance = this.getInstance();
-	    this.borders = new wDNativeLine( instance );
-	    await this.borders.init();
+        let instance = this.getInstance();
+        this.borders = new wDNativeLine( instance );
+        await this.borders.init();
         this.setDuty( false );
     }
 

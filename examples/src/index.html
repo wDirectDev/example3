@@ -17,189 +17,39 @@
 	<script src="config/controller.bundle.js"></script>
 	<script src="main.bundle.js"></script>
 -->
-	<script type="module" src="build/nk-elite.js"></script>
-	<script type="module" src="nk-radio/index.mjs"></script>
-	<script type="module">
-		import FreeQueue from "./free-queue/free-queue.js"
-		import initWasmFreeQueue from "./free-queue/free-queue.asm.js"
-
-		globalThis["Module"] = {};
-		initWasmFreeQueue(globalThis["Module"]);
-/*
-		globalThis["startplayback"] = async function()
-		{
-			globalThis["isPlaybackInProgress"] = true;
-
-			if (globalThis["audioCtx"] == undefined) {
-				globalThis["audioCtx"] = new (globalThis.AudioContext || globalThis.webkitAudioContext)();
-			}
-			await globalThis["audioCtx"].audioWorklet.addModule("./nk-radio/modules/radio/radio-processor.mjs");
-			globalThis["audioCtx"].suspend();
-			globalThis["audioElement"] = globalThis.document.getElementById("audiostream");
-			if (globalThis["audioSrc"] == undefined) {
-				globalThis["audioSrc"] = globalThis["audioCtx"].createMediaElementSource(globalThis["audioElement"]);
-			}
-			if (globalThis["audioSrc"]) {
-				globalThis["audioSrc"].connect(globalThis["audioCtx"].destination);
-			}	
-			if (globalThis["audioWorklet"] == undefined) {
-				globalThis["audioWorklet"] = new AudioWorkletNode(globalThis["audioCtx"], "radio-processor", {
-					processorOptions: {
-						queue: globalThis["queue"],
-						instance: globalThis["instance"],
-					},
-					numberOfInputs: 1,
-					numberOfOutputs: 1,
-					outputChannelCount: [2],
-					channelCount: 2,
-					channelCountMode: "max",
-					channelInterpretation: "speakers"
-				});
-				globalThis["audioWorklet"].connect(globalThis["audioCtx"].destination);
-			}
-			globalThis["audioSrc"].connect(globalThis["audioWorklet"]);
-			globalThis["audioCtx"].resume();
-			globalThis["audioElement"].play();		
-		}
-
-		globalThis["stopplayback"] = async function() 
-		{
-			globalThis["isPlaybackInProgress"] = false;
-			globalThis["renderBuffer"] = undefined;
-			globalThis["audioElement"].pause();
-		}
-*/
-/*
-		const t1 = globalThis.document.getElementById("startTest1");
-		t1.addEventListener( "click", async (e) => {
-			const CreateFreeQueueThreads = globalThis["Module"].cwrap('CreateFreeQueueThreads','number',[ '' ]);
-			const r = CreateFreeQueueThreads();
-			if ( r == 1 ) {
-				globalThis.onFreeQueueInitialize();
-			}
-		});
-
-		const t2 = globalThis.document.getElementById("startTest2");
-		t2.addEventListener( "click", async (e) => {
-			const DestroyFreeQueueThreads = globalThis["Module"].cwrap('DestroyFreeQueueThreads','number',[ '' ]);
-			const r = DestroyFreeQueueThreads();
-			if ( r == 1 ) {
-				globalThis["queue"] = undefined;
-				globalThis["instance"] = undefined;
-			}
-		});
-
-		const t3 = globalThis.document.getElementById("startTest3");
-		t3.addEventListener( "click", async (e) => {
-			const PrintQueueInfo = globalThis["Module"].cwrap('PrintQueueInfo','',[ 'number' ]);
-			if ( globalThis["instance"] != undefined ) {	
-				PrintQueueInfo( globalThis["instance"] );
-				if ( globalThis["queue"] != undefined ) globalThis["queue"].printAvailableReadAndWrite();
-			}
-		});
-
-		const t4 = globalThis.document.getElementById("startTest4");
-		t4.addEventListener( "click", async (e) => {
-			const PrintQueueInfo = globalThis["Module"].cwrap('PrintQueueInfo','',[ 'number' ]);
-			const _b = [2];
-			let bufferSize = globalThis["sampleRate"] / 25;
-			_b[0] = new Float64Array(bufferSize);
-			_b[1] = new Float64Array(bufferSize);
-			if ( globalThis["queue"] != undefined ) {
-				const r = globalThis["queue"].pull( _b, bufferSize );
-				console.log( "pull: " + r );
-				console.log( "pull data: " + _b );
-				globalThis["queue"].printAvailableReadAndWrite();
-			}
-		});
-
-		const t5 = globalThis.document.getElementById("startTest5");
-		t5.addEventListener( "click", async (e) => {
-			if ( globalThis["isPlaybackInProgress"] == false ) {
-				globalThis["startplayback"].call();
-				}
-		});
-
-		const t6 = globalThis.document.getElementById("startTest6");
-		t6.addEventListener( "click", async (e) => {
-			if ( globalThis["isPlaybackInProgress"] == true ) {
-				globalThis["stopplayback"].call();
-			}
-		});
-*/
-
-		globalThis["Module"].onRuntimeInitialized = function()
-		{ 
-			///////////////////////////////////////////////////////////////////////////////////////
-			// FreeQueue initialization
-			///////////////////////////////////////////////////////////////////////////////////////
-
-			globalThis["queue"] = undefined;
-			globalThis["instance"] = undefined;
-
-			globalThis["Module"].callMain("");
-
-			globalThis.onFreeQueueInitialize();
-
+	<script>
+		function initializeMap() {
 			///////////////////////////////////////////////////////////////////////////////////////
 			// default variables...
 			///////////////////////////////////////////////////////////////////////////////////////
-
 			globalThis["channels"] = 2;
-
 			globalThis["isPlaybackInProgress"] = false;
-			
 			globalThis["goniometer"] = "goniometer-off";
 			globalThis["holdChart"] = "holdchart-off";
-
 			globalThis["inputType"] = "default"; // "audio"; // "osc"
 			globalThis["renderType"] = "stereo";
-			
 			globalThis["kdX"] = 500;
 			globalThis["kdY"] = 10;
 			globalThis["zoomX"] = 100;
 			globalThis["zoomY"] = 100;
-
 			globalThis["holdBuffer"] = undefined;
 			globalThis["renderBuffer"] = undefined;
-
 			globalThis["sampleRate"] = 44100;
 			globalThis["volumeRate"] = 1.0;
-			
 			globalThis["nameOfFile"] = "";
 			globalThis["frameOffset"] = 0;
-
 			///////////////////////////////////////////////////////////////////////////////////////
-		};
-		
-		globalThis["onFreeQueueInitialize"] = function() 
-		{
-			const GetFreeQueueThreads = globalThis["Module"].cwrap('GetFreeQueueThreads','number',[ '' ]);
-			const GetFreeQueuePointers = globalThis["Module"].cwrap('GetFreeQueuePointers','number',[ 'number', 'string' ]);
-			const PrintQueueInfo = globalThis["Module"].cwrap('PrintQueueInfo','',[ 'number' ]);
-			const CreateFreeQueue = globalThis["Module"].cwrap('CreateFreeQueue','number',[ 'number', 'number' ]);
-			const PrintQueueAddresses = globalThis["Module"].cwrap('PrintQueueAddresses','',[ 'number' ]);
-			globalThis["instance"] = GetFreeQueueThreads();
-			const bufferLengthPtr = GetFreeQueuePointers( globalThis["instance"], "buffer_length" );
-			const channelCountPtr = GetFreeQueuePointers( globalThis["instance"], "channel_count" );
-			const statePtr = GetFreeQueuePointers( globalThis["instance"], "state" );
-			const channelDataPtr = GetFreeQueuePointers( globalThis["instance"], "channel_data" );
-			const pointers = new Object();
-			pointers.memory = globalThis["Module"].HEAPU8;
-			pointers.bufferLengthPointer = bufferLengthPtr;
-			pointers.channelCountPointer = channelCountPtr;
-			pointers.statePointer = statePtr;
-			pointers.channelDataPointer = channelDataPtr;
-			globalThis["queue"] = FreeQueue.fromPointers( pointers );
-			if ( globalThis["queue"] != undefined ) globalThis["queue"].printAvailableReadAndWrite();
-//			globalThis.onApplicationInit();
-		};
+			console.log("GlobalVariables: Initialize completed...");
+		}
 	</script>
+
+	<script type="module" src="nk-radio/index.mjs"></script>
+	<script type="module" src="nk-elite/index.mjs"></script>
+
 </head>
-<body>
-	<div class="nk-radio">
-		<slot name="nk-radio"></slot>
-	</div>
-	<nk-radio slot="nk-radio" data-field="settings-2" data-services-path="webgpu"></nk-radio>	
+<body onload="initializeMap();">
+	<nk-radio slot="nk-radio" data-field="settings" data-services-path="webgpu"></nk-radio>
+	<br>
+	<nk-elite slot="nk-elite" data-field="settings" data-services-path="webgl"></nk-elite>
 </body>
 </html>
