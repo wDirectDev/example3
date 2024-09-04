@@ -2,7 +2,7 @@ export default () => {
 return  `
 
 <javascript-template>
-	import initWasmElite from "./nk-elite/modules/elite/bin/nk-elite.asm.js"
+	import initWasmElite from "./nk-elite/modules/elite/build/nk-elite.asm.js"
 	globalThis["LEliteTG"] = {
 		preRun:[],
 		postRun:[],

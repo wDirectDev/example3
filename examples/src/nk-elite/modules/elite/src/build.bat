@@ -30,4 +30,4 @@ set DIR=%cd%
 @call cmd /C "%EMSCRIPTENDIR:~0,2% && cd %EMSCRIPTENDIR% && emsdk_env.bat && %DIR:~0,2% && cd %DIR% && build.bat"
 cd ..
 
-@copy build\*.* ..\..\elite\bin /Y
+@copy build\*.* ..\..\elite\build /Y
