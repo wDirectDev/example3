@@ -37,6 +37,6 @@ if exist dist (
 
 cd ..
 
-@echo Whole project is clean...
+@echo Example project: Clean completed...
 
 exit /b 0

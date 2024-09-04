@@ -29,7 +29,7 @@ return `
 .audio-newkind__radio + label span {
   border: 2px solid #fff;
   border-radius: 80%;
-  font-size: 1rem;
+  font-size: 0.8em;
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -58,14 +58,13 @@ return `
 }
 
 .audio-newkind__btn {
-    width: 129px;
-    height: 52px;
+    width: 100%;
     border-radius: 8px;
     background: var(--Gosblue, #0D4CD3);
     color: var(--White, #FFF);
     text-align: center;
     font-family: 'Lato', sans-serif;
-    font-size: 16px;
+    font-size: 0.8em;
     font-style: normal;
     font-weight: 400;
     line-height: 24px;
@@ -90,6 +89,7 @@ return `
 	color: red;
 	display: none;
 }
+
 </css-template>
 
 `

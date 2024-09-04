@@ -35,6 +35,6 @@ fi
 
 cd ..
 
-echo Whole project is clean...
+echo Example project: Clean completed...
 
 exit 0

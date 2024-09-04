@@ -3,10 +3,12 @@
 # Emscripten SDK...
 # export EMSCRIPTENDIR=c:/emscripten/emsdk
 
-rm --force *.js
-rm --force *.wasm
+export SOURCEDIR=`pwd`
 
-export DIR=`pwd`
+find $SOURCEDIR -type f -name '*.js' -delete
+find $SOURCEDIR -type f -name '*.wasm' -delete
+find $SOURCEDIR -type f -name '*.data' -delete
+
 sh ./automake.sh
 
 exit 0

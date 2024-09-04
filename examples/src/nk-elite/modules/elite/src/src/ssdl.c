@@ -205,8 +205,6 @@ static ETNK_INLINE fixed fixdiv ( fixed x, fixed y ) {
 #define fmul(x,y)	fixmul(x,y)
 #define fdiv(x,y)	fixdiv(x,y)
 
-
-
 int gfx_graphics_startup (void)
 {
 	//PALETTE the_palette;
@@ -419,29 +417,22 @@ void gfx_update_screen (void)
 	//SDL_RenderClear(sdl_ren);
 	// FIXME:
 	// more sane framerate control
-    #ifdef __EMSCRIPTEN__
-        emscripten_sleep(speed_cap);
-    #else
-        SDL_Delay(speed_cap);
-    #endif
+
     //
 
 }
 
-
 void gfx_acquire_screen (void)
 {
 	// acquire_bitmap (gfx_screen);
-	puts("FIXME: gfx_acquire_screen() is not implemented");
+	// puts("FIXME: gfx_acquire_screen() is not implemented");
 }
-
 
 void gfx_release_screen (void)
 {
 	// release_bitmap(gfx_screen);
-	puts("FIXME: gfx_release_screen() is not implemented");
+	// puts("FIXME: gfx_release_screen() is not implemented");
 }
-
 
 void gfx_fast_plot_pixel (int x, int y, int col)
 {
@@ -449,21 +440,17 @@ void gfx_fast_plot_pixel (int x, int y, int col)
 	//gfx_screen->line[y][x] = col;
 	// FIXME really, it should be "FAST"?
 	putpixel(whatever, x, y, col);
-
 }
-
 
 void gfx_plot_pixel (int x, int y, int col)
 {
 	putpixel (gfx_screen, x + GFX_X_OFFSET, y + GFX_Y_OFFSET, col);
 }
 
-
 void gfx_draw_filled_circle (int cx, int cy, int radius, int circle_colour)
 {
 	circlefill (gfx_screen, cx + GFX_X_OFFSET, cy + GFX_Y_OFFSET, radius, circle_colour);
 }
-
 
 #define AA_BITS 3
 #define AA_AND  7
@@ -696,8 +683,6 @@ void gfx_draw_aa_line (int x1, int y1, int x2, int y2)
 #undef AA_AND
 #undef AA_BASE
 
-
-
 void gfx_draw_circle (int cx, int cy, int radius, int circle_colour)
 {
 	puts("gfx_draw_circle()");
@@ -711,8 +696,6 @@ void gfx_draw_circle (int cx, int cy, int radius, int circle_colour)
 		circle (gfx_screen, cx + GFX_X_OFFSET, cy + GFX_Y_OFFSET, radius, circle_colour);
 //#endif
 }
-
-
 
 void gfx_draw_line (int x1, int y1, int x2, int y2)
 {
@@ -734,8 +717,6 @@ void gfx_draw_line (int x1, int y1, int x2, int y2)
 		line (gfx_screen, x1 + GFX_X_OFFSET, y1 + GFX_Y_OFFSET, x2 + GFX_X_OFFSET, y2 + GFX_Y_OFFSET, GFX_COL_WHITE);
 }
 
-
-
 void gfx_draw_colour_line (int x1, int y1, int x2, int y2, int line_colour)
 {
 	if (y1 == y2)
@@ -756,15 +737,11 @@ void gfx_draw_colour_line (int x1, int y1, int x2, int y2, int line_colour)
 		line (gfx_screen, x1 + GFX_X_OFFSET, y1 + GFX_Y_OFFSET, x2 + GFX_X_OFFSET, y2 + GFX_Y_OFFSET, line_colour);
 }
 
-
-
 void gfx_draw_triangle (int x1, int y1, int x2, int y2, int x3, int y3, int col)
 {
 	triangle (gfx_screen, x1 + GFX_X_OFFSET, y1 + GFX_Y_OFFSET, x2 + GFX_X_OFFSET, y2 + GFX_Y_OFFSET,
 				   x3 + GFX_X_OFFSET, y3 + GFX_Y_OFFSET, col);
 }
-
-
 
 void gfx_display_text (int x, int y, char *txt)
 {
@@ -772,14 +749,11 @@ void gfx_display_text (int x, int y, char *txt)
 	textout (gfx_screen, datafile[ELITE_1].dat, txt, (x / (2 / GFX_SCALE)) + GFX_X_OFFSET, (y / (2 / GFX_SCALE)) + GFX_Y_OFFSET, GFX_COL_WHITE);
 }
 
-
 void gfx_display_colour_text (int x, int y, char *txt, int col)
 {
 	//text_mode (-1);
 	textout (gfx_screen, datafile[ELITE_1].dat, txt, (x / (2 / GFX_SCALE)) + GFX_X_OFFSET, (y / (2 / GFX_SCALE)) + GFX_Y_OFFSET, col);
 }
-
-
 
 void gfx_display_centre_text (int y, char *str, int psize, int col)
 {
@@ -804,7 +778,6 @@ void gfx_display_centre_text (int y, char *str, int psize, int col)
 	textout_centre (gfx_screen,  datafile[txt_size].dat, str, (128 * GFX_SCALE) + GFX_X_OFFSET, (y / (2 / GFX_SCALE)) + GFX_Y_OFFSET, txt_colour);
 }
 
-
 void gfx_clear_display (void)
 {
 	rectfill (gfx_screen, GFX_X_OFFSET + 1, GFX_Y_OFFSET + 1, 510 + GFX_X_OFFSET, 383 + GFX_Y_OFFSET, GFX_COL_BLACK);
@@ -815,22 +788,17 @@ void gfx_clear_text_area (void)
 	rectfill (gfx_screen, GFX_X_OFFSET + 1, GFX_Y_OFFSET + 340, 510 + GFX_X_OFFSET, 383 + GFX_Y_OFFSET, GFX_COL_BLACK);
 }
 
-
 void gfx_clear_area (int tx, int ty, int bx, int by)
 {
 	rectfill (gfx_screen, tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET,
 				   bx + GFX_X_OFFSET, by + GFX_Y_OFFSET, GFX_COL_BLACK);
 }
 
-
-
-
 void gfx_draw_rectangle (int tx, int ty, int bx, int by, int col)
 {
 	rectfill (gfx_screen, tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET,
 				   bx + GFX_X_OFFSET, by + GFX_Y_OFFSET, col);
 }
-
 
 void gfx_display_pretty_text (int tx, int ty, int bx, int by, char *txt)
 {
@@ -1066,8 +1034,6 @@ int gfx_request_file (char *title, char *path, char *ext)
 #endif
 }
 
-
-
 static void shutdown_sdl ( void )
 {
 	puts("SDL: shutting system down ...");
@@ -1084,12 +1050,9 @@ static void shutdown_sdl ( void )
 	SDL_Quit();
 }
 
-
 int init_sdl ( void )
 {
-    printf("hello, world!\n");
-
-    if (SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         printf("SDL_Init() failed: %s\n", SDL_GetError());
         return 1;
     }
@@ -1130,7 +1093,6 @@ int init_sdl ( void )
 
 int sdl_last_key_pressed;
 char key[KEY_MAX];
-
 
 static const struct {
 	SDL_Keycode sdl;
@@ -1205,7 +1167,8 @@ void handle_sdl_events ( void )
 				exit(0);	// FIXME: do it nicer ....
 			case SDL_KEYUP:
 			case SDL_KEYDOWN:
-				printf("KEY: scan=%s[#%d] sym=%s[#%d] event=%s repeated=%d\n",
+				/*
+				 printf("KEY: scan=%s[#%d] sym=%s[#%d] event=%s repeated=%d\n",
 					SDL_GetScancodeName(event.key.keysym.scancode),
 					event.key.keysym.scancode,
 					SDL_GetKeyName(event.key.keysym.sym),
@@ -1213,6 +1176,7 @@ void handle_sdl_events ( void )
 					event.key.state == SDL_PRESSED ? "DOWN": "UP",
 					event.key.repeat
 				);
+				*/
 				if (!event.key.repeat) {
 					int game_code = decode_keysym(event.key.keysym.sym);
 					//printf("KEY_MAP=%d\n", game_code);

@@ -1375,12 +1375,13 @@ void info_message (char *message)
 
 int main ( int argc, char *argv[] )
 {
-	if (init_sdl())
+	if ( init_sdl() )
 		return 1;
+
 	/* Read configuration, it also applies default values, if no config can be read */
 	read_config_file();
 
-	if (gfx_graphics_startup())
+	if ( gfx_graphics_startup() )
 		return 1;
 	
 	/* Start the sound system... */

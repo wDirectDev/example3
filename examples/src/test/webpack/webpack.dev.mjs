@@ -1,10 +1,1 @@
-import { merge } from 'webpack-merge';
-import common from './webpack.common.mjs';
-import server from './webpack.server.mjs';
-
-export default merge(common, server, {
-  mode: 'development',
-  watchOptions: {
-    ignored: '**/node_modules',
-  }
-});
+import{merge as e}from"webpack-merge";import o from"./webpack.common.mjs";import m from"./webpack.server.mjs";export default e(o,m,{mode:"development",watchOptions:{ignored:"**/node_modules"}});

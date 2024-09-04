@@ -32,17 +32,13 @@
 static const char *sample_filenames[NUM_SAMPLES] = {
 	"launch.wav", "crash.wav", "dock.wav", "gameover.wav", "pulse.wav", "hitem.wav", "explode.wav", "ecm.wav", "missile.wav", "hyper.wav", "incom1.wav", "incom2.wav", "beep.wav", "boop.wav"
 };
+
 static const Uint8 *sample_p[NUM_SAMPLES];
 static       int    sample_s[NUM_SAMPLES];
 
-
 static SDL_AudioDeviceID audio = 0;
 
-
 static int play_sfx_request = -1;
-
-
-
 
 static void audio_callback ( void *userdata, Uint8 *stream, int len )
 {

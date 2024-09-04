@@ -19,9 +19,6 @@
 -->
 	<script>
 		function initializeMap() {
-			///////////////////////////////////////////////////////////////////////////////////////
-			// default variables...
-			///////////////////////////////////////////////////////////////////////////////////////
 			globalThis["channels"] = 2;
 			globalThis["isPlaybackInProgress"] = false;
 			globalThis["goniometer"] = "goniometer-off";
@@ -38,14 +35,11 @@
 			globalThis["volumeRate"] = 1.0;
 			globalThis["nameOfFile"] = "";
 			globalThis["frameOffset"] = 0;
-			///////////////////////////////////////////////////////////////////////////////////////
 			console.log("GlobalVariables: Initialize completed...");
 		}
 	</script>
-
 	<script type="module" src="nk-radio/index.mjs"></script>
 	<script type="module" src="nk-elite/index.mjs"></script>
-
 </head>
 <body onload="initializeMap();">
 	<nk-radio slot="nk-radio" data-field="settings" data-services-path="webgpu"></nk-radio>

@@ -236,7 +236,7 @@ void rear_starfield (void)
 		stars[i].y = yy;
 		stars[i].x = xx;
 
-		if ((zz >= 300) || (abs(yy) >= 110))
+		if ((zz >= 300) || (fabs(yy) >= 110))
 		{
 			stars[i].z = (rand255() & 127) + 51;
 			
@@ -333,13 +333,13 @@ void side_starfield (void)
 			gfx_draw_line (sx, sy, (xx + 128) * GFX_SCALE, (yy + 96) * GFX_SCALE);
 
 		
-		if (abs(stars[i].x) >= 116)
+		if (fabs(stars[i].x) >= 116)
 		{
 			stars[i].y = rand255() - 128;
 			stars[i].x = (current_screen == SCR_LEFT_VIEW) ? 115 : -115;
 			stars[i].z = rand255() | 8;
 		}
-		else if (abs(stars[i].y) >= 116)
+		else if (fabs(stars[i].y) >= 116)
 		{
 			stars[i].x = rand255() - 128;
 			stars[i].y = (alpha > 0) ? -110 : 110;

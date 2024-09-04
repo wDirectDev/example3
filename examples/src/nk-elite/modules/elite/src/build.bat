@@ -11,7 +11,7 @@ set EMCCFLAGS=-O3 ^
 -s USE_SDL_GFX=2 ^
 -s USE_SDL=2 ^
 -s USE_SDL_MIXER=2 ^
---preload-file data/ ^
+--embed-file data/ ^
 -s ASYNCIFY=1  ^
 -s ALLOW_MEMORY_GROWTH=1 ^
 -s USE_ES6_IMPORT_META=1 ^
@@ -25,9 +25,9 @@ set EMCCFLAGS=-O3 ^
 -s EXPORT_NAME=LEliteTG ^
 -s INVOKE_RUN=0
 
-cd src-sdl2
+cd src
 set DIR=%cd%
 @call cmd /C "%EMSCRIPTENDIR:~0,2% && cd %EMSCRIPTENDIR% && emsdk_env.bat && %DIR:~0,2% && cd %DIR% && build.bat"
 cd ..
 
-@copy build\*.* ..\..\elite\wasm /Y
+@copy build\*.* ..\..\elite\bin /Y

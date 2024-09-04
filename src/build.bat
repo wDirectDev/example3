@@ -4,10 +4,15 @@ setlocal enabledelayedexpansion
 
 rem Emscripten SDK...
 
-@del *.js /F /Q
-@del *.wasm /F /Q
+set SOURCEDIR=src\free-queue
+set KEEPFILE=free-queue.js
 
-set DIR=%cd%
-@call cmd /C "%EMSCRIPTENDIR:~0,2% && cd %EMSCRIPTENDIR% && emsdk_env.bat && %DIR:~0,2% && cd %DIR% && automake.bat"
+set SOURCEDIR=%cd%
+
+for %%a in ( "%SOURCEDIR%\*.js" ) do @del "%%a"
+for %%a in ( "%SOURCEDIR%\*.wasm" ) do @del "%%a"
+for %%a in ( "%SOURCEDIR%\*.data" ) do @del "%%a"
+
+@call cmd /C "%EMSCRIPTENDIR:~0,2% && cd %EMSCRIPTENDIR% && emsdk_env.bat && %SOURCEDIR:~0,2% && cd %SOURCEDIR% && automake.bat"
 
 exit /b 0
