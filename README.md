@@ -1,4 +1,5 @@
 ## Configure emscripten SDK
+
 ### Emscripten SDK
 ```bash
 git clone https://github.com/emscripten-core/emsdk.git
@@ -19,7 +20,7 @@ source ./emsdk_env.sh
 
 ## Using included scripts of free-queue library
 
-### Build WebAssembly library in root ./build directory of free-queue Project
+### Build WebAssembly library to ./build  directory in root of free-queue Project
 ```bash
 chmod +x ./wp-build.sh
 ./wp-build.sh
