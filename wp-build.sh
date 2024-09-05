@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# webpack shell build file
+# Work project shell build file
+# Emscripten SDK...
 
 cd examples
 

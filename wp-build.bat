@@ -2,7 +2,8 @@
 
 setlocal enabledelayedexpansion
 
-rem webpack batch build file
+rem Work project batch build file
+rem Emscripten SDK...
 
 cd examples
 
