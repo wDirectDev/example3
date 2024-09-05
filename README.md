@@ -17,28 +17,37 @@ git pull
 source ./emsdk_env.sh
 ```
 
-## Configure free-queue library
-### free-queue library
+## Using included scripts of free-queue library
+
+### Build WebAssembly library
 ```bash
-git clone https://github.com/vvzababurin/free-queue.git
-cd free-queue
+chmod +x ./wp-clean.sh
+./wp-build.sh
+cd build
 ```
 
-### Install free-queue modules for examples
+### Clean compiled WebAssembly library
 ```bash
-cd examples
-npm install
+chmod +x ./wp-clean.sh
+./wp-clean.sh
 ```
 
-### Assign rights to ./build.sh
+### Build WebAssembly library and start example free-queue Demo
 ```bash
-cd ..
-chmod +x ./build.sh
+chmod +x ./ep-build.sh
+./ep-build.bat
 ```
 
-### Compile and run free-queue Demo
+### Start example free-queue Demo
 ```bash
-./build.sh
+chmod +x ./ep-start.sh
+./ep-start.bat
+```
+
+### Clean compiled WebAssembly library and example of free-queue Demo
+```bash
+chmod +x ./ep-clean.sh
+./ep-clean.sh
 ```
 
 
