@@ -12,6 +12,7 @@ if not exist node_modules (
 )
 
 @call cmd /C "npm run start:webpack"
+
 cd ..
 
 exit /b 0

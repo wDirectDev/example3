@@ -10,6 +10,7 @@ if [ ! -d ./node_modules ]; then
 fi
 
 npm run start:webpack
+
 cd ..
 
 exit 0
