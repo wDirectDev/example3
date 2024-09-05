@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
+# Project's example shell clean file
 # Emscripten SDK...
-# export EMSCRIPTENDIR=c:/emscripten/emsdk
 
 export BUILDDIR=build
 
@@ -13,10 +13,6 @@ cd src
 export DIR=`pwd`
 sh ./automake.sh clean
 cd ..
-
-# if [ -d ./examples/src/free-queue ]; then 
-#     rmdir -p ./examples/src/free-queue
-# fi
 
 cd examples
 

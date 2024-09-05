@@ -1,7 +1,4 @@
-#!/bin/sh
-
-# Emscripten SDK...
-# export EMSCRIPTENDIR=c:/emscripten/emsdk
+#!/bin/bash
 
 export DIR=`pwd`
 

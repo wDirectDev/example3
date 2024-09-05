@@ -25,6 +25,14 @@ set EMCCFLAGS=-O3 ^
 -s EXPORT_NAME=LEliteTG ^
 -s INVOKE_RUN=0
 
+set SOURCEDIR=build
+
+for %%a in ( "%SOURCEDIR%\*.js" ) do @del "%%a"
+for %%a in ( "%SOURCEDIR%\*.wasm" ) do @del "%%a"
+for %%a in ( "%SOURCEDIR%\*.data" ) do @del "%%a"
+
+@echo Build directory: Clean completed...
+
 cd src
 set DIR=%cd%
 @call cmd /C "%EMSCRIPTENDIR:~0,2% && cd %EMSCRIPTENDIR% && emsdk_env.bat && %DIR:~0,2% && cd %DIR% && build.bat"

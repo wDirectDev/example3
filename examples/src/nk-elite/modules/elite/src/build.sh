@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Emscripten SDK...
-# export EMSCRIPTENDIR=c:/emscripten/emsdk
-
 export NK_ELITE_OUTPUT=nk-elite.asm.js
 export EMCCFLAGS="-O3 \
 -s USE_SDL_GFX=2 \
@@ -21,6 +18,14 @@ export EMCCFLAGS="-O3 \
 -s SINGLE_FILE=0 \
 -s EXPORT_NAME=LEliteTG \
 -s INVOKE_RUN=0"
+
+export SOURCEDIR=build
+
+find $SOURCEDIR -type f -name '*.js' -delete
+find $SOURCEDIR -type f -name '*.wasm' -delete
+find $SOURCEDIR -type f -name '*.data' -delete
+
+echo Build directory: Clean completed...
 
 cd src
 export DIR=`pwd`

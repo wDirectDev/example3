@@ -203,14 +203,17 @@ int gfx_graphics_startup (void)
 {
 	int status = 0;
 
-    #ifdef __EMSCRIPTEN__
-		emscripten_get_canvas_size(&wnd_width, &wnd_height, &wnd_fullscreen);
+#ifdef __EMSCRIPTEN__
+	emscripten_get_canvas_size(&wnd_width, &wnd_height, &wnd_fullscreen);
 //		emscripten_get_canvas_element_size("#canvas",&wnd_height, &wnd_height);
-	#else
-		wnd_width = 800;
-		wnd_height = 600;
-		wnd_fullscreen = 0;
-	#endif
+	wnd_width = 512;
+	wnd_height = 512;
+	wnd_fullscreen = 0;
+#else
+	wnd_width = 512;
+	wnd_height = 512;
+	wnd_fullscreen = 0;
+#endif
 
 	printf( "VIDEO: width: %d; height: %d; fullscreen: %d; scale: %f\n", wnd_width, wnd_height, wnd_fullscreen, wnd_scale);
 
@@ -233,7 +236,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 
-	status = SDL_RenderSetLogicalSize(sdl_ren, 512, 512);
+	status = SDL_RenderSetLogicalSize(sdl_ren, wnd_width, wnd_height);
 	if ( status ) {
 		ERROR_WINDOW("Cannot set render logical size: %s", SDL_GetError());
 		return 1;
@@ -262,7 +265,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 #endif
-	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, 512, 512);
+	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, wnd_width, wnd_height);
 	if (!sdl_tex) {
 		ERROR_WINDOW("Cannot create texture: %s", SDL_GetError());
 		return 1;
@@ -272,7 +275,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 
-	SDL_SetRenderDrawColor(sdl_ren, 0xFF, 0, 0, 0xFF);
+	SDL_SetRenderDrawColor(sdl_ren, 0, 0xFF, 0, 0xFF);
 	SDL_RenderClear(sdl_ren);
 
 	for (int a = 0; a < IMG_NUM_OF; a++)

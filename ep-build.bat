@@ -2,6 +2,7 @@
 
 setlocal enabledelayedexpansion
 
+rem Project's example batch build file
 rem Emscripten SDK...
 
 set EMSCRIPTENDIR=c:/emscripten/emsdk
