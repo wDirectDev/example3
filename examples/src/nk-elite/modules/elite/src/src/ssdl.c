@@ -36,7 +36,7 @@
 
 SDL_Texture		*sdl_tex = NULL;
 SDL_Window		*sdl_win = NULL;
-SDL_Renderer	*sdl_ren = NULL;
+SDL_Renderer		*sdl_ren = NULL;
 
 #define MAX_POLYS	100
 
@@ -1023,6 +1023,7 @@ static void shutdown_sdl ( void )
 {
 	puts("SDL: shutting system down ...");
 	snd_sound_shutdown();
+	midi_sound_shutdown();
 	if (sdl_tex)
 		SDL_DestroyTexture(sdl_tex);
 	for (int i = 0; i < IMG_NUM_OF; i++)

@@ -1362,7 +1362,7 @@ void main_process()
 			{
 				current_screen = SCR_INTRO_ONE;
 
-				//snd_play_midi (SND_ELITE_THEME, TRUE);
+				snd_play_midi (SND_ELITE_THEME, TRUE);
 				//FIXME: no midi
 
 				initialise_intro1();
@@ -1406,7 +1406,7 @@ void main_process()
 
 				current_screen = SCR_INTRO_TWO;
 		
-				//snd_play_midi (SND_BLUE_DANUBE, TRUE);
+				snd_play_midi (SND_BLUE_DANUBE, TRUE);
 				//FIXME: no midi
 
 			#ifdef HACKING
@@ -1610,6 +1610,9 @@ int main ( int argc, char *argv[] )
 	
 	/* Start the sound system... */
 	if ( snd_sound_startup() ) printf( "AUDIO: we will continue without a sounds\n" );
+
+	/* Start the midi sound system... */
+	if ( midi_sound_startup() ) printf( "MIXER: we will continue without midi sounds\n" );
 
 	/* Do any setup necessary for the keyboard... */
 	// #pragma deprecated(kbd_keyboard_startup)

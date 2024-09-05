@@ -24,18 +24,34 @@
 #include "sound.h"
 #include "file.h"
 
-#define NUM_SAMPLES 14
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include "ssdl.h"
+
+
+#define NUM_SAMPLES	14
+#define NUM_MIDI	2
+
 #define SILENCE	0x80
 
 static const char *sample_filenames[NUM_SAMPLES] = {
 	"launch.wav", "crash.wav", "dock.wav", "gameover.wav", "pulse.wav", "hitem.wav", "explode.wav", "ecm.wav", "missile.wav", "hyper.wav", "incom1.wav", "incom2.wav", "beep.wav", "boop.wav"
 };
 
+static const char *midi_filenames[NUM_MIDI] = {
+	"theme.mid", "danube.mid"
+};
+
 static const Uint8 *sample_p[NUM_SAMPLES];
 static       int    sample_s[NUM_SAMPLES];
 
+static const Uint8 *midi_p[NUM_MIDI];
+static       int    midi_s[NUM_MIDI];
+
 static SDL_AudioDeviceID audio = 0;
 static int play_sfx_request = -1;
+
+static Mix_Music *midi_music = 0;
 
 static void audio_callback ( void *userdata, Uint8 *stream, int len )
 {
@@ -88,6 +104,10 @@ int snd_sound_startup (void)
 			// Load samples ... well, get the references/sizes from memory :)
 			for (int i = 0; i < NUM_SAMPLES; i++)
 				datafile_select(sample_filenames[i], &sample_p[i], &sample_s[i]);
+
+			for (int i = 0; i < NUM_MIDI; i++)
+				datafile_select(midi_filenames[i], &midi_p[i], &midi_s[i]);
+
 			// Go for the audio ...
 			SDL_PauseAudioDevice(audio, 0);
 			status = 0;
@@ -108,6 +128,25 @@ int snd_sound_shutdown (void)
 	return 0;
 }
 
+int midi_sound_startup(void)
+{
+	int status = Mix_Init(MIX_INIT_MID);
+	if ( !status ) return 1;
+	if ( Mix_OpenAudio(22050, AUDIO_U8, 1, 1024 ) < 0 )
+	{
+		puts("Mix_OpenAudio: failed\n");	
+		return 1;
+	}
+	return 0;
+}
+
+int midi_sound_shutdown(void)
+{
+	Mix_CloseAudio();
+	Mix_Quit();
+	return 0;
+}
+
 void snd_play_sample (int sample_no)
 {
 	play_sfx_request = sample_no;
@@ -115,14 +154,27 @@ void snd_play_sample (int sample_no)
 
 void snd_play_midi (int midi_no, int repeat)
 {
-	//////////////////////////////////////////////////////////////////////////
-	// Mix_Music *music = Mix_LoadMUS(“sndTrack.mid”);
-    // assert(music); // simple check for NULL.
-    // Mix_PlayMusic(music, -1); // NB: -1 loops music
-	printf("TODO: snd_play_midi() not implemented\n");
+	if ( midi_music ) {
+		snd_stop_midi();
+	}
+
+	const Uint8 *data_p = midi_p[midi_no];
+	int data_size = midi_s[midi_no];
+
+	SDL_RWops *v = SDL_RWFromConstMem(data_p, data_size);
+	if ( v ) {
+		midi_music = Mix_LoadMUS_RW(v, 0);
+		if (midi_music) {
+			Mix_PlayMusic(midi_music, repeat);
+		} 	
+		SDL_RWclose( v );
+	}
 }
 
 void snd_stop_midi (void)
 {
-	printf("TODO: snd_stop_midi() not implemented\n");
+	if ( midi_music ) {
+		Mix_FreeMusic( midi_music );
+	        midi_music = 0;
+	}
 }
