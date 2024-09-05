@@ -19,11 +19,10 @@ source ./emsdk_env.sh
 
 ## Using included scripts of free-queue library
 
-### Build WebAssembly library
+### Build WebAssembly library in root ./build directory of free-queue Project
 ```bash
 chmod +x ./wp-clean.sh
 ./wp-build.sh
-cd build
 ```
 
 ### Clean compiled WebAssembly library
@@ -32,7 +31,7 @@ chmod +x ./wp-clean.sh
 ./wp-clean.sh
 ```
 
-### Build WebAssembly library and start example free-queue Demo
+### Build WebAssembly library and Start example free-queue Demo
 ```bash
 chmod +x ./ep-build.sh
 ./ep-build.bat
