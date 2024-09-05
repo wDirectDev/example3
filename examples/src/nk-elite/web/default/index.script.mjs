@@ -15,9 +15,9 @@ return  `
 		canvas:function(){
 			let e = document.getElementById("canvas");
 			e.addEventListener("webglcontextlost", function(e){
-				alert("WebGL context lost. You will need to reload the page.");
+				console.log("LEliteTG: WebGL context lost. You will need to reload the page.");
 				e.preventDefault();
-			})
+			});
 			return e;
 		}(),
 		setStatus:function(e){

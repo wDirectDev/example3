@@ -40,10 +40,10 @@ SDL_Renderer	*sdl_ren = NULL;
 
 #define MAX_POLYS	100
 
-int wnd_width = 800;
-int wnd_height = 600;
-int wnd_fullscreen = 0;
-double wnd_scale = 1.0;
+int wnd_width;
+int wnd_height;
+int wnd_fullscreen;
+double wnd_scale;
 
 static int start_poly;
 static int total_polys;
@@ -65,19 +65,19 @@ static struct poly_data poly_chain[MAX_POLYS];
 
 // sdl2_gfx substitutions of allegro functions
 
-#define rectfill(ren,tx,ty,bx,by,c)		boxRGBA(sdl_ren,tx,ty,bx,by,RGBA_PARAM(c))
-#define	line(ren,x1,y1,x2,y2,c)			lineRGBA(sdl_ren,x1,y1,x2,y2,RGBA_PARAM(c))
-#define hline(ren,x1,y,x2,c)			hlineRGBA(sdl_ren,x1,x2,y,RGBA_PARAM(c))
-#define vline(ren,x1,y1,y2,c)			vlineRGBA(sdl_ren,x1,y1,y2,RGBA_PARAM(c))
-#define circle(ren,x,y,r,c)			circleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
-#define circlefill(ren,x,y,r,c)			filledCircleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
-#define putpixel(ren,x,y,c)			pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
+#define rectfill(ren,tx,ty,bx,by,c)			boxRGBA(sdl_ren,tx,ty,bx,by,RGBA_PARAM(c))
+#define	line(ren,x1,y1,x2,y2,c)				lineRGBA(sdl_ren,x1,y1,x2,y2,RGBA_PARAM(c))
+#define hline(ren,x1,y,x2,c)				hlineRGBA(sdl_ren,x1,x2,y,RGBA_PARAM(c))
+#define vline(ren,x1,y1,y2,c)				vlineRGBA(sdl_ren,x1,y1,y2,RGBA_PARAM(c))
+#define circle(ren,x,y,r,c)					circleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
+#define circlefill(ren,x,y,r,c)				filledCircleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
+#define putpixel(ren,x,y,c)					pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
 #define triangle(ren,x1,y1,x2,y2,x3,y3,c)	filledTrigonRGBA(sdl_ren,x1,y1,x2,y2,x3,y3,RGBA_PARAM(c))
 
 // #define textout(g,font,str,x,y,c)		fprintf(stderr,"FIXME: no string function (textout) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
 // #define textout_centre(g,font,str,x,y,c)	fprintf(stderr,"FIXME: no string function (textout_centre) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
 
-#define textout(g,font,str,x,y,c)		stringRGBA(sdl_ren,x,y,str,RGBA_PARAM(c))
+#define textout(g,font,str,x,y,c)			stringRGBA(sdl_ren,x,y,str,RGBA_PARAM(c))
 #define textout_centre(g,font,str,x,y,c)	stringRGBA(sdl_ren,x-strlen(str)*4,y,str,RGBA_PARAM(c))
 
 
@@ -204,21 +204,22 @@ int gfx_graphics_startup (void)
 	int status = 0;
 
     #ifdef __EMSCRIPTEN__
-	wnd_scale = emscripten_get_device_pixel_ratio();
-	emscripten_get_canvas_size( &wnd_width, &wnd_height, &wnd_fullscreen);
+		emscripten_get_canvas_size(&wnd_width, &wnd_height, &wnd_fullscreen);
+//		emscripten_get_canvas_element_size("#canvas",&wnd_height, &wnd_height);
 	#else
-	wnd_width = 512;
-	wnd_height = 512;
-	wnd_fullscreen = 0;
-	wnd_scale = 1.0;
+		wnd_width = 800;
+		wnd_height = 600;
+		wnd_fullscreen = 0;
 	#endif
+
+	printf( "VIDEO: width: %d; height: %d; fullscreen: %d; scale: %f\n", wnd_width, wnd_height, wnd_fullscreen, wnd_scale);
 
 	sdl_win = SDL_CreateWindow(
 		OUR_WINDOW_TITLE,
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		wnd_width, wnd_height,
-		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_INPUT_FOCUS
+		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
 	);
 
 	if (!sdl_win) {
@@ -232,7 +233,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 
-	status = SDL_RenderSetLogicalSize(sdl_ren, 800, 800);
+	status = SDL_RenderSetLogicalSize(sdl_ren, 512, 512);
 	if ( status ) {
 		ERROR_WINDOW("Cannot set render logical size: %s", SDL_GetError());
 		return 1;
@@ -261,7 +262,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 #endif
-	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, 800, 800);
+	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, 512, 512);
 	if (!sdl_tex) {
 		ERROR_WINDOW("Cannot create texture: %s", SDL_GetError());
 		return 1;

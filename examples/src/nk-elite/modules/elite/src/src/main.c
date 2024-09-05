@@ -1316,50 +1316,15 @@ void info_message (char *message)
 	/* snd_play_sample (SND_BEEP); */
 }
 
+unsigned int parts = 1;
+unsigned int startup_part = 0;
 
-int main ( int argc, char *argv[] )
+void main_process()
 {
-	static int w_h = 0;
-	static int w_w = 0;
-
-	if ( start_sdl() ) return 1;
-
-	/* Read configuration, it also applies default values, if no config can be read */
-	read_config_file();
-
-	if ( gfx_graphics_startup() ) return 1;
-	
-	/* Start the sound system... */
-	if ( snd_sound_startup() ) printf( "AUDIO: we will continue without a sounds\n" );
-
-	/* Do any setup necessary for the keyboard... */
-	// #pragma deprecated(kbd_keyboard_startup)
-	// if ( kbd_keyboard_startup() ) printf( "KEYBOARD: event watcher failed\n" );
-	
-	finish = 0;
-	auto_pilot = 0;
-	
-	unsigned int parts = 1;
-	unsigned int startup_part = 0;
-
-	while (!finish)
-	{
 		unsigned int change = 0;
 
-		if ( (w_h != wnd_height) || ( w_h == 0 ) ) change = 1;
-		if ( (w_w != wnd_width) || ( w_w == 0 ) ) change = 1;
-
-		if ( change == 1 ) {
-			w_h = wnd_height;
-			w_w = wnd_width;
-
-    		#ifdef __EMSCRIPTEN__			
-			SDL_SetWindowSize(sdl_win, wnd_width, wnd_height );
-			#endif			
-
-			printf( "width: %d; height: %d; fullscreen: %d; scale: %f\n", wnd_width, wnd_height, wnd_fullscreen, wnd_scale);			
-			change = 0;
-		}
+//		if ( (w_h != wnd_height) || ( w_h == 0 ) ) change = 1;
+//		if ( (w_w != wnd_width) || ( w_w == 0 ) ) change = 1;
 
 		if ( parts == 1 ) {
 			game_over = 0;	
@@ -1374,7 +1339,7 @@ int main ( int argc, char *argv[] )
 
 			startup_part = 0;
 			parts = 2;
-			continue;
+			return;
 		}
 		else if ( parts == 2 ) 
 		{
@@ -1394,7 +1359,7 @@ int main ( int argc, char *argv[] )
 				identify = 0;
 			#endif
 				startup_part = 1;
-				continue;
+				return;
 			}
 			else if ( startup_part == 1 )
 			{
@@ -1415,11 +1380,11 @@ int main ( int argc, char *argv[] )
 					snd_stop_midi();	
 					startup_part = 0xffff;
 				}
-				continue;
+				return;
 			}
 			startup_part = 0;
 			parts = 3;
-			continue;
+			return;
 		}
 		else if ( parts == 3 ) {
 			///////////////////////////////////////////////////////////////
@@ -1442,7 +1407,7 @@ int main ( int argc, char *argv[] )
 				flight_climb = 0;
 
 				startup_part = 1;
-				continue;
+				return;
 			}
 			else if ( startup_part == 1 )
 			{
@@ -1457,11 +1422,11 @@ int main ( int argc, char *argv[] )
 					snd_stop_midi();	
 					startup_part = 0xffff;
 				}			
-				continue;
+				return;
 			} 
 			startup_part = 0;
 			parts = 4;
-			continue;
+			return;
 		}
 		else if ( parts == 4 ) {			
 			old_cross_x = -1;
@@ -1470,7 +1435,7 @@ int main ( int argc, char *argv[] )
 			display_commander_status ();
 			startup_part = 0;
 			parts = 5;
-			continue;
+			return;
 		}
 		else if ( parts == 5 && !game_over )
 		{
@@ -1483,7 +1448,7 @@ int main ( int argc, char *argv[] )
 
 			handle_flight_keys ();
 
-			if (game_paused) continue;
+			if (game_paused) return;
 			if (message_count > 0) message_count--;
 
 			if (!rolling) {
@@ -1522,7 +1487,7 @@ int main ( int argc, char *argv[] )
 				{
 					update_console();
 					gfx_release_screen();
-					continue;
+					return;
 				}
 
 				if ((current_screen == SCR_FRONT_VIEW) || (current_screen == SCR_REAR_VIEW) ||
@@ -1604,16 +1569,43 @@ int main ( int argc, char *argv[] )
 
 				draw_cross (old_cross_x, old_cross_y);
 			}
-			continue;
+			return;
 		} 
 		else if ( parts == 5 && game_over < 2 ) 
 		{
 			run_game_over_screen();
 			startup_part = 0;
 			parts = 1;
-			continue;
+			return;
 		}
-	}
+}
+
+int main ( int argc, char *argv[] )
+{
+	if ( start_sdl() ) return 1;
+
+	/* Read configuration, it also applies default values, if no config can be read */
+	read_config_file();
+
+	if ( gfx_graphics_startup() ) return 1;
+	
+	/* Start the sound system... */
+	if ( snd_sound_startup() ) printf( "AUDIO: we will continue without a sounds\n" );
+
+	/* Do any setup necessary for the keyboard... */
+	// #pragma deprecated(kbd_keyboard_startup)
+	// if ( kbd_keyboard_startup() ) printf( "KEYBOARD: event watcher failed\n" );
+	
+	finish = 0;
+	auto_pilot = 0;
+
+    #ifdef __EMSCRIPTEN__
+	    emscripten_set_main_loop(main_process, 0, 1);
+    #else
+		while (!finish) {        
+			main_process();
+		}
+	#endif
 
 	return 0;
 }

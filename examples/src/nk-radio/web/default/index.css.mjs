@@ -58,7 +58,7 @@ return `
 }
 
 .audio-newkind__btn {
-    width: 100%;
+    width: 10%;
     border-radius: 8px;
     background: var(--Gosblue, #0D4CD3);
     color: var(--White, #FFF);
