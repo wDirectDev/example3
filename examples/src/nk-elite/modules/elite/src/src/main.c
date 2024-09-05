@@ -793,10 +793,22 @@ void handle_flight_keys (void)
 	    ((current_screen == SCR_MARKET_PRICES) ||
 		 (current_screen == SCR_OPTIONS) ||
 		 (current_screen == SCR_SETTINGS) ||
-		 (current_screen == SCR_EQUIP_SHIP)))
-		kbd_read_key();
+		 (current_screen == SCR_EQUIP_SHIP))
+	)
+	{
+		handle_sdl_events();
+		int key_pressed = kbd_check_keys();
 
-	kbd_poll_keyboard();
+		kbd_enter_pressed = 0;
+		kbd_backspace_pressed = 0;
+	
+		int keycode = key_pressed >> 8;
+		if (keycode == KEY_RETURN) kbd_enter_pressed = 1;
+		if (keycode == KEY_BACKSPACE) kbd_backspace_pressed = 1;
+	}
+
+	handle_sdl_events();
+	int key_pressed = kbd_check_keys();
 
 	// FIXME: no joy yet ...
 #if 0
@@ -1446,6 +1458,10 @@ void main_process()
 			rolling = 0;
 			climbing = 0;
 
+
+			///////////////////////////////////////////////////////////////
+			// Менюхи
+			///////////////////////////////////////////////////////////////
 			handle_flight_keys ();
 
 			if (game_paused) return;
@@ -1463,6 +1479,9 @@ void main_process()
 
 			if (!docked)
 			{
+				///////////////////////////////////////////////////////////////
+				// Полет, вне базы...
+				///////////////////////////////////////////////////////////////
 				gfx_acquire_screen();
 					
 				if ((current_screen == SCR_FRONT_VIEW) || (current_screen == SCR_REAR_VIEW) ||

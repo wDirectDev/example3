@@ -207,13 +207,13 @@ int kbd_check_keys()
 	kbd_backspace_pressed = key[KEY_BACKSPACE];
 	kbd_space_pressed = key[KEY_SPACE];
 
-	int rc = 0;
+	int lastkey = 0;
 	if (sdl_last_key_pressed) {
-		rc = key[sdl_last_key_pressed];
+		lastkey = sdl_last_key_pressed;
 		sdl_last_key_pressed = 0;
 	}
 
-	return rc;
+	return lastkey;
 }
 
 void kbd_poll_keyboard (void)
