@@ -18,30 +18,27 @@
 	<script src="main.bundle.js"></script>
 -->
 	<script>
-		function initializeMap() {
-			globalThis["channels"] = 2;
-			globalThis["isPlaybackInProgress"] = false;
-			globalThis["goniometer"] = "goniometer-off";
-			globalThis["holdChart"] = "holdchart-off";
-			globalThis["inputType"] = "default"; // "audio"; // "osc"
-			globalThis["renderType"] = "stereo";
-			globalThis["kdX"] = 500;
-			globalThis["kdY"] = 10;
-			globalThis["zoomX"] = 100;
-			globalThis["zoomY"] = 100;
-			globalThis["holdBuffer"] = undefined;
-			globalThis["renderBuffer"] = undefined;
-			globalThis["sampleRate"] = 44100;
-			globalThis["volumeRate"] = 1.0;
-			globalThis["nameOfFile"] = "";
-			globalThis["frameOffset"] = 0;
-			console.log("GlobalVariables: Initialize completed...");
+		function window_onload() {
+/*
+			window.addEventListener("resize", function() {
+				let _collection = document.getElementsByTagName("nk-radio");
+				for (let i=0; i < _collection.length; i++ ){
+				        if ( typeof _collection[i].onresize != "function" ) {
+						setTimeout( function( w, h ) {
+							alert( w );
+							_collection[i].onresize( w, h );
+						}, 1500, _collection[i].width, _collection[i].height );
+					}
+				}
+			});
+*/
+			console.log("window_onload: Initialize completed...");
 		}
 	</script>
 	<script type="module" src="nk-radio/index.mjs"></script>
 	<script type="module" src="nk-elite/index.mjs"></script>
 </head>
-<body onload="initializeMap();">
+<body onload="window_onload();">
 	<nk-radio slot="nk-radio" data-field="settings" data-services-path="webgpu"></nk-radio>
 	<br>
 	<nk-elite slot="nk-elite" data-field="settings" data-services-path="webgl"></nk-elite>

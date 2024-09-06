@@ -2,13 +2,13 @@ import FreeQueue from "../../../free-queue/free-queue.js";
 
 class WorkletBasicProcessor extends AudioWorkletProcessor 
 {
-    constructor(options) {
+	constructor(options) {
 		super(); 
-		this.queue = Object.setPrototypeOf(options.processorOptions.queue, FreeQueue.prototype);
-		this.instance = options.processorOptions.instance;
-    }
+		this.instance = Object.setPrototypeOf(options.processorOptions.instance, FreeQueue.prototype);
+		this.pointer = options.processorOptions.pointer;
+	}
 	
-    process(inputs, outputs, parameters) 
+	process(inputs, outputs, parameters) 
 	{
 		////////////////////////////////////////////////////////////////////////////////////////
 		// inputs count...
@@ -34,9 +34,9 @@ class WorkletBasicProcessor extends AudioWorkletProcessor
 				}
 			}
 
-			if ( this.queue != undefined ) {
-				const r = this.queue.push( dataArray, bufferSize );
-//				console.debug( "processor: queue.push [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
+			if ( this.instance != undefined || this.instance != null) {
+				const r = this.instance.push( dataArray, bufferSize );
+				console.log( "processor: queue.push [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
 			}
 
 		}
@@ -45,6 +45,5 @@ class WorkletBasicProcessor extends AudioWorkletProcessor
 	}
 
 }
-
 
 registerProcessor("radio-processor", WorkletBasicProcessor);

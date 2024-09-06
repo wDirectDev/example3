@@ -243,7 +243,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 
-	status = SDL_RenderSetLogicalSize(sdl_ren, wnd_width, wnd_height);
+	status = SDL_RenderSetLogicalSize(sdl_ren, 300, 300);
 	if ( status ) {
 		ERROR_WINDOW("Cannot set render logical size: %s", SDL_GetError());
 		return 1;
@@ -272,7 +272,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 #endif
-	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, wnd_width, wnd_height);
+	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, 512, 512);
 	if (!sdl_tex) {
 		ERROR_WINDOW("Cannot create texture: %s", SDL_GetError());
 		return 1;

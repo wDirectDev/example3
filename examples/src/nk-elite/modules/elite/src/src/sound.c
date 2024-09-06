@@ -163,11 +163,10 @@ void snd_play_midi (int midi_no, int repeat)
 
 	SDL_RWops *v = SDL_RWFromConstMem(data_p, data_size);
 	if ( v ) {
-		midi_music = Mix_LoadMUS_RW(v, 0);
+		midi_music = Mix_LoadMUS_RW(v, 1);
 		if (midi_music) {
 			Mix_PlayMusic(midi_music, repeat);
 		} 	
-		SDL_RWclose( v );
 	}
 }
 

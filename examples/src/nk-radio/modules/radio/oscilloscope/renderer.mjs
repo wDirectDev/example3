@@ -14,10 +14,19 @@ import { wDGoniometer } from './goniometer.mjs';
 
 export class wDApplication
 {
-    constructor() 
+    constructor(CONFIG) 
     {
+	    this.setConfig(CONFIG);
         this.setShaderBindGroup( null );
         this.setTextureBindGroup( null );
+    }
+    setConfig(CONFIG)
+    {
+	    this.CONFIG = CONFIG;        
+    }
+    getConfig()
+    {
+        return this.CONFIG;
     }
     getBorderWidth()
     {
@@ -448,8 +457,11 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         return this.shaderBindGroup;
     }    
     render = async() => {
-	    let texture = this.context.getCurrentTexture();
-	    this.renderPassDesc.colorAttachments[0].view = texture.createView();
+
+        const CONFIG = this.getConfig();
+
+        let texture = this.context.getCurrentTexture();
+        this.renderPassDesc.colorAttachments[0].view = texture.createView();
 
         this.commandEncoder = this.device.createCommandEncoder();
         this.passEncoder = this.commandEncoder.beginRenderPass( this.renderPassDesc );
@@ -501,7 +513,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                         } )
                     }
                 ]
-	        } );
+            } );
             this.getTextureBindGroup( textureBindGroup );
         }
 
@@ -564,29 +576,29 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Any other plugin ( 1;2;4;8;16;32;64;128;256 )
         /////////////////////////////////////////////////////////////////////////////////////////////////
-        if ( globalThis["go1"] == "go1-on" ) {
+        if ( CONFIG.application.go1 == "go1-on" ) {
             pluginId = pluginId | 2;
         }
 */    
 
-        if ( globalThis["goniometer"] == "goniometer-on" ) {
+        if ( CONFIG.application.goniometer == "goniometer-on" ) {
             pluginId = pluginId | 1;
         }
     
-        if ( globalThis["queue"] != undefined ) {
-            let bufferSize = globalThis["sampleRate"] / 25;
+        if ( CONFIG.queue.instance != undefined ) {
+            let bufferSize = CONFIG.application.sampleRate / 25;
 
             let _b = [2];
             _b[0] = new Float64Array(bufferSize);
             _b[1] = new Float64Array(bufferSize);
 
-            let r = globalThis["queue"].pull( _b, bufferSize );
+            let r = CONFIG.queue.instance.pull( _b, bufferSize );
             if ( r == true )
             {
-                globalThis["renderBuffer"] = new Float64Array(bufferSize * 2);
+                CONFIG.application.renderBuffer = new Float64Array(bufferSize * 2);
                 for ( let i = 0; i < bufferSize; i++ ) {
-                    globalThis["renderBuffer"][i * 2 + 0] = _b[0][i];
-                    globalThis["renderBuffer"][i * 2 + 1] = _b[1][i];
+                    CONFIG.application.renderBuffer[i * 2 + 0] = _b[0][i];
+                    CONFIG.application.renderBuffer[i * 2 + 1] = _b[1][i];
                 }
             }
             //console.debug( "draw: queue.pull [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
@@ -603,39 +615,39 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Если воспроизведение аудио происходит
         /////////////////////////////////////////////////////////////////////////////////////////////////
-        if ( globalThis["isPlaybackInProgress"] )
+        if ( CONFIG.player.isPlaying )
         {
-            // console.log("isPlaybackInProgress: "+globalThis["isPlaybackInProgress"]);
+            // console.log("isPlaybackInProgress: "+CONFIG.application.isPlaybackInProgress"]);
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Тип воспроизведения audio или osc
             /////////////////////////////////////////////////////////////////////////////////////////////
-            if ( globalThis["inputType"] == "audio" || globalThis["inputType"] == "osc" ) 
+            if ( CONFIG.application.inputType == "audio" || CONFIG.application.inputType == "osc" ) 
             {
-                let _nameoffile = globalThis["nameOfFile"];
+                let _nameoffile = CONFIG.application.nameOfFile;
                 if ( window.isExist( _nameoffile ) > 0 ) {
-                    if ( window.isPlaying() > 0 ) {      
+                    if ( CONFIG.player.isPlaying() > 0 ) {      
                         /////////////////////////////////////////////////////////////////////////////////
                         // number of channels
                         /////////////////////////////////////////////////////////////////////////////////
                         let _channels = window.getchannelscount( _nameoffile );
-                        globalThis["channels"] = _channels;
+                        CONFIG.application.channels = _channels;
                         /////////////////////////////////////////////////////////////////////////////////
                         // sampleRate of the file
                         /////////////////////////////////////////////////////////////////////////////////
                         let _sampleRate = window.getsampleRate( _nameoffile );
-                        globalThis["sampleRate"] = _sampleRate;
+                        CONFIG.application.sampleRate = _sampleRate;
                         /////////////////////////////////////////////////////////////////////////////////
                         // frames of the file
-                        let _countofframes = globalThis["sampleRate"] / 25;
+                        let _countofframes = CONFIG.sampleRate / 25;
                         /////////////////////////////////////////////////////////////////////////////
                         // speed test... single allocation
                         let _memptr = window.malloc( _countofframes * _channels * SIZE_OF_DOUBLE );
                         if ( _memptr > 0 ) {
 
-                            let _framescount = window.getdatabuffer( _nameoffile, _memptr, globalThis["frameOffset"], _countofframes );                              
+                            let _framescount = window.getdatabuffer( _nameoffile, _memptr, CONFIG.application.frameOffset, _countofframes );                              
                             if ( _framescount > 0 ) {                                
-                                globalThis["renderBuffer"] = window.copy( _memptr, _countofframes * _channels * SIZE_OF_DOUBLE );
-                                globalThis["frameOffset"] = _framescount;
+                                CONFIG.application.renderBuffer = window.copy( _memptr, _countofframes * _channels * SIZE_OF_DOUBLE );
+                                CONFIG.application.frameOffset = _framescount;
                             } else {
                                 window.stopplayback();
                             }
@@ -649,19 +661,19 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
             ////////////////////////////////////////////////////////////////////////////////////
             // Удерживать картинку графика
             ////////////////////////////////////////////////////////////////////////////////////
-            if ( globalThis["holdChart"] == "holdchart-on" ) {
+            if ( CONFIG.application.holdChart == "holdchart-on" ) {
                 ////////////////////////////////////////////////////////////////////////////////
                 // Удерживать картинку определенного блока памяти
                 ////////////////////////////////////////////////////////////////////////////////
-                if ( globalThis["holdBuffer"] == undefined ) {
-                    globalThis["holdBuffer"] = new Float64Array( globalThis["renderBuffer"] );
+                if ( CONFIG.application.holdBuffer == undefined ) {
+                    CONFIG.application.holdBuffer = new Float64Array( CONFIG.application.renderBuffer );
                 }
             }
             ////////////////////////////////////////////////////////////////////////////////////
             // Не удерживать картинку графика
             ////////////////////////////////////////////////////////////////////////////////////                                
             else {
-                globalThis["holdBuffer"] = undefined;
+                CONFIG.application.holdBuffer = undefined;
             }
             ////////////////////////////////////////////////////////////////////////////////////
             // Если плагин гониометра включен
@@ -670,7 +682,7 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Рисование системы координат с графиком...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                await this.spline.drawData( this, null, globalThis["channels"], globalThis["renderType"], 1, 1, globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
+                await this.spline.drawData( this, null, CONFIG.application.channels, CONFIG.application.renderType, 1, 1, CONFIG.application.kdX, CONFIG.application.kdY, CONFIG.application.zoomX, CONFIG.application.zoomY, thickness, _colors );
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Установление начальных параметров...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////                
@@ -678,14 +690,14 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Если стерео ( 2 канала ), рисование системы координат гониометра и графика задержанного блока памяти...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["holdChart"] == "holdchart-on" && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined ) {
-                    await this.goniometer.draw( this, globalThis["holdBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
+                if ( CONFIG.application.renderType == "stereo" && CONFIG.application.channels == 2 && CONFIG.application.holdChart == "holdchart-on" && CONFIG.application.holdBuffer != null && CONFIG.application.holdBuffer != undefined ) {
+                    await this.goniometer.draw( this, CONFIG.application.holdBuffer, CONFIG.application.kdX, CONFIG.application.kdY, CONFIG.application.zoomX, CONFIG.application.zoomY, [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 } 
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Если стерео ( 2 канала ), рисование системы координат гониометра и текущего блока памяти...
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                else if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["renderBuffer"] != null && globalThis["renderBuffer"] != undefined ){
-                    await this.goniometer.draw( this, globalThis["renderBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
+                else if ( CONFIG.application.renderType == "stereo" && CONFIG.application.channels == 2 && CONFIG.application.renderBuffer != null && CONFIG.application.renderBuffer != undefined ){
+                    await this.goniometer.draw( this, CONFIG.application.renderBuffer, CONFIG.application.kdX, CONFIG.application.kdY,CONFIG.application.zoomX, CONFIG.application.zoomY, [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 }
             } 
 
@@ -693,13 +705,13 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
             // Если плагинов больше нет - рисование по умолчанию...
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             if ( pluginId == 0 ) {
-                if ( globalThis["holdChart"] == "holdchart-on" && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined) {
-                    await this.spline.drawData( this, globalThis["holdBuffer"], globalThis["channels"], globalThis["renderType"], globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
-                } else if ( globalThis["renderBuffer"] != null && globalThis["renderBuffer"] != undefined ){
+                if ( CONFIG.application.holdChart == "holdchart-on" && CONFIG.application.holdBuffer != null && CONFIG.application.holdBuffer != undefined) {
+                    await this.spline.drawData( this, CONFIG.application.holdBuffer , CONFIG.application.channels , CONFIG.application.renderType , CONFIG.application.sampleRate , CONFIG.application.volumeRate , CONFIG.application.kdX , CONFIG.application.kdY , CONFIG.application.zoomX , CONFIG.application.zoomY , thickness, _colors );
+                } else if ( CONFIG.application.renderBuffer != null && CONFIG.application.renderBuffer != undefined ){
 
-                    await this.spline.drawData( this, globalThis["renderBuffer"], globalThis["channels"], globalThis["renderType"], globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
+                    await this.spline.drawData( this, CONFIG.application.renderBuffer , CONFIG.application.channels , CONFIG.application.renderType , CONFIG.application.sampleRate , CONFIG.application.volumeRate , CONFIG.application.kdX , CONFIG.application.kdY , CONFIG.application.zoomX , CONFIG.application.zoomY , thickness, _colors );
                 } else {
-                    await this.spline.drawData( this, null, null, "stereo", globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );        
+                    await this.spline.drawData( this, null, null, "stereo", CONFIG.application.sampleRate , CONFIG.application.volumeRate , CONFIG.application.kdX , CONFIG.application.kdY , CONFIG.application.zoomX , CONFIG.application.zoomY , thickness, _colors );        
                 }
             } 
         }
@@ -708,16 +720,16 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
         ////////////////////////////////////////////////////////////////////////////////////
         else {
             if ( pluginId == 0 ) {
-                if ( globalThis["holdChart"] == "holdchart-on" && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined) {
-                    await this.spline.drawData( this, globalThis["holdBuffer"], globalThis["channels"], globalThis["renderType"], globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
+                if ( CONFIG.application.holdChart == "holdchart-on" && CONFIG.application.holdBuffer != null && CONFIG.application.holdBuffer != undefined) {
+                    await this.spline.drawData( this, CONFIG.application.holdBuffer , CONFIG.application.channels , CONFIG.application.renderType , CONFIG.application.sampleRate , CONFIG.application.volumeRate , CONFIG.application.kdX , CONFIG.application.kdY , CONFIG.application.zoomX , CONFIG.application.zoomY , thickness, _colors );
                 } else {
-                    await this.spline.drawData( this, null, null, "stereo", globalThis["sampleRate"], globalThis["volumeRate"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );        
+                    await this.spline.drawData( this, null, null, "stereo", CONFIG.application.sampleRate , CONFIG.application.volumeRate , CONFIG.application.kdX , CONFIG.application.kdY , CONFIG.application.zoomX , CONFIG.application.zoomY , thickness, _colors );        
                 }
             } else if ( pluginId & 1 == 1 ) {
-                await this.spline.drawData( this, null, globalThis["channels"], globalThis["renderType"], 1, 1, globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], thickness, _colors );
+                await this.spline.drawData( this, null, CONFIG.application.channels , CONFIG.application.renderType , 1, 1, CONFIG.application.kdX , CONFIG.application.kdY , CONFIG.application.zoomX , CONFIG.application.zoomY , thickness, _colors );
                 this.goniometer.set( sBW + sW / 2.0, sBW + sH / 2.0, sH / 2.0 - 2.0 * sBW, thickness );
-                if ( globalThis["renderType"] == "stereo" && globalThis["channels"] == 2 && globalThis["holdChart"] == "holdchart-on" && globalThis["holdBuffer"] != null && globalThis["holdBuffer"] != undefined ) {
-                    await this.goniometer.draw( this, globalThis["holdBuffer"], globalThis["kdX"], globalThis["kdY"], globalThis["zoomX"], globalThis["zoomY"], [ 1.0, 1.0, 0.0, 1.0 ] ) 
+                if ( CONFIG.application.renderType == "stereo" && CONFIG.application.channels == 2 && CONFIG.application.holdChart == "holdchart-on" && CONFIG.application.holdBuffer != null && CONFIG.application.holdBuffer != undefined ) {
+                    await this.goniometer.draw( this, CONFIG.application.holdBuffer , CONFIG.application.kdX , CONFIG.application.kdY , CONFIG.application.zoomX , CONFIG.application.zoomY , [ 1.0, 1.0, 0.0, 1.0 ] ) 
                 } 
             }
         }

@@ -9,8 +9,8 @@ const getTemplate = (html) => {
     if ( body != null ) {
       let object = body.getElementsByTagName("html-template")[0];
       if ( object != null ) {
-	if ( object.innerHTML.trim() != "" ) {
-          container.innerHTML = object.innerHTML;
+	if ( `${object.innerHTML}`.trim() != "" ) {
+          container.innerHTML = `${object.innerHTML}`;
           resolve(container);
         }
       }
@@ -27,9 +27,9 @@ const getScript = (script) => {
     if ( body != null ) {
       let object = body.getElementsByTagName("javascript-template")[0];
       if ( object != null ) {
-        if ( object.textContent.trim() != "" ) {
+        if ( `${object.textContent}`.trim() != "" ) {
           container.type = "module";
-          container.textContent = object.textContent;
+          container.textContent = `${object.textContent}`;
           resolve(container);
         }
       }
@@ -46,8 +46,8 @@ const getCss = (css) => {
     if ( body != null ) {
       let object = body.getElementsByTagName("css-template")[0];
       if ( object != null ) {
-	if ( object.textContent.trim() != "" ) {
-          container.textContent = object.textContent;
+	if ( `${object.textContent}`.trim() != "" ) {
+          container.textContent = `${object.textContent}`;
           resolve(container);
         }
       }
@@ -73,28 +73,24 @@ const template = (component) => {
     let html = await getTemplate(component.template.html);    
     let script = await getScript(component.template.script);
 
-//    component.this.attachShadow({mode: "open"});
-//    if ( css != null ) component.this.shadowRoot.appendChild(css);
-//    if ( html != null ) component.this.shadowRoot.appendChild(html);
-//    if ( script != null ) component.this.shadowRoot.appendChild(script);
-
-    if ( css != null ) component.this.appendChild(css);
-    if ( html != null ) component.this.appendChild(html);
-    if ( script != null ) component.this.appendChild(script);
+    component.this.attachShadow({mode: "open"});
+    if ( css != null ) component.this.shadowRoot.appendChild(css);
+    if ( html != null ) component.this.shadowRoot.appendChild(html);
+    if ( script != null ) component.this.shadowRoot.appendChild(script);
 
     resolve(component);
   })
 }
 
 const nkRadio = class extends HTMLElement {
-  constructor () {
-    super()
-    properties(this)
-	.then(component => template(component))
-	.then(async component => {
-	        new (await wControl())(component)
-      })
-  }
+    constructor () {
+        super();
+        properties(this).then( (component) => { 
+            template(component).then( async component => {
+                new (await wControl())(component);		
+            } )
+        } )
+    }
 }
 
 if (customElements.get("nk-radio") === undefined) {

@@ -74,20 +74,20 @@ return `
     align-self: flex-start;
 }
 
+.audio-newkind__canvas {
+    width: 100%;
+    display: none;
+}
+
+.audio-newkind__error {
+    text-align: center;
+    width: 100%;
+    color: red;
+    display: none;
+}
+
 .audio-newkind__btn:hover {
     cursor: pointer;
-}
-
-#gfx {
-	width: 100%;
-	display: none;
-}
-
-#error {
-	text-align: center;
-	width: 100%;
-	color: red;
-	display: none;
 }
 
 </css-template>
