@@ -132,7 +132,7 @@ int midi_sound_startup(void)
 {
 	int status = Mix_Init(MIX_INIT_MID);
 	if ( !status ) return 1;
-	if ( Mix_OpenAudio(22050, AUDIO_U8, 1, 1024 ) < 0 )
+	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048 ) < 0 )
 	{
 		puts("Mix_OpenAudio: failed\n");	
 		return 1;

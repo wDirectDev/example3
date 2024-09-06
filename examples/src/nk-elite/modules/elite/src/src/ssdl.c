@@ -230,7 +230,14 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 
-	sdl_ren = SDL_CreateRenderer(sdl_win, -1, SDL_RENDERER_ACCELERATED);
+	int rc_drv = SDL_GetNumRenderDrivers();
+	for ( int i = 0; i < rc_drv; i++ ) {
+		SDL_RendererInfo info;
+		SDL_GetRenderDriverInfo( i, &info );
+		printf( "Driver: idx=%d name=%s\n", i, info.name );
+	}
+
+	sdl_ren = SDL_CreateRenderer(sdl_win, 0, SDL_RENDERER_ACCELERATED);
 	if (!sdl_ren) {
 		ERROR_WINDOW("Cannot create renderer: %s", SDL_GetError());
 		return 1;
