@@ -5,26 +5,29 @@ import Application from "./oscilloscope/index.mjs";
 const newAudio = async (CONFIG) => {
     try {
 //        await CONFIG.stream.song.pause()
-        await CONFIG.audio.ctx.suspend();
-        CONFIG.stream.song = new Audio(CONFIG.stream.path)
-        CONFIG.stream.source = CONFIG.audio.ctx.createMediaElementSource(CONFIG.stream.song)
-        CONFIG.stream.song.crossOrigin = 'anonymous'
-        CONFIG.stream.song.addEventListener("canplay", async (event) => {
-            await CONFIG.audio.ctx.resume();
-            await CONFIG.stream.song.play()
-            CONFIG.html.button.start.textContent = 'Stop Audio'
-            return true
-        });
-        await CONFIG.stream.source.connect(CONFIG.audio.ctx.destination);
-        await CONFIG.stream.source.connect(CONFIG.audio.node);
+	if ( CONFIG.audio.init == false ) {
+		CONFIG.audio.init = true;
+	        CONFIG.stream.song = new Audio(CONFIG.stream.path);
+	        CONFIG.stream.source = CONFIG.audio.ctx.createMediaElementSource(CONFIG.stream.song);
+	        CONFIG.stream.song.crossOrigin = 'anonymous';
+	        CONFIG.stream.song.addEventListener("canplay", async (event) => {
+	            await CONFIG.audio.ctx.resume();
+	            await CONFIG.stream.song.play();
+	            CONFIG.html.button.start.textContent = 'Stop Audio';
+	            return true;
+	        });
+	        await CONFIG.stream.source.connect(CONFIG.audio.ctx.destination);
+        	await CONFIG.stream.source.connect(CONFIG.audio.node);
+		CONFIG.audio.init = false;
+	}
     } catch (e) {
-        CONFIG.html.button.start.textContent = 'Stop Audio'
-        return true
+        CONFIG.html.button.start.textContent = 'Stop Audio';
+        return true;
     }
 }
 
 const ctx = async (CONFIG) => {
-    if( !CONFIG.audio.ctx ) {
+    if( CONFIG.audio.ctx == undefined || CONFIG.audio.ctx == null ) {
         CONFIG.audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
         await CONFIG.audio.ctx.audioWorklet.addModule(new URL('./radio-processor.mjs', import.meta.url).pathname);
     }
@@ -142,7 +145,7 @@ const componentInit = ( self, CONFIG ) =>
     const scale = window.devicePixelRatio;
 
     canvas.width = window.innerWidth;
-    canvas.height = canvas.width * 1 / 5;
+    canvas.height = canvas.width * 3 / 22;
 
     canvas.height = canvas.height * scale;
     canvas.width = canvas.width * scale;
@@ -168,29 +171,38 @@ export default async () => {
 
                 for (let i = 0, max = CONFIG.html.button.radios.length; i < max; i++) {
                     CONFIG.html.button.radios.this[i].addEventListener( "change", async (event) => {
-                        if ( CONFIG.player.isPlaying) {
-                            await CONFIG.stream.song.pause();
-                            CONFIG.html.button.start.textContent = "Start Audio";
-
+                        if (CONFIG.player.isPlaying) {
                             CONFIG.player.isPlaying = false;
-                            
+                            await CONFIG.stream.song.pause();
+                            CONFIG.stream.song = undefined;
+                            CONFIG.audio.ctx.suspend();
+                            CONFIG.audio.ctx = undefined;
+                            CONFIG.queue.instance._reset();
+                            CONFIG.html.button.start.textContent = "Start Audio";
                             CONFIG.stream.path = event.target.value;
-                            if( CONFIG.audio.ctx) {
-                                CONFIG.player.isPlaying = ! CONFIG.player.isPlaying;
-                                await newAudio(this.CONFIG);
+                            if(CONFIG.audio.ctx != undefined && CONFIG.audio.ctx != null) {
+                                CONFIG.player.isPlaying = !CONFIG.player.isPlaying;
+                                await newAudio(CONFIG);
+                            } else {
+                                CONFIG.player.isPlaying = !CONFIG.player.isPlaying;
+                                await ctx(CONFIG);
+                                await newAudio(CONFIG);
                             }
-                        }
+                        } else {
+                            CONFIG.stream.path = event.target.value;				
+			}
                     } );
                 }
 
-                CONFIG.application.instance.start();
-
-                CONFIG.html.button.start.addEventListener( "click", async (e) => {                                        
-                    if ( CONFIG.player.isPlaying ) {
-			CONFIG.html.button.start.textContent = "Start Audio";
+                CONFIG.html.button.start.addEventListener( "click", async (e) => {
+                    if (CONFIG.player.isPlaying) {
                         CONFIG.player.isPlaying = false;
                         await CONFIG.stream.song.pause();
+			CONFIG.stream.song = undefined;
                         CONFIG.audio.ctx.suspend();
+			CONFIG.audio.ctx = undefined;
+                        CONFIG.queue.instance._reset();
+                        CONFIG.html.button.start.textContent = "Start Audio";
                     } else {
                         CONFIG.html.button.start.textContent = "Stop Audio";                        
                         CONFIG.player.isPlaying = true;
@@ -198,12 +210,15 @@ export default async () => {
                         await newAudio(CONFIG);
                     }                    
                 });
+
+                CONFIG.application.instance.start();
             }
 
             CONFIG = {
                 audio: {
-                    ctx: null,
-                    node: null
+                    ctx: undefined,
+                    node: undefined,
+                    init: false
                 },
                 html: {
                     scope: {
@@ -219,14 +234,12 @@ export default async () => {
                     }
                 },
                 player: {
-                    start: false,
-                    stop: false,
                     isPlaying: false
                 },
                 stream: {
-                    song: null,
-                    source: null,
-                    path: null,
+                    song: undefined,
+                    source: undefined,
+                    path: undefined,
                 },
                 web: {
                     crossOrigin: 'anonymous'

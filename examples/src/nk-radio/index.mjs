@@ -65,7 +65,7 @@ const properties = (self) => {
   })
 }
 
-const template = (component) => {
+const merge = (component) => {
   return new Promise(async (resolve, reject) => {
     component.template = (component.this.dataset.preset) ? await wTemplate(component.this.dataset.preset) : await wTemplate("default");
 
@@ -86,7 +86,7 @@ const nkRadio = class extends HTMLElement {
     constructor () {
         super();
         properties(this).then( (component) => { 
-            template(component).then( async component => {
+            merge(component).then( async component => {
                 new (await wControl())(component);		
             } )
         } )

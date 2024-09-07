@@ -58,8 +58,8 @@ return `
 }
 
 .audio-newkind__btn {
-    width: 10%;
-    border-radius: 8px;
+    width: 8em;
+    border-radius: 0.8em;
     background: var(--Gosblue, #0D4CD3);
     color: var(--White, #FFF);
     text-align: center;
@@ -67,7 +67,7 @@ return `
     font-size: 0.8em;
     font-style: normal;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 2em;
     align-self: center;
     cursor: pointer;
     border: none;

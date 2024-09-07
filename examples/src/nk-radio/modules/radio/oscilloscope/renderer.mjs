@@ -585,15 +585,15 @@ fn main( @location(0) inFragUV : vec2<f32>, @location(1) inColor : vec4<f32> ) -
             pluginId = pluginId | 1;
         }
     
-        if ( CONFIG.queue.instance != undefined ) {
-            let bufferSize = CONFIG.application.sampleRate / 25;
+        if ( CONFIG.queue.instance != undefined || CONFIG.queue.instance != null ) {
+            let bufferSize = ( ( CONFIG.application.sampleRate < 44100 ) ? 44100 : CONFIG.application.sampleRate ) / 25;
 
             let _b = [2];
             _b[0] = new Float64Array(bufferSize);
             _b[1] = new Float64Array(bufferSize);
 
-            let r = CONFIG.queue.instance.pull( _b, bufferSize );
-            if ( r == true )
+            let rc = CONFIG.queue.instance.pull( _b, bufferSize );
+            if ( rc == true )
             {
                 CONFIG.application.renderBuffer = new Float64Array(bufferSize * 2);
                 for ( let i = 0; i < bufferSize; i++ ) {

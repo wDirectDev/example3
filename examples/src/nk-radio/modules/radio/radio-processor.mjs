@@ -3,8 +3,8 @@ import FreeQueue from "../../../free-queue/free-queue.js";
 class WorkletBasicProcessor extends AudioWorkletProcessor 
 {
 	constructor(options) {
-		super(); 
-		this.instance = Object.setPrototypeOf(options.processorOptions.instance, FreeQueue.prototype);
+		super();
+		this.instance = FreeQueue.fromObject(options.processorOptions.instance);
 		this.pointer = options.processorOptions.pointer;
 	}
 	
@@ -34,9 +34,9 @@ class WorkletBasicProcessor extends AudioWorkletProcessor
 				}
 			}
 
-			if ( this.instance != undefined || this.instance != null) {
+			if ( this.instance != undefined && this.instance != null) {
 				const r = this.instance.push( dataArray, bufferSize );
-				console.log( "processor: queue.push [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
+//				console.log( "processor: queue.push [ " + ( ( r == true ) ? "true" : "false" ) + " ]" );
 			}
 
 		}
