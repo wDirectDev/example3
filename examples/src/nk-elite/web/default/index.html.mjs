@@ -10,7 +10,7 @@ return  `
 		<span><input type="button" onclick="globalThis['LSDLTest'].requestFullscreen(document.getElementById('pointerLock').checked,document.getElementById('resize').checked)" value="Fullscreen"></span>
 	</span>
 -->
-	<canvas id="canvas" oncontextmenu="event.preventDefault()" style="cursor: default;"></canvas>
+<!--	<canvas id="canvas-nk-elite" oncontextmenu="event.preventDefault()" style="cursor: default;"></canvas> -->
     </slot>
 </html-template>
 

@@ -1,7 +1,6 @@
 import templateDefaultCss from "./default/index.css.mjs"
-import templateDefaultHtml from "./default/index.html.mjs"
 import templateDefaultScript from "./default/index.script.mjs"
-
+import templateDefaultHtml from "./default/index.html.mjs"
 export default (type) => {
     let template = {}
     template.default = {
