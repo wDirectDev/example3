@@ -173,10 +173,16 @@ export default async () => {
                     CONFIG.html.button.radios.this[i].addEventListener( "change", async (event) => {
                         if (CONFIG.player.isPlaying) {
                             CONFIG.player.isPlaying = false;
+
                             await CONFIG.stream.song.pause();
+                            await CONFIG.audio.ctx.suspend();
+
+                            CONFIG.audio.node.disconnect();
+
                             CONFIG.stream.song = undefined;
-                            CONFIG.audio.ctx.suspend();
                             CONFIG.audio.ctx = undefined;
+                            CONFIG.audio.node = undefined;
+  
                             CONFIG.queue.instance._reset();
                             CONFIG.html.button.start.textContent = "Start Audio";
                             CONFIG.stream.path = event.target.value;
@@ -197,10 +203,15 @@ export default async () => {
                 CONFIG.html.button.start.addEventListener( "click", async (e) => {
                     if (CONFIG.player.isPlaying) {
                         CONFIG.player.isPlaying = false;
+
                         await CONFIG.stream.song.pause();
+                        await CONFIG.audio.ctx.suspend();
+			CONFIG.audio.node.disconnect();
+
 			CONFIG.stream.song = undefined;
-                        CONFIG.audio.ctx.suspend();
 			CONFIG.audio.ctx = undefined;
+			CONFIG.audio.node = undefined;
+
                         CONFIG.queue.instance._reset();
                         CONFIG.html.button.start.textContent = "Start Audio";
                     } else {
