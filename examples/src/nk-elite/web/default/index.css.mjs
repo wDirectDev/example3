@@ -24,6 +24,11 @@ return  `
     gap: 16px;
 }
 
+.game-newkind__canvas {
+    cursor: default;
+    width: 512px;
+}
+
 </css-template>
 
 `

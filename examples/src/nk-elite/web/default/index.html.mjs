@@ -8,7 +8,7 @@ return  `
                 <span><input type="checkbox" id="hideMenu">Hide menu</span>
 <!--	        <span><input type="checkbox" id="othe" checked=""></span>  -->
             </form>
-            <canvas id="nk-elitecanvas" oncontextmenu="event.preventDefault()" style="cursor: default;"></canvas>
+            <canvas class="game-newkind__canvas" id="nk-elitecanvas" oncontextmenu="event.preventDefault()"></canvas>
         </div>
     </slot>
 </html-template>

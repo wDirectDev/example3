@@ -74,7 +74,8 @@ return `
 }
 
 .audio-newkind__canvas {
-    width: 100%;
+    cursor: default;
+    width: 1024px;
     display: none;
 }
 
