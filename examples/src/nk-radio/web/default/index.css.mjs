@@ -15,7 +15,6 @@ return `
 }
 
 :host {
-    display: flex;
     margin-bottom: 16px;
     box-shadow: 0px 0.47vw 0.94vw 0px #88919d4d;
     box-sizing: border-box;
@@ -29,7 +28,7 @@ return `
 .audio-newkind__radio + label span {
   border: 2px solid #fff;
   border-radius: 80%;
-  font-size: 0.8em;
+  font-size: 1.0em;
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -53,7 +52,7 @@ return `
 .audio-newkind__title {
   margin-bottom: 0.5rem;
   font-family: 'Oleo Script', cursive;
-  font-size: 2.5em;
+  font-size: 1.0em;
   text-align: center;
 }
 
@@ -64,7 +63,7 @@ return `
     color: var(--White, #FFF);
     text-align: center;
     font-family: 'Lato', sans-serif;
-    font-size: 0.8em;
+    font-size: 1.0em;
     font-style: normal;
     font-weight: 400;
     line-height: 2em;

@@ -36,22 +36,27 @@ const eliteTGInit = ( CONFIG ) => {
 
 const componentInit = ( self, CONFIG ) =>
 {
-    CONFIG.html.scope.canvas = document.createElement("canvas");
+    CONFIG.html.scope.canvas = self.this.shadowRoot.querySelector("#nk-elitecanvas");
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //    It's work too...
-//    CONFIG.html.scope.canvas.oncontextmenu = function() { return false; }
+//    CONFIG.html.scope.canvas = document.createElement("canvas");
 
     CONFIG.html.scope.canvas.addEventListener("contextmenu", function(e){
         e.preventDefault();
     });
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//    It's work too...
+//    CONFIG.html.scope.canvas.oncontextmenu = function() { return false; }
 
     CONFIG.html.scope.canvas.addEventListener("webglcontextlost", function(e){
         console.log("LEliteTG: WebGL context lost. You will need to reload the page.");
         e.preventDefault();
     });
 
-    self.this.shadowRoot.appendChild(CONFIG.html.scope.canvas);
+//    self.this.shadowRoot.appendChild(CONFIG.html.scope.canvas);
+
     eliteTGInit( CONFIG );
 }
 

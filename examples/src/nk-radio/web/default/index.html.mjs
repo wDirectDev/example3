@@ -12,9 +12,9 @@ return  `
                 <input type="radio" class="audio-newkind__radio" id="cats-radio" name="radio-selection" value="https://ice1.somafm.com/deepspaceone-128-aac">
                 <label for="cats-radio"><span></span>Cats Radio</label>
             </form>
-            <div class="audio-newkind__error" id="error">[ Your browser does not support WebGPU or it is not enabled ]</div>
-            <canvas class="audio-newkind__canvas" id="gfx"></canvas>
+            <canvas class="audio-newkind__canvas" id="gfx" oncontextmenu="event.preventDefault()" style="cursor: default;"></canvas>
             <button class="audio-newkind__btn" id="start">Start Audio</button>
+            <div class="audio-newkind__error" id="error">[ Your browser does not support WebGPU or it is not enabled ]</div>
         </div>
     </slot>
 </html-template>

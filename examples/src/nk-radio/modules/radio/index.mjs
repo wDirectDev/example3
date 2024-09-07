@@ -145,7 +145,7 @@ const componentInit = ( self, CONFIG ) =>
     const scale = window.devicePixelRatio;
 
     canvas.width = window.innerWidth;
-    canvas.height = canvas.width * 3 / 22;
+    canvas.height = canvas.width * 3 / 14;
 
     canvas.height = canvas.height * scale;
     canvas.width = canvas.width * scale;
