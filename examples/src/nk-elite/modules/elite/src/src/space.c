@@ -984,7 +984,6 @@ void update_console (void)
 
 	if ( venableconsole == TRUE ) {
 		gfx_draw_scanner();
-
 		display_speed();
 		display_flight_climb();
 		display_flight_roll();
@@ -1019,13 +1018,12 @@ void update_console (void)
 		if (ecm_active)
 			gfx_draw_sprite (IMG_BIG_E, 115, 490);
 
-		gfx_set_clip_region (0, 0, 512, 512);
-	} 
-	else 
-	{
-		gfx_clear_scanner();
-		gfx_display_centre_text (420, "Special thanks for Sergey Zababurin", 120, GFX_COL_GOLD);
-	}
+	} else {
+                gfx_clear_scanner();        
+		gfx_display_centre_text (400, "Special thanks for Sergey Zababurin", 120, GFX_COL_GOLD);
+        }
+
+	gfx_set_clip_region (0, 0, 512, 512);
 }
 
 void increase_flight_roll (void)

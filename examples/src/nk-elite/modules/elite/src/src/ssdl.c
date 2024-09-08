@@ -854,7 +854,6 @@ void gfx_clear_scanner()
 			GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + 385);
 		SDL_SetRenderDrawColor(sdl_ren, 0, 0, 0, 0xFF);
 		SDL_RenderClear(sdl_ren);
-		gfx_set_clip_region (0, 0, 512, 512);
 }
 
 

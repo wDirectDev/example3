@@ -1604,6 +1604,7 @@ int enableconsole( int _state ) {
 int enablenamecalling( int _state ) {
 	venablenamecalling = _state;
 	update_console();
+	gfx_update_screen();
 	return TRUE;
 }
 
