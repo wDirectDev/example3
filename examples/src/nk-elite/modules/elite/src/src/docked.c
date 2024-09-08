@@ -250,12 +250,11 @@ void display_short_range_chart (void)
 
 	gfx_display_centre_text (10, "SHORT RANGE CHART", 140, GFX_COL_GOLD);
 
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 
 	draw_fuel_limit_circle (GFX_X_CENTRE, GFX_Y_CENTRE);
 
-	for (i = 0; i < 64; i++)
-		row_used[i] = 0;
+	for (i = 0; i < 64; i++) row_used[i] = 0;
 
 	glx = cmdr.galaxy;
 
@@ -283,12 +282,8 @@ void display_short_range_chart (void)
 
 		row = py / (8 * GFX_SCALE);
 
-		if (row_used[row] == 1)
-		    row++;
-
-		if (row_used[row] == 1)
-			row -= 2;
-
+		if (row_used[row] == 1) row++;
+		if (row_used[row] == 1) row -= 2;
 		if (row <= 3)
 		{
 			waggle_galaxy (&glx);
@@ -347,8 +342,8 @@ void display_galactic_chart (void)
 
 	gfx_display_centre_text (10, str, 140, GFX_COL_GOLD);
 
-	gfx_draw_line (0, 36, 511, 36);
-	gfx_draw_line (0, 36+258, 511, 36+258);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
+	gfx_draw_line (0, 36+258, wnd_width - 1, 36+258);
 
 	draw_fuel_limit_circle (docked_planet.d * GFX_SCALE,
 					(docked_planet.b / (2 / GFX_SCALE)) + (18 * GFX_SCALE) + 1);
@@ -401,7 +396,7 @@ void display_data_on_planet (void)
 
 	gfx_display_centre_text (10, str, 140, GFX_COL_GOLD);
 
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 
 
 	generate_planet_data (&hyper_planet_data, hyperspace_planet);
@@ -430,7 +425,7 @@ void display_data_on_planet (void)
 	gfx_display_text (16, 266, str);
 
 	description = describe_planet (hyperspace_planet);
-	gfx_display_pretty_text (16, 298, 400, 384, description);
+	gfx_display_pretty_text (16, 298, 400, wnd_height - 128, description);
 }
 
 
@@ -512,7 +507,7 @@ void display_commander_status (void)
 
 	gfx_display_centre_text (10, str, 140, GFX_COL_GOLD);
 
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 
 
 	gfx_display_colour_text (16, 58, "Present System:", GFX_COL_GREEN_1);
@@ -722,13 +717,13 @@ void highlight_stock (int i)
 	if ((hilite_item != -1) && (hilite_item != i))
 	{
 		y = hilite_item * 15 + 55;
-		gfx_clear_area (2, y, 510, y + 15);
+		gfx_clear_area (2, y, wnd_width - 2, y + 15);
 		display_stock_price (hilite_item);		
 	}
 
 	y = i * 15 + 55;
 	
-	gfx_draw_rectangle (2, y, 510, y + 15, GFX_COL_DARK_RED);
+	gfx_draw_rectangle (2, y, wnd_width - 2, y + 15, GFX_COL_DARK_RED);
 	display_stock_price (i);		
 
 	hilite_item = i;
@@ -819,7 +814,7 @@ void display_market_prices (void)
 	sprintf (str, "%s MARKET PRICES", planet_name);
 	gfx_display_centre_text (10, str, 140, GFX_COL_GOLD);
 
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 
 	gfx_display_colour_text (16,  40, "PRODUCT", GFX_COL_GREEN_1);
 	gfx_display_colour_text (166, 40, "UNIT", GFX_COL_GREEN_1);
@@ -850,7 +845,7 @@ void display_inventory (void)
 
 	gfx_clear_display();
 	gfx_display_centre_text (10, "INVENTORY", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 	
 	sprintf (str, "%d.%d Light Years", cmdr.fuel / 10, cmdr.fuel % 10);
 	gfx_display_colour_text (16, 50, "Fuel:", GFX_COL_GREEN_1);
@@ -1063,13 +1058,13 @@ void highlight_equip (int i)
 	if ((hilite_item != -1) && (hilite_item != i))
 	{
 		y = equip_stock[hilite_item].y;
-		gfx_clear_area (2, y+1, 510, y + 15);
+		gfx_clear_area (2, y+1, wnd_width - 2, y + 15);
 		display_equip_price (hilite_item);		
 	}
 
 	y = equip_stock[i].y;
 	
-	gfx_draw_rectangle (2, y+1, 510, y + 15, GFX_COL_DARK_RED);
+	gfx_draw_rectangle (2, y+1, wnd_width - 2, y + 15, GFX_COL_DARK_RED);
 	display_equip_price (i);		
 
 	hilite_item = i;
@@ -1131,7 +1126,7 @@ void list_equip_prices (void)
 	int y;
 	int tech_level;
 
-	gfx_clear_area (2, 55, 510, 380);
+	gfx_clear_area (2, 55, wnd_width - 2, (wnd_height - 132));
 	
 	tech_level = current_planet_data.techlevel + 1;
 
@@ -1349,7 +1344,7 @@ void equip_ship (void)
 
 	gfx_clear_display();
 	gfx_display_centre_text (10, "EQUIP SHIP", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 
 	collapse_equip_list();
 	

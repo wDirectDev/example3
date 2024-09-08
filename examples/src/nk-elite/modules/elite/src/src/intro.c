@@ -79,8 +79,8 @@ void update_intro1 (void)
 {
 	universe[0].location.z -= 100;
 
-	if (universe[0].location.z < 384)
-		universe[0].location.z = 384;
+	if (universe[0].location.z < (wnd_height - 128) )
+		universe[0].location.z = wnd_height - 128;  //??????
 
 	gfx_clear_display();
 

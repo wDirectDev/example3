@@ -210,8 +210,8 @@ int gfx_graphics_startup (void)
 	wnd_height = 512;
 	wnd_fullscreen = 0;
 #else
-	wnd_width = 512;
-	wnd_height = 512;
+	wnd_width = 800;
+	wnd_height = 800;
 	wnd_fullscreen = 0;
 #endif
 
@@ -243,7 +243,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 
-	status = SDL_RenderSetLogicalSize(sdl_ren, 300, 300);
+	status = SDL_RenderSetLogicalSize(sdl_ren, wnd_width, wnd_height);
 	if ( status ) {
 		ERROR_WINDOW("Cannot set render logical size: %s", SDL_GetError());
 		return 1;
@@ -272,7 +272,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 #endif
-	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, 512, 512);
+	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, wnd_width, wnd_height);
 	if (!sdl_tex) {
 		ERROR_WINDOW("Cannot create texture: %s", SDL_GetError());
 		return 1;
@@ -340,7 +340,7 @@ int gfx_graphics_startup (void)
 
 	//blit (scanner_image, gfx_screen, 0, 0, GFX_X_OFFSET, 385+GFX_Y_OFFSET, scanner_image->w, scanner_image->h);
 	sprites[IMG_THE_SCANNER].rect.x = GFX_X_OFFSET;	// unlike other "sprites" the position is the same to put, always, so set it here ...
-	sprites[IMG_THE_SCANNER].rect.y = 385 + GFX_Y_OFFSET;
+	sprites[IMG_THE_SCANNER].rect.y = (wnd_height - 127) + GFX_Y_OFFSET;
 	//scanner_rect.x = GFX_X_OFFSET;
 	//scanner_rect.y = 385+GFX_Y_OFFSET;
 	//scanner_rect.w = sprites[IMG_THE_SCANNER].w;
@@ -351,10 +351,10 @@ int gfx_graphics_startup (void)
 	//SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &scanner_rect);
 	//gfx_draw_scanner();
 	SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &sprites[IMG_THE_SCANNER].rect);	// render scanner without setting clipping (would be with gfx_draw_scanner ...)
-	gfx_draw_line (0, 0, 0, 384);
-	gfx_draw_line (0, 0, 511, 0);
-	gfx_draw_line (511, 0, 511, 384);
-	gfx_draw_line (511, 0, 511, 384);
+	gfx_draw_line (0, 0, 0, (wnd_height - 128));
+	gfx_draw_line (0, 0, wnd_width - 1, 0);
+	gfx_draw_line (wnd_width - 1, 0, wnd_width - 1, (wnd_height - 128));
+	gfx_draw_line (wnd_width - 1, 0, wnd_width - 1, (wnd_height - 128));
 	gfx_draw_scanner();
 
 
@@ -738,13 +738,13 @@ void gfx_draw_triangle (int x1, int y1, int x2, int y2, int x3, int y3, int col)
 void gfx_display_text (int x, int y, char *txt)
 {
 	//text_mode (-1);
-	textout (gfx_screen, datafile[ELITE_1].dat, txt, (x / (2 / GFX_SCALE)) + GFX_X_OFFSET, (y / (2 / GFX_SCALE)) + GFX_Y_OFFSET, GFX_COL_WHITE);
+	textout (gfx_screen, datafile[ELITE_1].dat, txt, x + GFX_X_OFFSET, y + GFX_Y_OFFSET, GFX_COL_WHITE);
 }
 
 void gfx_display_colour_text (int x, int y, char *txt, int col)
 {
 	//text_mode (-1);
-	textout (gfx_screen, datafile[ELITE_1].dat, txt, (x / (2 / GFX_SCALE)) + GFX_X_OFFSET, (y / (2 / GFX_SCALE)) + GFX_Y_OFFSET, col);
+	textout (gfx_screen, datafile[ELITE_1].dat, txt, x + GFX_X_OFFSET, y + GFX_Y_OFFSET, col);
 }
 
 void gfx_display_centre_text (int y, char *str, int psize, int col)
@@ -772,12 +772,12 @@ void gfx_display_centre_text (int y, char *str, int psize, int col)
 
 void gfx_clear_display (void)
 {
-	rectfill (gfx_screen, GFX_X_OFFSET + 1, GFX_Y_OFFSET + 1, 510 + GFX_X_OFFSET, 383 + GFX_Y_OFFSET, GFX_COL_BLACK);
+	rectfill (gfx_screen, GFX_X_OFFSET + 1, GFX_Y_OFFSET + 1, wnd_width - 2 + GFX_X_OFFSET, (wnd_height - 129) + GFX_Y_OFFSET, GFX_COL_BLACK);
 }
 
 void gfx_clear_text_area (void)
 {
-	rectfill (gfx_screen, GFX_X_OFFSET + 1, GFX_Y_OFFSET + 340, 510 + GFX_X_OFFSET, 383 + GFX_Y_OFFSET, GFX_COL_BLACK);
+	rectfill (gfx_screen, GFX_X_OFFSET + 1, GFX_Y_OFFSET + 340, wnd_width - 2 + GFX_X_OFFSET, (wnd_height - 129) + GFX_Y_OFFSET, GFX_COL_BLACK);
 }
 
 void gfx_clear_area (int tx, int ty, int bx, int by)
@@ -848,9 +848,9 @@ static ETNK_INLINE void set_clip ( int x1, int y1, int x2, int y2 )
 
 void gfx_clear_scanner()
 {
-		set_clip(/*gfx_screen,*/ GFX_X_OFFSET, 385 + GFX_Y_OFFSET,
+		set_clip(/*gfx_screen,*/ GFX_X_OFFSET, (wnd_height - 127) + GFX_Y_OFFSET,
 			GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
-			GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + 385);
+			GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + (wnd_height - 127));
 		SDL_SetRenderDrawColor(sdl_ren, 0, 0, 0, 0xFF);
 		SDL_RenderClear(sdl_ren);
 }
@@ -859,9 +859,9 @@ void gfx_clear_scanner()
 
 void gfx_draw_scanner (void)
 {
-	set_clip(/*gfx_screen,*/ GFX_X_OFFSET, 385 + GFX_Y_OFFSET,
+	set_clip(/*gfx_screen,*/ GFX_X_OFFSET, (wnd_height - 127) + GFX_Y_OFFSET,
 		GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
-		GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + 385);
+		GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + (wnd_height - 127));
 
 	SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &sprites[IMG_THE_SCANNER].rect);
 	#if 0
@@ -1007,7 +1007,7 @@ void gfx_draw_sprite ( int sprite_no, int x, int y )
 		exit(1);
 	}
 	if (x == -1)
-		x = ((256 * GFX_SCALE) - sprites[sprite_no].rect.w) / 2;
+		x = (wnd_width - sprites[sprite_no].rect.w ) / 2;
 	//draw_sprite (gfx_screen, sprite_bmp, x + GFX_X_OFFSET, y + GFX_Y_OFFSET);
 	//SDL_Rect rect;
 	sprites[sprite_no].rect.x = x + GFX_X_OFFSET;

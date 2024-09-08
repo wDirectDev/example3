@@ -27,6 +27,7 @@
 
 #include "elite.h"
 #include "file.h"
+#include "ssdl.h"
 
 #include "datafile.h"
 
@@ -156,19 +157,19 @@ static void read_scanner_config_file (char *filename)
 
 	read_cfg_line (str, sizeof(str), fp);
 	sscanf (str, "%d,%d", &scanner_cx, &scanner_cy);
-	scanner_cy += 385;
+	scanner_cy += (wnd_height - 127);
 
 	read_cfg_line (str, sizeof(str), fp);
 	sscanf (str, "%d,%d", &compass_centre_x, &compass_centre_y);
-	compass_centre_y += 385;
+	compass_centre_y += (wnd_height - 127);
 	
 	read_cfg_line (str, sizeof(str), fp);
 	sscanf (str, "%d,%d,%d", &condition_x, &condition_y, &condition_r);
-	condition_y += 385;
+	condition_y += (wnd_height - 127);
 
 	read_cfg_line (str, sizeof(str), fp);
 	sscanf (str, "%d,%d", &zoom_x, &zoom_y);
-	zoom_y += 385;
+	zoom_y += (wnd_height - 127);
 
 	fclose (fp);
 }
@@ -195,17 +196,17 @@ void read_config_file (void)
 	scanner_filename[0]	= '\0';
 	scanner_cx		= 253;
 	scanner_cy		= 63;
-	compass_centre_x	= 382;
+	compass_centre_x	= (wnd_width - 130);
 	compass_centre_y	= 22;
 	condition_x		= 122;
 	condition_y		= 28;
 	condition_r		= 20;
 	zoom_x			= 133;
 	zoom_y			= 110;
-	scanner_cy += 385;
-	compass_centre_y += 385;
-	condition_y += 385;
-	zoom_y += 385;
+	scanner_cy += (wnd_height - 127);
+	compass_centre_y += (wnd_height - 127);
+	condition_y += (wnd_height - 127);
+	zoom_y += (wnd_height - 127);
 
 	fp = pref_fopen (config_filename, "r");
 	if (fp == NULL) {

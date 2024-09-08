@@ -20,21 +20,21 @@ typedef int32_t fixed;
 
 /* --- configuration related, old config.h --- */
 
-#define GFX_ALLEGRO
+// #define GFX_ALLEGRO
 /* #define GFX_WIN32_GDI */
 /* #define GFX_OPENGL */
 /* #defime GFX_X_WINDOWS */
 /* #define GFX_DIRECTX */
 
 /* Set the screen resolution ... (if nothing is defined, assume 256x256) */
-#define RES_800_600
+// define RES_800_600
 /* #define RES_512_512 */
 /* #define RES_640_480 */
 /* #define RES_320_240 */
 
 /* --- define from the mdw's branch, for "HACKING" --- */
 
-#define HACKING
+// #define HACKING
 
 /* --- my own hacks ~ LGB --- */
 

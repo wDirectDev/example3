@@ -82,11 +82,8 @@ void front_starfield (void)
 		sx = stars[i].x;
 		zz = stars[i].z;
 
-		sx += 128;
-		sy += 96;
-
-		sx *= GFX_SCALE;
-		sy *= GFX_SCALE;
+		sx += wnd_width / 2;
+		sy += ( wnd_height / 2 ) - 132;
 
 		if ((!warp_stars) &&
 			(sx >= GFX_VIEW_TX) && (sx <= GFX_VIEW_BX) &&
@@ -128,7 +125,7 @@ void front_starfield (void)
 
 		
 		if (warp_stars)
-			gfx_draw_line (sx, sy, (xx + 128) * GFX_SCALE, (yy + 96) * GFX_SCALE);
+			gfx_draw_line (sx, sy, (xx + ( wnd_width / 2 )), (yy + ( wnd_height / 2 ) - 132));
 		
 		sx = xx;
 		sy = yy;
@@ -178,11 +175,8 @@ void rear_starfield (void)
 		sx = stars[i].x;
 		zz = stars[i].z;
 
-		sx += 128;
-		sy += 96;
-
-		sx *= GFX_SCALE;
-		sy *= GFX_SCALE;
+		sx += ( wnd_width / 2 );
+		sy += ( wnd_height / 2 ) - 132;
 
 		if ((!warp_stars) &&
 			(sx >= GFX_VIEW_TX) && (sx <= GFX_VIEW_BX) &&
@@ -223,14 +217,14 @@ void rear_starfield (void)
 		{
 			ey = yy;
 			ex = xx;
-			ex = (ex + 128) * GFX_SCALE;
-			ey = (ey + 96) * GFX_SCALE;
+			ex = (ex + ( wnd_width / 2 ) - 132);
+			ey = (ey + ( wnd_height / 2 ) - 132);
 
 			if ((sx >= GFX_VIEW_TX) && (sx <= GFX_VIEW_BX) &&
 			   (sy >= GFX_VIEW_TY) && (sy <= GFX_VIEW_BY) &&
 			   (ex >= GFX_VIEW_TX) && (ex <= GFX_VIEW_BX) &&
 			   (ey >= GFX_VIEW_TY) && (ey <= GFX_VIEW_BY))
-				gfx_draw_line (sx, sy, (xx + 128) * GFX_SCALE, (yy + 96) * GFX_SCALE);
+				gfx_draw_line (sx, sy, (xx + ( wnd_width / 2 )) * GFX_SCALE, (yy + ( wnd_height / 2 ) - 132));
 		}
 		
 		stars[i].y = yy;
@@ -289,11 +283,8 @@ void side_starfield (void)
 		sx = stars[i].x;
 		zz = stars[i].z;
 
-		sx += 128;
-		sy += 96;
-
-		sx *= GFX_SCALE;
-		sy *= GFX_SCALE;
+		sx += ( wnd_width / 2 );
+		sy += ( wnd_height / 2 ) - 132;
 
 		if ((!warp_stars) &&
 			(sx >= GFX_VIEW_TX) && (sx <= GFX_VIEW_BX) &&
@@ -318,11 +309,11 @@ void side_starfield (void)
 		delt8 = delta / (zz / 32);
 		xx = xx + delt8;
 
-		xx += (yy * (beta / 256));		
-		yy -= (xx * (beta / 256));
+		xx += (yy * (beta / (wnd_width / 2)));		
+		yy -= (xx * (beta / (wnd_height / 2)));
 
-		xx += ((yy / 256) * (alpha / 256)) * (-xx);
-		yy += ((yy / 256) * (alpha / 256)) * (yy);
+		xx += ((yy / (wnd_width / 2)) * (alpha / (wnd_width / 2))) * (-xx);
+		yy += ((yy / (wnd_height / 2)) * (alpha / (wnd_height / 2))) * (yy);
 
 		yy += alpha; 
 
@@ -330,18 +321,18 @@ void side_starfield (void)
 		stars[i].x = xx;
 
 		if (warp_stars)
-			gfx_draw_line (sx, sy, (xx + 128) * GFX_SCALE, (yy + 96) * GFX_SCALE);
+			gfx_draw_line (sx, sy, (xx + wnd_width / 2), (yy + ( wnd_height / 2 ) - 132) );
 
 		
 		if (fabs(stars[i].x) >= 116)
 		{
-			stars[i].y = rand255() - 128;
+			stars[i].y = rand255() - wnd_height / 4;
 			stars[i].x = (current_screen == SCR_LEFT_VIEW) ? 115 : -115;
 			stars[i].z = rand255() | 8;
 		}
 		else if (fabs(stars[i].y) >= 116)
 		{
-			stars[i].x = rand255() - 128;
+			stars[i].x = rand255() - wnd_width / 4;
 			stars[i].y = (alpha > 0) ? -110 : 110;
 			stars[i].z = rand255() | 8;
 		} 

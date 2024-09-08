@@ -154,8 +154,8 @@ void move_cross (int dx, int dy)
 		if (cross_x < 1)
 			cross_x = 1;
 			
-		if (cross_x > 510)
-			cross_x = 510;
+		if (cross_x > wnd_width - 2)
+			cross_x = wnd_width - 2;
 
 		if (cross_y < 37)
 			cross_y = 37;
@@ -177,23 +177,23 @@ void draw_cross (int cx, int cy)
 {
 	if (current_screen == SCR_SHORT_RANGE)
 	{
-		gfx_set_clip_region (1, 37, 510, 339);
+		gfx_set_clip_region (1, 37, wnd_width - 2, 339);
 		xor_mode (TRUE);
 		gfx_draw_colour_line (cx - 16, cy, cx + 16, cy, GFX_COL_RED);
 		gfx_draw_colour_line (cx, cy - 16, cx, cy + 16, GFX_COL_RED);
 		xor_mode (FALSE);
-		gfx_set_clip_region (1, 1, 510, 383);
+		gfx_set_clip_region (1, 1, wnd_width - 2, (wnd_height - 129));
 		return;
 	}
 	
 	if (current_screen == SCR_GALACTIC_CHART)
 	{
-		gfx_set_clip_region (1, 37, 510, 293);
+		gfx_set_clip_region (1, 37, wnd_width - 2, 293);
 		xor_mode (TRUE);
 		gfx_draw_colour_line (cx - 8, cy, cx + 8, cy, GFX_COL_RED);
 		gfx_draw_colour_line (cx, cy - 8, cx, cy + 8, GFX_COL_RED);
 		xor_mode (FALSE);
-		gfx_set_clip_region (1, 1, 510, 383);
+		gfx_set_clip_region (1, 1, wnd_width - 2, (wnd_height - 129));
 	}
 }
 
@@ -230,7 +230,7 @@ void draw_laser_sights(void)
 
 	if (laser)
 	{
-		x1 = 128 * GFX_SCALE;
+		x1 = wnd_width / 2;
 		y1 = (96-8) * GFX_SCALE;
 		y2 = (96-16) * GFX_SCALE;
    
@@ -245,16 +245,16 @@ void draw_laser_sights(void)
 		gfx_draw_colour_line (x1, y1, x1, y2, GFX_COL_WHITE);
 		gfx_draw_colour_line (x1+1, y1, x1+1, y2, GFX_COL_GREY_1); 
 
-		x1 = (128-8) * GFX_SCALE;
+		x1 = (wnd_width / 2) - 8;
 		y1 = 96 * GFX_SCALE;
-		x2 = (128-16) * GFX_SCALE;
+		x2 = (wnd_width / 2) - 3;
 		   
 		gfx_draw_colour_line (x1, y1-1, x2, y1-1, GFX_COL_GREY_1); 
 		gfx_draw_colour_line (x1, y1, x2, y1, GFX_COL_WHITE);
 		gfx_draw_colour_line (x1, y1+1, x2, y1+1, GFX_COL_GREY_1); 
 
-		x1 = (128+8) * GFX_SCALE;
-		x2 = (128+16) * GFX_SCALE;
+		x1 = (wnd_width / 2) + 16;
+		x2 = (wnd_width / 2) + 32;
 
 		gfx_draw_colour_line (x1, y1-1, x2, y1-1, GFX_COL_GREY_1); 
 		gfx_draw_colour_line (x1, y1, x2, y1, GFX_COL_WHITE);
@@ -696,7 +696,7 @@ void run_escape_sequence (void)
 			snd_play_sample (SND_EXPLODE);
 		}
 
-		gfx_set_clip_region (1, 1, 510, 383);
+		gfx_set_clip_region (1, 1, wnd_width - 2, (wnd_height - 129));
 		gfx_clear_display();
 		update_starfield();
 		update_universe();
@@ -728,7 +728,7 @@ void run_escape_sequence (void)
 		}
 
 		warp_stars = 1;
-		gfx_set_clip_region (1, 1, 510, 383);
+		gfx_set_clip_region (1, 1, wnd_width - 2, (wnd_height - 129));
 		gfx_clear_display();
 		update_starfield();
 		update_universe();
@@ -1155,7 +1155,7 @@ void save_commander_screen (void)
 
 	gfx_clear_display();
 	gfx_display_centre_text (10, "SAVE COMMANDER", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 	gfx_update_screen();
 	
 	strcpy (path, cmdr.name);
@@ -1193,7 +1193,7 @@ void load_commander_screen (void)
 
 	gfx_clear_display();
 	gfx_display_centre_text (10, "LOAD COMMANDER", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 	gfx_update_screen();
 	
 	
@@ -1251,7 +1251,7 @@ void run_game_over_screen()
 	int type;
 	
 	current_screen = SCR_GAME_OVER;
-	gfx_set_clip_region (1, 1, 510, 383);
+	gfx_set_clip_region (1, 1, wnd_width - 2, (wnd_height - 129));
 	
 	flight_speed = 6;
 	flight_roll = 0;
@@ -1299,12 +1299,12 @@ void display_break_pattern (void)
 {
 	int i;
 
-	gfx_set_clip_region (1, 1, 510, 383);
+	gfx_set_clip_region (1, 1, wnd_width - 2, (wnd_height - 129));
 	gfx_clear_display();
 	
 	for (i = 0; i < 20; i++) {
-		gfx_set_clip_region (1, 1, 510, 383);	// put it here, to avoid overdraw console etc with circles when they are big enough
-		gfx_draw_circle (256, 192, 30 + i * 15, GFX_COL_WHITE);
+		gfx_set_clip_region (1, 1, wnd_width - 2, (wnd_height - 129));	// put it here, to avoid overdraw console etc with circles when they are big enough
+		gfx_draw_circle (wnd_width / 2, ( wnd_height - 128 ) / 2, 30 + i * 15, GFX_COL_WHITE);
 		gfx_update_screen();
 	}	
 
@@ -1449,7 +1449,7 @@ void main_process()
 		{
 			//snd_update_sound();
 			gfx_update_screen();
-			gfx_set_clip_region (1, 1, 510, 383);
+			gfx_set_clip_region (1, 1, wnd_width - 2, (wnd_height - 129));
 
 			rolling = 0;
 			climbing = 0;

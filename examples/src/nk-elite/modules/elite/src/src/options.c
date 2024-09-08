@@ -75,7 +75,7 @@ void quit_screen (void)
 
 	gfx_clear_display();
 	gfx_display_centre_text (10, "GAME OPTIONS", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 
 	gfx_display_centre_text (175, "QUIT GAME (Y/N)?", 140, GFX_COL_GOLD);		
 }
@@ -87,7 +87,7 @@ void restart_screen(void)
 
 	gfx_clear_display();
 	gfx_display_centre_text (10, "GAME OPTIONS", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 
 	gfx_display_centre_text (175, "RESTART GAME (Y/N)?", 140, GFX_COL_GOLD);		
 }  
@@ -274,7 +274,7 @@ void game_settings_screen (void)
 
 	gfx_clear_display();
 	gfx_display_centre_text (10, "GAME SETTINGS", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 
 	for (i = 0; i < NUM_SETTINGS; i++)
 	{
@@ -291,7 +291,7 @@ void display_option_item (int i)
 	int y;
 	int col;
 	
-	y = (384 - (30 * NUM_OPTIONS)) / 2;
+	y = ((wnd_height - 128) - (30 * NUM_OPTIONS)) / 2;
 	y += i * 30;
 	col = ((!docked) && option_list[i].docked_only) ? GFX_COL_GREY_1 : GFX_COL_WHITE;
 
@@ -307,14 +307,14 @@ void highlight_option (int i)
 	if ((hilite_item != -1) && (hilite_item != i))
 	{
 		x = GFX_X_CENTRE - (OPTION_BAR_WIDTH / 2);
-		y = (384 - (30 * NUM_OPTIONS)) / 2;
+		y = ((wnd_height - 128) - (30 * NUM_OPTIONS)) / 2;
 		y += hilite_item * 30;
 		gfx_clear_area (x, y, x + OPTION_BAR_WIDTH, y + OPTION_BAR_HEIGHT);
 		display_option_item (hilite_item);		
 	}
 
 	x = GFX_X_CENTRE - (OPTION_BAR_WIDTH / 2);
-	y = (384 - (30 * NUM_OPTIONS)) / 2;
+	y = ((wnd_height - 128) - (30 * NUM_OPTIONS)) / 2;
 	y += i * 30;
 	
 	gfx_draw_rectangle (x, y, x + OPTION_BAR_WIDTH, y + OPTION_BAR_HEIGHT,
@@ -376,7 +376,7 @@ void display_options (void)
 	
 	gfx_clear_display();
 	gfx_display_centre_text (10, "GAME OPTIONS", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, 511, 36);
+	gfx_draw_line (0, 36, wnd_width - 1, 36);
 	gfx_display_centre_text (300, "Version: Release 1.0", 120, GFX_COL_WHITE);
 	gfx_display_centre_text (320, "www.newkind.co.uk", 120, GFX_COL_WHITE);
 	gfx_display_centre_text (340, "Written by Christian Pinder 1999-2001", 120, GFX_COL_WHITE);

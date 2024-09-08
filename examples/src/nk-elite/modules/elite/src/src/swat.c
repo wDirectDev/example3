@@ -851,8 +851,8 @@ void tactics (int un)
 	attacking = 0;
 
 	if ((fabs(ship->location.z) >= 768) ||
-		(fabs(ship->location.x) >= 512) ||
-		(fabs(ship->location.y) >= 512))
+		(fabs(ship->location.x) >= wnd_width) ||
+		(fabs(ship->location.y) >= wnd_height))  //??????
 	{
 		if (ship->bravery > (rand255() & 127))
 		{
@@ -956,8 +956,8 @@ int fire_laser (void)
 			if (energy > 1)
 				energy--;
 			
-			laser_x = ((rand() & 3) + 128 - 2) * GFX_SCALE;
-			laser_y = ((rand() & 3) + 96 - 2) * GFX_SCALE;
+			laser_x = ((rand() & 3) + ( wnd_width / 2 ) - 2);
+			laser_y = ((rand() & 3) + ( wnd_height / 2 ) - 130) ;
 			
 			return 2;
 		}

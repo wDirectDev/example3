@@ -26,52 +26,16 @@
 #ifndef ETNK_SDL_H
 #define ETNK_SDL_H
 
-#ifdef RES_512_512
-
-#define GFX_SCALE		(2)
+#define GFX_SCALE	(1)
 #define GFX_X_OFFSET	(0)
 #define GFX_Y_OFFSET	(0)
-#define GFX_X_CENTRE	(256)
-#define GFX_Y_CENTRE	(192)
+#define GFX_X_CENTRE	(wnd_width / 2)
+#define GFX_Y_CENTRE	((wnd_height - 128)/2)
 
 #define GFX_VIEW_TX		1
 #define GFX_VIEW_TY		1
-#define GFX_VIEW_BX		509
-#define GFX_VIEW_BY		381
-
-#endif
-
-#ifdef RES_800_600
-
-#define GFX_SCALE		(2)
-// #define GFX_X_OFFSET	(144) 
-// #define GFX_Y_OFFSET	(44)
-#define GFX_X_OFFSET	(0) 
-#define GFX_Y_OFFSET	(0)
-#define GFX_X_CENTRE	(256)
-#define GFX_Y_CENTRE	(192)
-
-#define GFX_VIEW_TX		1
-#define GFX_VIEW_TY		1
-#define GFX_VIEW_BX		509
-#define GFX_VIEW_BY		381
-
-#endif
-
-#ifndef GFX_SCALE
-
-#define GFX_SCALE		(1)
-#define GFX_X_OFFSET	(0)
-#define GFX_Y_OFFSET	(0)
-#define GFX_X_CENTRE	(128)
-#define GFX_Y_CENTRE	(96)
-
-#define GFX_VIEW_TX		1
-#define GFX_VIEW_TY		1
-#define GFX_VIEW_BX		253
-#define GFX_VIEW_BY		191
-
-#endif
+#define GFX_VIEW_BX		(wnd_width - 3)
+#define GFX_VIEW_BY		(wnd_height - 131)
 
 #define GFX_COL_BLACK		0
 #define GFX_COL_DARK_RED	28

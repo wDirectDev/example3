@@ -797,7 +797,7 @@ void display_speed (void)
 	int colour;
 
 	sx = 417;
-	sy = 384 + 9;
+	sy = ( wnd_height - 128 ) + 9;
 
 	len = ((flight_speed * 64) / myship.max_speed) - 1;
 
@@ -819,14 +819,14 @@ void display_dial_bar (int len, int x, int y)
 {
 	int i = 0;
 
-	gfx_draw_colour_line (x, y + 384, x + len, y + 384, GFX_COL_GOLD);
+	gfx_draw_colour_line (x, y + (wnd_height - 128), x + len, y + (wnd_height - 128), GFX_COL_GOLD);
 	i++;
-	gfx_draw_colour_line (x, y + i + 384, x + len, y + i + 384, GFX_COL_GOLD);
+	gfx_draw_colour_line (x, y + i + (wnd_height - 128), x + len, y + i + (wnd_height - 128), GFX_COL_GOLD);
 	
 	for (i = 2; i < 7; i++)
-		gfx_draw_colour_line (x, y + i + 384, x + len, y + i + 384, GFX_COL_YELLOW_1);
+		gfx_draw_colour_line (x, y + i + (wnd_height - 128), x + len, y + i + (wnd_height - 128), GFX_COL_YELLOW_1);
 
-	gfx_draw_colour_line (x, y + i + 384, x + len, y + i + 384, GFX_COL_DARK_RED);
+	gfx_draw_colour_line (x, y + i + (wnd_height - 128), x + len, y + i + (wnd_height - 128), GFX_COL_DARK_RED);
 }
 
 
@@ -899,7 +899,7 @@ void display_flight_roll (void)
 	int pos;
 
 	sx = 416;
-	sy = 384 + 9 + 14;
+	sy = (wnd_height - 128) + 9 + 14;
 
 	pos = sx - ((flight_roll * 28) / myship.max_roll);
 	pos += 32;
@@ -917,7 +917,7 @@ void display_flight_climb (void)
 	int pos;
 
 	sx = 416;
-	sy = 384 + 9 + 14 + 16;
+	sy = (wnd_height - 128) + 9 + 14 + 16;
 
 	pos = sx + ((flight_climb * 28) / myship.max_climb);
 	pos += 32;
@@ -947,7 +947,7 @@ void display_missiles (void)
 	nomiss = cmdr.missiles > 4 ? 4 : cmdr.missiles;
 
 	x = (4 - nomiss) * 16 + 35;
-	y = 113 + 385;
+	y = 113 + (wnd_height - 127);
 	
 	if (missile_target != MISSILE_UNARMED)
 	{
@@ -998,7 +998,7 @@ void update_console (void)
 		update_condition();
 		
 		if (docked) {
-			gfx_set_clip_region (0, 0, 512, 512);
+			gfx_set_clip_region (0, 0, wnd_width, wnd_height);
 			return;
 		}
 
@@ -1023,7 +1023,7 @@ void update_console (void)
 		gfx_display_centre_text (400, "Special thanks for Sergey Zababurin", 120, GFX_COL_GOLD);
         }
 
-	gfx_set_clip_region (0, 0, 512, 512);
+	gfx_set_clip_region (0, 0, wnd_width, wnd_height);
 }
 
 void increase_flight_roll (void)
