@@ -151,12 +151,11 @@ static void load_sprite ( int i, const char *fn, SDL_Surface **pass_surface_back
 	sprites[i].rect.y = 0;
 }
 
-
-
 // Allegro fixed math stuffs to "emulate" ...
 static ETNK_INLINE fixed itofix ( int x ) {
 	return x << 16;
 }
+
 static ETNK_INLINE fixed ftofix ( double x ) {
 	if (x > 32767.0) {
 		//*allegro_errno = ERANGE;

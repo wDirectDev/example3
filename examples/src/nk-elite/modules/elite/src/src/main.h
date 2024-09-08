@@ -29,10 +29,9 @@ void update_screen (void);
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
-#endif
-
 EMSCRIPTEN_KEEPALIVE
 int SetGameParameter( char* _variable, char* _state );
+#endif
 
 extern int venableconsole;
 extern int venablenamecalling;

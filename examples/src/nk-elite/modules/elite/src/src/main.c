@@ -1608,6 +1608,7 @@ int enablenamecalling( int _state ) {
 	return TRUE;
 }
 
+#ifdef __EMSCRIPTEN__
 EMSCRIPTEN_KEEPALIVE
 int SetGameParameter( char* _variable, char* _state ) {
 	printf( "SetGameParameter: variable[\"%s\"]=%s\n", _variable, _state );
@@ -1628,6 +1629,7 @@ int SetGameParameter( char* _variable, char* _state ) {
 	}
 	return VBAD;
 }
+#endif
 
 int main ( int argc, char *argv[] )
 {
@@ -1657,12 +1659,12 @@ int main ( int argc, char *argv[] )
 	finish = 0;
 	auto_pilot = 0;
 
-    #ifdef __EMSCRIPTEN__
+        #ifdef __EMSCRIPTEN__
 	    emscripten_set_main_loop(main_process, 0, 1);
-    #else
-		while (!finish) {        
-			main_process();
-		}
+        #else
+            while (!finish) {        
+		main_process();
+            }
 	#endif
 
 	return 0;
