@@ -977,43 +977,55 @@ void display_condition(void)
 }
 
 void update_console (void)
-{
-	gfx_draw_scanner();
-	
-	display_speed();
-	display_flight_climb();
-	display_flight_roll();
-	display_shields();
-	display_altitude();
-	display_energy();
-	display_cabin_temp();
-	display_laser_temp();
-	display_fuel();
-	display_missiles();
-	update_condition();
-	
-	if (docked) {
-	  gfx_set_clip_region (0, 0, 512, 512);
-	  return;
+{	
+	if ( venablenamecalling == TRUE ) {
+		gfx_display_centre_text (20, "Hello for Sergey Zababurin", 120, GFX_COL_GOLD);
 	}
 
-	update_scanner();
-	update_compass();
-	display_condition();
+	if ( venableconsole == TRUE ) {
+		gfx_draw_scanner();
 
+		display_speed();
+		display_flight_climb();
+		display_flight_roll();
+		display_shields();
+		display_altitude();
+		display_energy();
+		display_cabin_temp();
+		display_laser_temp();
+		display_fuel();
+		display_missiles();
+
+		update_condition();
+		
+		if (docked) {
+			gfx_set_clip_region (0, 0, 512, 512);
+			return;
+		}
+
+		update_scanner();
+		update_compass();
+		display_condition();
+
+		{
+		char buf[5];
+		sprintf(buf, "x%d", scanner_zoom);
+		gfx_display_text(zoom_x, zoom_y, buf);
+		}
+
+		if (ship_count[SHIP_CORIOLIS] || ship_count[SHIP_DODEC])
+			gfx_draw_sprite (IMG_BIG_S, 387, 490);
+
+		if (ecm_active)
+			gfx_draw_sprite (IMG_BIG_E, 115, 490);
+
+		gfx_set_clip_region (0, 0, 512, 512);
+	} 
+	else 
 	{
-	  char buf[5];
-	  sprintf(buf, "x%d", scanner_zoom);
-	  gfx_display_text(zoom_x, zoom_y, buf);
+		gfx_clear_scanner();
+		gfx_display_centre_text (420, "Special thanks for Sergey Zababurin", 120, GFX_COL_GOLD);
 	}
-
-	if (ship_count[SHIP_CORIOLIS] || ship_count[SHIP_DODEC])
-		gfx_draw_sprite (IMG_BIG_S, 387, 490);
-
-	if (ecm_active)
-		gfx_draw_sprite (IMG_BIG_E, 115, 490);
-
-	gfx_set_clip_region (0, 0, 512, 512);
 }
 
 void increase_flight_roll (void)

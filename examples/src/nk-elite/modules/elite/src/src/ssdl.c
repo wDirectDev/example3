@@ -27,6 +27,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
+#include "main.h"
 #include "ssdl.h"
 #include "elite.h"
 #include "keyboard.h"
@@ -282,7 +283,7 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 
-	SDL_SetRenderDrawColor(sdl_ren, 0, 0xFF, 0, 0xFF);
+	SDL_SetRenderDrawColor(sdl_ren, 0, 0, 0, 0xFF);
 	SDL_RenderClear(sdl_ren);
 
 	for (int a = 0; a < IMG_NUM_OF; a++)
@@ -846,23 +847,32 @@ static ETNK_INLINE void set_clip ( int x1, int y1, int x2, int y2 )
 }
 
 
+void gfx_clear_scanner()
+{
+		set_clip(/*gfx_screen,*/ GFX_X_OFFSET, 385 + GFX_Y_OFFSET,
+			GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
+			GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + 385);
+		SDL_SetRenderDrawColor(sdl_ren, 0, 0, 0, 0xFF);
+		SDL_RenderClear(sdl_ren);
+		gfx_set_clip_region (0, 0, 512, 512);
+}
+
 
 
 void gfx_draw_scanner (void)
 {
-	//fprintf(stderr, "FIXME: gfx_draw_scanner() is not implemented :(\n");
 	set_clip(/*gfx_screen,*/ GFX_X_OFFSET, 385 + GFX_Y_OFFSET,
-		 GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
-		 GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + 385);
+		GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
+		GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + 385);
 
 	SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &sprites[IMG_THE_SCANNER].rect);
-#if 0
-	set_clip(/*gfx_screen,*/ GFX_X_OFFSET, 385 + GFX_Y_OFFSET,
-		 GFX_X_OFFSET + scanner_image->w,
-		 GFX_Y_OFFSET + scanner_image->h + 385);
-	blit (scanner_image, gfx_screen, 0, 0, GFX_X_OFFSET,
-	     385+GFX_Y_OFFSET, scanner_image->w, scanner_image->h);
-#endif
+	#if 0
+		set_clip(/*gfx_screen,*/ GFX_X_OFFSET, 385 + GFX_Y_OFFSET,
+			GFX_X_OFFSET + scanner_image->w,
+			GFX_Y_OFFSET + scanner_image->h + 385);
+		blit (scanner_image, gfx_screen, 0, 0, GFX_X_OFFSET,
+			385+GFX_Y_OFFSET, scanner_image->w, scanner_image->h);
+	#endif
 }
 
 void gfx_set_clip_region (int tx, int ty, int bx, int by)

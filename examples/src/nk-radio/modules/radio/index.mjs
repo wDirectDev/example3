@@ -170,22 +170,18 @@ export default async () => {
                 }
 
                 for (let i = 0, max = CONFIG.html.button.radios.length; i < max; i++) {
-                    CONFIG.html.button.radios.this[i].addEventListener( "change", async (event) => {
+                    CONFIG.html.button.radios.this[i].addEventListener( "change", async (e) => {
                         if (CONFIG.player.isPlaying) {
                             CONFIG.player.isPlaying = false;
-
                             await CONFIG.stream.song.pause();
                             await CONFIG.audio.ctx.suspend();
-
                             CONFIG.audio.node.disconnect();
-
                             CONFIG.stream.song = undefined;
                             CONFIG.audio.ctx = undefined;
                             CONFIG.audio.node = undefined;
-  
                             CONFIG.queue.instance._reset();
                             CONFIG.html.button.start.textContent = "Start Audio";
-                            CONFIG.stream.path = event.target.value;
+                            CONFIG.stream.path = e.target.value;
                             if(CONFIG.audio.ctx != undefined && CONFIG.audio.ctx != null) {
                                 CONFIG.player.isPlaying = !CONFIG.player.isPlaying;
                                 await newAudio(CONFIG);
@@ -196,22 +192,19 @@ export default async () => {
                             }
                         } else {
                             CONFIG.stream.path = event.target.value;				
-			}
+			            }
                     } );
                 }
 
                 CONFIG.html.button.start.addEventListener( "click", async (e) => {
                     if (CONFIG.player.isPlaying) {
                         CONFIG.player.isPlaying = false;
-
                         await CONFIG.stream.song.pause();
                         await CONFIG.audio.ctx.suspend();
-			CONFIG.audio.node.disconnect();
-
-			CONFIG.stream.song = undefined;
-			CONFIG.audio.ctx = undefined;
-			CONFIG.audio.node = undefined;
-
+                        CONFIG.audio.node.disconnect();
+                        CONFIG.stream.song = undefined;
+                        CONFIG.audio.ctx = undefined;
+                        CONFIG.audio.node = undefined;
                         CONFIG.queue.instance._reset();
                         CONFIG.html.button.start.textContent = "Start Audio";
                     } else {

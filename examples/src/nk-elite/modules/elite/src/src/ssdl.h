@@ -164,6 +164,7 @@ extern void gfx_clear_text_area (void);
 extern void gfx_clear_area (int tx, int ty, int bx, int by);
 extern void gfx_display_pretty_text (int tx, int ty, int bx, int by, char *txt);
 extern void gfx_draw_scanner (void);
+extern void gfx_clear_scanner(void);
 extern void gfx_set_clip_region (int tx, int ty, int bx, int by);
 extern void gfx_polygon (int num_points, int *poly_list, int face_colour);
 extern void gfx_draw_sprite (int sprite_no, int x, int y);

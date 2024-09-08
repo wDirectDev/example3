@@ -55,9 +55,18 @@ const componentInit = ( self, CONFIG ) =>
         e.preventDefault();
     });
 
-//    self.this.shadowRoot.appendChild(CONFIG.html.scope.canvas);
+    const e = self.this.shadowRoot.querySelector("#showAndApply");
+    e.addEventListener("click", async function(event) {	
 
-    eliteTGInit( CONFIG );
+        CONFIG.html.scope.parameters.showGameConsole = self.this.shadowRoot.querySelector("#showGameConsole").checked;
+		CONFIG.html.scope.parameters.showNameCalling = self.this.shadowRoot.querySelector("#showNameCalling").checked;
+
+		await globalThis["LEliteTG"].ccall('SetGameParameter','number',[ 'string', 'string' ],[ "enableconsole", ( CONFIG.html.scope.parameters.showGameConsole == true ) ? "enable" : "disable" ], { async: true } );
+		await globalThis["LEliteTG"].ccall('SetGameParameter','number',[ 'string', 'string' ],[ "enablename-calling", ( CONFIG.html.scope.parameters.showNameCalling == true ) ? "enable" : "disable" ], { async: true } );
+
+    });
+
+	eliteTGInit( CONFIG );
 }
 
 export default async () => {
@@ -72,11 +81,15 @@ export default async () => {
             }
 
             CONFIG = {
-		html: {
-		    scope: { 
-		        canvas: undefined
-                    }
-		}
+				html: {
+					scope: { 
+						parameters: {
+							showGameConsole: undefined,
+							showNameCalling: undefined,
+						},
+						canvas: undefined
+					}
+				}
             };
         }
         resolve(wControl);

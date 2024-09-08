@@ -15,10 +15,26 @@
 #ifndef ETNK_MAIN_H
 #define ETNK_MAIN_H
 
+
+
+#define						TRUE	 1
+#define						FALSE	 0
+#define						SBAD	-1
+#define						VBAD	-2
+
 void info_message (char *message);
 void save_commander_screen (void);
 void load_commander_screen (void);
 void update_screen (void);
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
+EMSCRIPTEN_KEEPALIVE
+int SetGameParameter( char* _variable, char* _state );
+
+extern int venableconsole;
+extern int venablenamecalling;
 
 #endif

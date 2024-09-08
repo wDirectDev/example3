@@ -49,7 +49,6 @@
 
 
 
-
 int old_cross_x, old_cross_y;
 int cross_timer;
 
@@ -69,7 +68,8 @@ int remap_keys;
 int find_input;
 char find_name[20];
 
-
+int venableconsole = TRUE;
+int venablenamecalling = FALSE;
 
 /*
  * Initialise the game parameters.
@@ -1302,24 +1302,20 @@ void display_break_pattern (void)
 	gfx_set_clip_region (1, 1, 510, 383);
 	gfx_clear_display();
 	
-	for (i = 0; i < 20; i++)
-	{
+	for (i = 0; i < 20; i++) {
 		gfx_set_clip_region (1, 1, 510, 383);	// put it here, to avoid overdraw console etc with circles when they are big enough
 		gfx_draw_circle (256, 192, 30 + i * 15, GFX_COL_WHITE);
 		gfx_update_screen();
 	}	
 
-
-	if (docked)
-	{
+	if (docked) {
 		check_mission_brief();
 		display_commander_status();
 		update_console();
-	}
-	else
+	} else {
 		current_screen = SCR_FRONT_VIEW;
+	}
 }
-
 
 void info_message (char *message)
 {
@@ -1599,17 +1595,56 @@ void main_process()
 		}
 }
 
+int enableconsole( int _state ) {
+	venableconsole = _state;
+	update_console();
+	return TRUE;
+}
+
+int enablenamecalling( int _state ) {
+	venablenamecalling = _state;
+	update_console();
+	return TRUE;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int SetGameParameter( char* _variable, char* _state ) {
+	printf( "SetGameParameter: variable[\"%s\"]=%s\n", _variable, _state );
+	if ( strcmp( _variable, "enableconsole" ) == 0 ) {
+		if ( strcmp( _state, "enable" ) == 0 ) {
+			return enableconsole( TRUE );
+		} else if ( strcmp( _state, "disable" ) == 0 ) {
+			return enableconsole( FALSE );
+		} 
+		return SBAD;
+	} if ( strcmp( _variable, "enablename-calling" ) == 0 ) {
+		if ( strcmp( _state, "enable" ) == 0 ) {
+			return enablenamecalling( TRUE );
+		} else if ( strcmp( _state, "disable" ) == 0 ) {
+			return enablenamecalling( FALSE );
+		} 
+		return SBAD;
+	}
+	return VBAD;
+}
+
 int main ( int argc, char *argv[] )
 {
-	if ( start_sdl() ) return 1;
+	if ( start_sdl() ) {
+		printf( "FATAL: coudn't start SDL library's feature\n" );
+		return 1;
+	}
 
 	/* Read configuration, it also applies default values, if no config can be read */
 	read_config_file();
 
-	if ( gfx_graphics_startup() ) return 1;
+	if ( gfx_graphics_startup() ) {
+		printf( "FATAL: coudn't start video mode\n" );
+		return 1;
+	}
 	
 	/* Start the sound system... */
-	if ( snd_sound_startup() ) printf( "AUDIO: we will continue without a sounds\n" );
+	if ( snd_sound_startup() ) printf( "AUDIO: we will continue without any sounds\n" );
 
 	/* Start the midi sound system... */
 	if ( midi_sound_startup() ) printf( "MIXER: we will continue without midi sounds\n" );
