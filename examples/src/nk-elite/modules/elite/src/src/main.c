@@ -231,23 +231,23 @@ void draw_laser_sights(void)
 	if (laser)
 	{
 		x1 = wnd_width / 2;
-		y1 = (96-8) * GFX_SCALE;
-		y2 = (96-16) * GFX_SCALE;
+		y1 = ((wnd_height / 2 - 132)-16);
+		y2 = ((wnd_height / 2 - 132)-32);
    
 		gfx_draw_colour_line (x1-1, y1, x1-1, y2, GFX_COL_GREY_1); 
 		gfx_draw_colour_line (x1, y1, x1, y2, GFX_COL_WHITE);
 		gfx_draw_colour_line (x1+1, y1, x1+1, y2, GFX_COL_GREY_1); 
 
-		y1 = (96+8) * GFX_SCALE;
-		y2 = (96+16) * GFX_SCALE;
+		y1 = ((wnd_height / 2 - 132)+16);
+		y2 = ((wnd_height / 2 - 132)+32);
 		
 		gfx_draw_colour_line (x1-1, y1, x1-1, y2, GFX_COL_GREY_1); 
 		gfx_draw_colour_line (x1, y1, x1, y2, GFX_COL_WHITE);
 		gfx_draw_colour_line (x1+1, y1, x1+1, y2, GFX_COL_GREY_1); 
 
-		x1 = (wnd_width / 2) - 8;
-		y1 = 96 * GFX_SCALE;
-		x2 = (wnd_width / 2) - 3;
+		x1 = (wnd_width / 2) - 16;
+		y1 = (wnd_height / 2 - 132);
+		x2 = (wnd_width / 2) - 32;
 		   
 		gfx_draw_colour_line (x1, y1-1, x2, y1-1, GFX_COL_GREY_1); 
 		gfx_draw_colour_line (x1, y1, x2, y1, GFX_COL_WHITE);
@@ -1359,8 +1359,6 @@ void main_process()
 				current_screen = SCR_INTRO_ONE;
 
 				snd_play_midi (SND_ELITE_THEME, TRUE);
-				//FIXME: no midi
-
 				initialise_intro1();
 
 			#ifdef HACKING

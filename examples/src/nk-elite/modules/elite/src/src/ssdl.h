@@ -26,11 +26,11 @@
 #ifndef ETNK_SDL_H
 #define ETNK_SDL_H
 
-#define GFX_SCALE	(1)
-#define GFX_X_OFFSET	(0)
-#define GFX_Y_OFFSET	(0)
-#define GFX_X_CENTRE	(wnd_width / 2)
-#define GFX_Y_CENTRE	((wnd_height - 128)/2)
+#define GFX_SCALE		(1)
+#define GFX_X_OFFSET		(0)
+#define GFX_Y_OFFSET		(0)
+#define GFX_X_CENTRE		(wnd_width / 2)
+#define GFX_Y_CENTRE		(wnd_height / 2 - 128)
 
 #define GFX_VIEW_TX		1
 #define GFX_VIEW_TY		1

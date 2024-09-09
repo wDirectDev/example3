@@ -738,13 +738,13 @@ void gfx_draw_triangle (int x1, int y1, int x2, int y2, int x3, int y3, int col)
 void gfx_display_text (int x, int y, char *txt)
 {
 	//text_mode (-1);
-	textout (gfx_screen, datafile[ELITE_1].dat, txt, x + GFX_X_OFFSET, y + GFX_Y_OFFSET, GFX_COL_WHITE);
+	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y, GFX_COL_WHITE);
 }
 
 void gfx_display_colour_text (int x, int y, char *txt, int col)
 {
 	//text_mode (-1);
-	textout (gfx_screen, datafile[ELITE_1].dat, txt, x + GFX_X_OFFSET, y + GFX_Y_OFFSET, col);
+	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y, col);
 }
 
 void gfx_display_centre_text (int y, char *str, int psize, int col)
@@ -767,7 +767,7 @@ void gfx_display_centre_text (int y, char *str, int psize, int col)
 #endif
 	txt_colour = col;
 	//text_mode (-1);
-	textout_centre (gfx_screen,  datafile[txt_size].dat, str, (128 * GFX_SCALE) + GFX_X_OFFSET, (y / (2 / GFX_SCALE)) + GFX_Y_OFFSET, txt_colour);
+	textout_centre (gfx_screen,  datafile[txt_size].dat, str, (wnd_width / 2), y, txt_colour);
 }
 
 void gfx_clear_display (void)
@@ -1070,6 +1070,10 @@ int start_sdl ( void )
 //		return 1;
 //	}
 	atexit(shutdown_sdl);
+
+	pref_path = SDL_GetBasePath();
+	printf( "FILE: [\"pref_path\"]=\"%s\"\n", pref_path );
+
 //	pref_path = SDL_GetPrefPath("lgb", "newkind");
 //	if (!pref_path) {
 //		ERROR_WINDOW("Cannot make use of pref path: %s", SDL_GetError());
