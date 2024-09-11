@@ -978,7 +978,7 @@ void display_condition(void)
 
 void update_console (void)
 {	
-	if ( venablenamecalling == TRUE ) {
+	if ( venablescreenname == TRUE ) {
 		gfx_display_centre_text (20, "Hello for Sergey Zababurin", 120, GFX_COL_GOLD);
 	}
 
