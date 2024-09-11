@@ -137,5 +137,6 @@ extern void gfx_render_polygon (int num_points, int *point_list, int face_colour
 extern void gfx_render_line (int x1, int y1, int x2, int y2, int dist, int col);
 extern void gfx_finish_render (void);
 extern int  gfx_request_file (char *title, char *path, char *ext);
+extern SDL_Texture* gfx_texture_clone(SDL_Texture* tex, SDL_Renderer* renderer);
 
 #endif

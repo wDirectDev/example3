@@ -74,11 +74,11 @@ static struct poly_data poly_chain[MAX_POLYS];
 #define vline(ren,x1,y1,y2,c)				vlineRGBA(sdl_ren,x1,y1,y2,RGBA_PARAM(c))
 //#define circle(ren,x,y,r,c)					circleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
 //#define circlefill(ren,x,y,r,c)				filledCircleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
-//#define putpixel(ren,x,y,c)					pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
+#define putpixel(ren,x,y,c)					pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
 #define triangle(ren,x1,y1,x2,y2,x3,y3,c)	filledTrigonRGBA(sdl_ren,x1,y1,x2,y2,x3,y3,RGBA_PARAM(c))
 
-// #define textout(g,font,str,x,y,c)		fprintf(stderr,"FIXME: no string function (textout) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
-// #define textout_centre(g,font,str,x,y,c)	fprintf(stderr,"FIXME: no string function (textout_centre) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
+//#define textout(g,font,str,x,y,c)		fprintf(stderr,"FIXME: no string function (textout) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
+//#define textout_centre(g,font,str,x,y,c)	fprintf(stderr,"FIXME: no string function (textout_centre) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
 
 #define textout(g,font,str,x,y,c)			stringRGBA(sdl_ren,x,y,str,RGBA_PARAM(c))
 #define textout_centre(g,font,str,x,y,c)	stringRGBA(sdl_ren,x-strlen(str)*4,y,str,RGBA_PARAM(c))
@@ -193,6 +193,41 @@ static ETNK_INLINE fixed fixdiv ( fixed x, fixed y ) {
 		return (x < 0) ? -0x7FFFFFFF : 0x7FFFFFFF;
 	} else
 		return ftofix(fixtof(x) / fixtof(y));
+}
+
+SDL_Texture* gfx_texture_clone(SDL_Texture* tex, SDL_Renderer* renderer) 
+{
+    Uint32 format;
+    int w, h;
+    SDL_BlendMode blendmode;
+    SDL_Texture* renderTarget;
+    SDL_Texture* newTex;
+
+    // Get all properties from the texture we are duplicating
+    SDL_QueryTexture(tex, &format, NULL, &w, &h);
+    SDL_GetTextureBlendMode(tex, &blendmode);
+
+    // Save the current rendering target (will be NULL if it is the current window)
+    renderTarget = SDL_GetRenderTarget(renderer);
+
+    // Create a new texture with the same properties as the one we are duplicating
+    newTex = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, w, h);
+
+    // Set its blending mode and make it the render target
+    SDL_SetTextureBlendMode(newTex, SDL_BLENDMODE_NONE);
+    SDL_SetRenderTarget(renderer, newTex);
+
+    // Render the full original texture onto the new one
+    SDL_RenderCopy(renderer, tex, NULL, NULL);
+
+    // Change the blending mode of the new texture to the same as the original one
+    SDL_SetTextureBlendMode(newTex, blendmode);
+
+    // Restore the render target
+    SDL_SetRenderTarget(renderer, renderTarget);
+
+    // Return the new texture
+    return newTex;
 }
 
 #define fmul(x,y)	fixmul(x,y)
@@ -844,7 +879,7 @@ static ETNK_INLINE void gfx_set_clip ( int x1, int y1, int x2, int y2 )
 
 void gfx_clear_scanner()
 {
-		set_clip(/*gfx_screen,*/ GFX_X_OFFSET, (wnd_height - 127) + GFX_Y_OFFSET,
+		gfx_set_clip(/*gfx_screen,*/ GFX_X_OFFSET, (wnd_height - 127) + GFX_Y_OFFSET,
 			GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
 			GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + (wnd_height - 127));
 		SDL_SetRenderDrawColor(sdl_ren, 0, 0, 0, 0xFF);
@@ -855,7 +890,7 @@ void gfx_clear_scanner()
 
 void gfx_draw_scanner (void)
 {
-	set_clip(/*gfx_screen,*/ GFX_X_OFFSET, (wnd_height - 127) + GFX_Y_OFFSET,
+	gfx_set_clip(/*gfx_screen,*/ GFX_X_OFFSET, (wnd_height - 127) + GFX_Y_OFFSET,
 		GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
 		GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + (wnd_height - 127));
 

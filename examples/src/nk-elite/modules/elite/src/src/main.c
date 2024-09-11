@@ -143,6 +143,19 @@ void move_cross (int dx, int dy)
 	{
 		cross_x += (dx * 4);
 		cross_y += (dy * 4);
+
+		if (cross_x < 1)
+			cross_x = 1;
+
+		if (cross_x > wnd_width - 2)
+			cross_x = wnd_width - 2;
+
+		if (cross_y < 37)
+			cross_y = 37;
+
+		if (cross_y > (wnd_height - 219))
+			cross_y = (wnd_height - 219);
+
 		return;
 	}
 
@@ -160,8 +173,8 @@ void move_cross (int dx, int dy)
 		if (cross_y < 37)
 			cross_y = 37;
 		
-		if (cross_y > 293)
-			cross_y = 293;
+		if (cross_y > (wnd_height - 173))
+			cross_y = (wnd_height - 173);
 	}
 }
 
@@ -178,6 +191,7 @@ void draw_cross (int cx, int cy)
 	{
 		gfx_set_clip_region (1, 37, wnd_width - 2, (wnd_height - 173));
 		xor_mode (TRUE);
+		// gfx_update_screen();
 		gfx_draw_colour_line (cx - 16, cy, cx + 16, cy, GFX_COL_RED);
 		gfx_draw_colour_line (cx, cy - 16, cx, cy + 16, GFX_COL_RED);
 		xor_mode (FALSE);
@@ -187,7 +201,7 @@ void draw_cross (int cx, int cy)
 	
 	if (current_screen == SCR_GALACTIC_CHART)
 	{
-		gfx_set_clip_region (1, 37, wnd_width - 2, 293);
+		gfx_set_clip_region (1, 37, wnd_width - 2, (wnd_height - 219));
 		xor_mode (TRUE);
 		gfx_draw_colour_line (cx - 8, cy, cx + 8, cy, GFX_COL_RED);
 		gfx_draw_colour_line (cx, cy - 8, cx, cy + 8, GFX_COL_RED);
@@ -348,28 +362,25 @@ void arrow_left (void)
 		case SCR_MARKET_PRICES:
 			sell_stock();
 			break;
-
 		case SCR_SETTINGS:
 			select_left_setting();
 			break;
-		
 		case SCR_SHORT_RANGE:
 		case SCR_GALACTIC_CHART:
 			move_cross (-1, 0);
 			break;
-
 		case SCR_FRONT_VIEW:
-		  roll_left();
-		  break;
+			roll_left();
+			break;
 		case SCR_REAR_VIEW:
-		  if (remap_keys) roll_right(); else roll_left();
-		  break;
+			if (remap_keys) roll_right(); else roll_left();
+			break;
 		case SCR_RIGHT_VIEW:
-		  if (remap_keys) dive(); else roll_left();
-		  break;
+			if (remap_keys) dive(); else roll_left();
+			break;
 		case SCR_LEFT_VIEW:
-		  if (remap_keys) climb(); else roll_left();
-		  break;
+			if (remap_keys) climb(); else roll_left();
+			break;
 	}
 }
 
