@@ -85,14 +85,17 @@ int snd_sound_startup (void)
 {
 	int status = 1;
 	play_sfx_request = -1;
+
 	SDL_AudioSpec audio_want, audio_got;
 	SDL_memset(&audio_want, 0, sizeof(audio_want));
+
 	audio_want.freq = 22050;
 	audio_want.format = AUDIO_U8;
 	audio_want.channels = 1;
 	audio_want.samples = 1024;
 	audio_want.callback = audio_callback;
 	audio_want.userdata = NULL;
+
 	audio = SDL_OpenAudioDevice(NULL, 0, &audio_want, &audio_got, 0);
 	if (audio) {
 		if (audio_want.freq != audio_got.freq || audio_want.format != audio_got.format || audio_want.channels != audio_got.channels) {
@@ -115,6 +118,7 @@ int snd_sound_startup (void)
 	} else  {
 		printf("AUDIO: Cannot open audio: %s\n", SDL_GetError());
 	}
+	
 	return status;
 }
 

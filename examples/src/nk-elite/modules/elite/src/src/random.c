@@ -17,9 +17,7 @@
  */
  
 #include "etnk.h"
-
 #include <stdlib.h>
-
 #include "random.h"
 
 static int rand_seed;
@@ -46,12 +44,10 @@ int randint (void)
 	return ix; 
 }
  
-
 void set_rand_seed (int seed)
 {
 	rand_seed = seed;
 }
-
 
 int get_rand_seed (void)
 {
@@ -60,5 +56,10 @@ int get_rand_seed (void)
 
 int rand255 (void)
 {
-	return (randint() & 255);
+	return (randint() & 0xff);
+}
+
+int rand65535 (void)
+{
+	return (randint() & 0xffff);
 }

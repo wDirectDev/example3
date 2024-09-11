@@ -23,5 +23,6 @@ int randint (void);
 void set_rand_seed (int seed);
 int get_rand_seed (void);
 int rand255 (void);
+int rand65535 (void);
 
 #endif

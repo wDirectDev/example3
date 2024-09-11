@@ -377,10 +377,10 @@ void display_options (void)
 	gfx_clear_display();
 	gfx_display_centre_text (10, "GAME OPTIONS", 140, GFX_COL_GOLD);
 	gfx_draw_line (0, 36, wnd_width - 1, 36);
-	gfx_display_centre_text (300, "Version: Release 1.0", 120, GFX_COL_WHITE);
-	gfx_display_centre_text (320, "www.newkind.co.uk", 120, GFX_COL_WHITE);
-	gfx_display_centre_text (340, "Written by Christian Pinder 1999-2001", 120, GFX_COL_WHITE);
-	gfx_display_centre_text (360, "Based on original code by Ian Bell & David Braben", 120, GFX_COL_WHITE);
+	gfx_display_centre_text ((wnd_height - 132 ) - 80, "Version: Release 1.0", 120, GFX_COL_WHITE); // 300
+	gfx_display_centre_text ((wnd_height - 132 ) - 60, "www.newkind.co.uk", 120, GFX_COL_WHITE); // 320
+	gfx_display_centre_text ((wnd_height - 132 ) - 40, "Written by Christian Pinder 1999-2001", 120, GFX_COL_WHITE); // 340
+	gfx_display_centre_text ((wnd_height - 132 ) - 20, "Based on original code by Ian Bell & David Braben", 120, GFX_COL_WHITE); //360
 	
 	for (i = 0; i < NUM_OPTIONS; i++)
 		display_option_item (i);

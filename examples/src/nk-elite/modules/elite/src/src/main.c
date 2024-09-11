@@ -170,14 +170,13 @@ void move_cross (int dx, int dy)
  * Draw the cross hairs at the specified position.
  */
 
-// FIXME: no xor_mode ...
 #define xor_mode(shit)
 
 void draw_cross (int cx, int cy)
 {
 	if (current_screen == SCR_SHORT_RANGE)
 	{
-		gfx_set_clip_region (1, 37, wnd_width - 2, 339);
+		gfx_set_clip_region (1, 37, wnd_width - 2, (wnd_height - 173));
 		xor_mode (TRUE);
 		gfx_draw_colour_line (cx - 16, cy, cx + 16, cy, GFX_COL_RED);
 		gfx_draw_colour_line (cx, cy - 16, cx, cy + 16, GFX_COL_RED);
@@ -535,7 +534,7 @@ void f_pressed (void)
 		find_input = 1;
 		*find_name = '\0';
 		gfx_clear_text_area();
-		gfx_display_text (16, 340, "Planet Name?");
+		gfx_display_text (16, (wnd_height - 132 ) - 40, "Planet Name?");
 	}
 }
 
@@ -553,7 +552,7 @@ void add_find_char (int letter)
 
 	sprintf (str, "Planet Name? %s", find_name);		
 	gfx_clear_text_area ();
-	gfx_display_text(16, 340, str);
+	gfx_display_text(16, (wnd_height - 132 ) - 40, str);
 }
 
 
@@ -570,7 +569,7 @@ void delete_find_char (void)
 		
 	sprintf (str, "Planet Name? %s", find_name);		
 	gfx_clear_text_area();
-	gfx_display_text(16, 340, str);
+	gfx_display_text(16, (wnd_height - 132 ) - 40, str);
 }
 
 void o_pressed()
@@ -1401,11 +1400,11 @@ void main_process()
 				current_screen = SCR_INTRO_TWO;
 		
 				snd_play_midi (SND_BLUE_DANUBE, TRUE);
-				//FIXME: no midi
 
 			#ifdef HACKING
 				identify = 0;
 			#endif
+
 				initialise_intro2();
 
 				flight_speed = 3;

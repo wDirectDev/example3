@@ -56,7 +56,7 @@ void initialise_intro1 (void)
 {
 	clear_universe();
 	set_init_matrix (intro_ship_matrix);
-	add_new_ship (SHIP_COBRA3, 0, 0, 2500, intro_ship_matrix, -127, -127);
+	add_new_ship (SHIP_COBRA3, 0, 0, 100, intro_ship_matrix, -127, -127);
 }
 
 
@@ -79,8 +79,8 @@ void update_intro1 (void)
 {
 	universe[0].location.z -= 100;
 
-	if (universe[0].location.z < (wnd_height - 128) )
-		universe[0].location.z = wnd_height - 128;  //??????
+	if (universe[0].location.z < 512 )
+		universe[0].location.z = 512; 
 
 	gfx_clear_display();
 
@@ -90,14 +90,14 @@ void update_intro1 (void)
 	gfx_draw_sprite(IMG_ELITE_TXT, -1, 10);
 
 	if ( venablenamecalling == TRUE ) {
-		gfx_display_centre_text ( (wnd_height - 132 ) - 60, "Re-engineered by C.J.Pinder.", 120, GFX_COL_WHITE);	
-		gfx_display_centre_text ( (wnd_height - 132 ) - 40, "Special thanks for Sergey Zababurin", 120, GFX_COL_WHITE);
+		gfx_display_centre_text ( (wnd_height - 132 ) - 70, "Re-engineered by C.J.Pinder.", 120, GFX_COL_WHITE);	
+		gfx_display_centre_text ( (wnd_height - 132 ) - 50, "Special thanks for Sergey Zababurin", 120, GFX_COL_WHITE);
 	} else {
-		gfx_display_centre_text ( (wnd_height - 132 ) - 60, "Original Game (C) I.Bell & D.Braben.", 120, GFX_COL_WHITE);
-		gfx_display_centre_text ( (wnd_height - 132 ) - 40, "Re-engineered by C.J.Pinder.", 120, GFX_COL_WHITE);	
+		gfx_display_centre_text ( (wnd_height - 132 ) - 70, "Original Game (C) I.Bell & D.Braben.", 120, GFX_COL_WHITE);
+		gfx_display_centre_text ( (wnd_height - 132 ) - 50, "Re-engineered by C.J.Pinder.", 120, GFX_COL_WHITE);	
 	}
 	
-	gfx_display_centre_text ((wnd_height - 132 ) - 10, "Load New Commander (Y/N)?", 140, GFX_COL_GOLD);
+	gfx_display_centre_text ( (wnd_height - 132 ) - 20, "Load New Commander (Y/N)?", 140, GFX_COL_GOLD);
 }
 
 static void next_ship(int bump)
@@ -117,8 +117,8 @@ static void next_ship(int bump)
   ship_count[universe[0].type] = 0;
   universe[0].type = 0;		
 
-  add_new_ship (ship_no, 0, 0, 4500, intro_ship_matrix, -127,
-		-127);
+  add_new_ship (ship_no, 0, 0, 4500, intro_ship_matrix, -127, -127);
+
   ship_bump = +1;
 }
 

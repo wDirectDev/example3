@@ -48,19 +48,8 @@ char *government_type[] = {	"Anarchy",
 							"Democracy",
 							"Corporate State"};
 
-
-
-
-
-
 int cross_x = 0;
 int cross_y = 0;
-
-
-
-
-
-
 
 void draw_fuel_limit_circle (int cx, int cy)
 {
@@ -69,13 +58,13 @@ void draw_fuel_limit_circle (int cx, int cy)
 
 	if (current_screen == SCR_GALACTIC_CHART)
 	{
-		radius = cmdr.fuel / 4 * GFX_SCALE;
-		cross_size = 7 * GFX_SCALE;
+		radius = cmdr.fuel / 2;
+		cross_size = 14;
 	}
 	else
 	{
-		radius = cmdr.fuel * GFX_SCALE;
-		cross_size = 16 * GFX_SCALE;
+		radius = cmdr.fuel * 2;
+		cross_size = 16 * 2;
 	}
 	
 	gfx_draw_circle (cx, cy, radius, GFX_COL_GREEN_1);
@@ -128,13 +117,13 @@ void show_distance_to_planet (void)
 
 	if (current_screen == SCR_GALACTIC_CHART)
 	{
-		px = cross_x / GFX_SCALE;
-		py = (cross_y - ((18 * GFX_SCALE) + 1)) * (2 / GFX_SCALE);
+		px = cross_x / 2;
+		py = cross_y - 36 - 1;
 	}
 	else
 	{
-		px = ((cross_x - GFX_X_CENTRE) / (4 * GFX_SCALE)) + docked_planet.d;
-		py = ((cross_y - GFX_Y_CENTRE) / (2 * GFX_SCALE)) + docked_planet.b;
+		px = ((cross_x - GFX_X_CENTRE) / 8) + docked_planet.d;
+		py = ((cross_y - GFX_Y_CENTRE) / 4) + docked_planet.b;
 	}
 
 	hyperspace_planet = find_planet (px, py);
@@ -143,29 +132,25 @@ void show_distance_to_planet (void)
 
 	gfx_clear_text_area();
 	sprintf (str, "%-18s", planet_name);
-	gfx_display_text (16, 340, str);
+	gfx_display_text (16, (wnd_height - 132 ) - 40, str);
 
-	show_distance (356, docked_planet, hyperspace_planet);
+	show_distance ((wnd_height - 132 ) - 24, docked_planet, hyperspace_planet);  // 356
 
-	if (current_screen == SCR_GALACTIC_CHART)
-	{
-		cross_x = hyperspace_planet.d * GFX_SCALE;
-		cross_y = hyperspace_planet.b / (2 / GFX_SCALE) + (18 * GFX_SCALE) + 1;
-	}
-	else
-	{
-		cross_x = ((hyperspace_planet.d - docked_planet.d) * (4 * GFX_SCALE)) + GFX_X_CENTRE;
-		cross_y = ((hyperspace_planet.b - docked_planet.b) * (2 * GFX_SCALE)) + GFX_Y_CENTRE;
+	if (current_screen == SCR_GALACTIC_CHART) {
+		cross_x = hyperspace_planet.d * 2;
+		cross_y = hyperspace_planet.b + 36 + 1;
+	} else {
+		cross_x = ((hyperspace_planet.d - docked_planet.d) * 8) + GFX_X_CENTRE;
+		cross_y = ((hyperspace_planet.b - docked_planet.b) * 4) + GFX_Y_CENTRE;
 	}
 }
-
 
 void move_cursor_to_origin (void)
 {
 	if (current_screen == SCR_GALACTIC_CHART)
 	{
-		cross_x = docked_planet.d * GFX_SCALE;
-		cross_y = docked_planet.b / (2 / GFX_SCALE) + (18 * GFX_SCALE) + 1;
+		cross_x = docked_planet.d * 2;
+		cross_y = docked_planet.b + 36 + 1;
 	}
 	else
 	{
@@ -207,7 +192,7 @@ void find_planet_by_name (char *find_name)
 	if (!found)
 	{
 		gfx_clear_text_area();
-		gfx_display_text (16, 340, "Unknown Planet");
+		gfx_display_text (16, (wnd_height - 132 ) - 40, "Unknown Planet"); // 340
 		return;
 	}
 
@@ -215,19 +200,20 @@ void find_planet_by_name (char *find_name)
 
 	gfx_clear_text_area ();
 	sprintf (str, "%-18s", planet_name);
-	gfx_display_text (16, 340, str);
 
-	show_distance (356, docked_planet, hyperspace_planet);
+	gfx_display_text (16, (wnd_height - 132 ) - 40, str);  // 340
+
+	show_distance ((wnd_height - 132 ) - 24, docked_planet, hyperspace_planet);
 
 	if (current_screen == SCR_GALACTIC_CHART)
 	{
-		cross_x = hyperspace_planet.d * GFX_SCALE;
-		cross_y = hyperspace_planet.b / (2 / GFX_SCALE) + (18 * GFX_SCALE) + 1;
+		cross_x = hyperspace_planet.d * 2;
+		cross_y = hyperspace_planet.b + 36 + 1;
 	}
 	else
 	{
-		cross_x = ((hyperspace_planet.d - docked_planet.d) * (4 * GFX_SCALE)) + GFX_X_CENTRE;
-		cross_y = ((hyperspace_planet.b - docked_planet.b) * (2 * GFX_SCALE)) + GFX_Y_CENTRE;
+		cross_x = ((hyperspace_planet.d - docked_planet.d) * 8) + GFX_X_CENTRE;
+		cross_y = ((hyperspace_planet.b - docked_planet.b) * 4) + GFX_Y_CENTRE;
 	}
 }
 
@@ -275,12 +261,12 @@ void display_short_range_chart (void)
 		}
 
 		px = (glx.d - docked_planet.d);
-		px = px * 4 * GFX_SCALE + GFX_X_CENTRE;  /* Convert to screen co-ords */
+		px = px * 8 + GFX_X_CENTRE;  /* Convert to screen co-ords */
 
 		py = (glx.b - docked_planet.b);
-		py = py * 2 * GFX_SCALE + GFX_Y_CENTRE;	/* Convert to screen co-ords */
+		py = py * 4 + GFX_Y_CENTRE;	/* Convert to screen co-ords */
 
-		row = py / (8 * GFX_SCALE);
+		row = py / 16;
 
 		if (row_used[row] == 1) row++;
 		if (row_used[row] == 1) row -= 2;
@@ -301,7 +287,7 @@ void display_short_range_chart (void)
 			name_planet (planet_name, glx);
 			capitalise_name (planet_name);
 
-			gfx_display_text (px + (4 * GFX_SCALE), (row * 8 - 5) * GFX_SCALE, planet_name);
+			gfx_display_text (px + 8, (row * 8 - 5) * 2, planet_name);
 		}
 
 
@@ -310,7 +296,7 @@ void display_short_range_chart (void)
 		/* Yes this was how it was done... don't ask :-( */
 
 		blob_size = (glx.f & 1) + 2 + carry_flag;
-		blob_size *= GFX_SCALE;
+		blob_size *= 2;
 		gfx_draw_filled_circle (px, py, blob_size, GFX_COL_GOLD);
 
 		waggle_galaxy (&glx);
@@ -319,8 +305,8 @@ void display_short_range_chart (void)
 		waggle_galaxy (&glx);
 	}
 
-	cross_x = ((hyperspace_planet.d - docked_planet.d) * 4 * GFX_SCALE) + GFX_X_CENTRE;
-	cross_y = ((hyperspace_planet.b - docked_planet.b) * 2 * GFX_SCALE) + GFX_Y_CENTRE;
+	cross_x = ((hyperspace_planet.d - docked_planet.d) * 8 ) + GFX_X_CENTRE;
+	cross_y = ((hyperspace_planet.b - docked_planet.b) * 4 ) + GFX_Y_CENTRE;
 }
 
 
@@ -343,17 +329,17 @@ void display_galactic_chart (void)
 	gfx_display_centre_text (10, str, 140, GFX_COL_GOLD);
 
 	gfx_draw_line (0, 36, wnd_width - 1, 36);
-	gfx_draw_line (0, 36+258, wnd_width - 1, 36+258);
+	gfx_draw_line (0, ( wnd_height - 132 ) - 86, wnd_width - 1, ( wnd_height - 132 ) - 86);
 
-	draw_fuel_limit_circle (docked_planet.d * GFX_SCALE,
-					(docked_planet.b / (2 / GFX_SCALE)) + (18 * GFX_SCALE) + 1);
+	draw_fuel_limit_circle (docked_planet.d * 2,
+					docked_planet.b + 36 + 1);
 
 	glx = cmdr.galaxy;
 
 	for (i = 0; i < 256; i++)
 	{
-		px = glx.d * GFX_SCALE;
-		py = (glx.b / (2 / GFX_SCALE)) + (18 * GFX_SCALE) + 1;
+		px = glx.d * 2;
+		py = glx.b + 36 + 1;
 
 		gfx_plot_pixel (px, py, GFX_COL_WHITE);
 
@@ -368,8 +354,8 @@ void display_galactic_chart (void)
 	}
 
 
-	cross_x = hyperspace_planet.d * GFX_SCALE;
-	cross_y = (hyperspace_planet.b / (2 / GFX_SCALE)) + (18 * GFX_SCALE) + 1;
+	cross_x = hyperspace_planet.d * 2;
+	cross_y = hyperspace_planet.b + 36 + 1;
 }
 
 
@@ -730,7 +716,7 @@ void highlight_stock (int i)
 
 	gfx_clear_text_area();
 	sprintf (str, "Cash: %d.%d", cmdr.credits / 10, cmdr.credits % 10);
-	gfx_display_text (16, 340, str);
+	gfx_display_text (16, (wnd_height - 132 ) - 40, str);
 }
 
 void select_previous_stock (void)
@@ -885,8 +871,6 @@ enum equip_types
 	EQ_LEFT_MILITARY, EQ_RIGHT_MILITARY
 };
 	
-		
-
 #define NO_OF_EQUIP_ITEMS	34
 
 struct equip_item
@@ -1071,7 +1055,7 @@ void highlight_equip (int i)
 
 	gfx_clear_text_area();
 	sprintf (str, "Cash: %d.%d", cmdr.credits / 10, cmdr.credits % 10);
-	gfx_display_text (16, 340, str);
+	gfx_display_text (16, (wnd_height - 132 ) - 40, str);
 }
 
 

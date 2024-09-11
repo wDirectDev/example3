@@ -22,11 +22,13 @@
 #include <math.h>
 #include <ctype.h>
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "SDL2_gfxPrimitives.h"
+
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
+
 #include "main.h"
 #include "ssdl.h"
 #include "elite.h"
@@ -37,7 +39,7 @@
 
 SDL_Texture		*sdl_tex = NULL;
 SDL_Window		*sdl_win = NULL;
-SDL_Renderer		*sdl_ren = NULL;
+SDL_Renderer	*sdl_ren = NULL;
 
 #define MAX_POLYS	100
 
@@ -70,9 +72,9 @@ static struct poly_data poly_chain[MAX_POLYS];
 #define	line(ren,x1,y1,x2,y2,c)				lineRGBA(sdl_ren,x1,y1,x2,y2,RGBA_PARAM(c))
 #define hline(ren,x1,y,x2,c)				hlineRGBA(sdl_ren,x1,x2,y,RGBA_PARAM(c))
 #define vline(ren,x1,y1,y2,c)				vlineRGBA(sdl_ren,x1,y1,y2,RGBA_PARAM(c))
-#define circle(ren,x,y,r,c)					circleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
-#define circlefill(ren,x,y,r,c)				filledCircleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
-#define putpixel(ren,x,y,c)					pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
+//#define circle(ren,x,y,r,c)					circleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
+//#define circlefill(ren,x,y,r,c)				filledCircleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
+//#define putpixel(ren,x,y,c)					pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
 #define triangle(ren,x1,y1,x2,y2,x3,y3,c)	filledTrigonRGBA(sdl_ren,x1,y1,x2,y2,x3,y3,RGBA_PARAM(c))
 
 // #define textout(g,font,str,x,y,c)		fprintf(stderr,"FIXME: no string function (textout) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
@@ -108,11 +110,7 @@ SDL_RWops *datafile_open ( const char *fn )
 	return v;
 }
 
-
-
 #define IS_IMG_EXTERNAL	0x100
-
-
 
 static void load_sprite ( int i, const char *fn, SDL_Surface **pass_surface_back )
 {
@@ -188,6 +186,7 @@ static ETNK_INLINE fixed fixmul ( fixed x, fixed y ) {
 	}
 #endif
 }
+
 static ETNK_INLINE fixed fixdiv ( fixed x, fixed y ) {
 	if (y == 0) {
 		//*allegro_errno = ERANGE;
@@ -211,7 +210,7 @@ int gfx_graphics_startup (void)
 	wnd_fullscreen = 0;
 #else
 	wnd_width = 800;
-	wnd_height = 800;
+	wnd_height = 600;
 	wnd_fullscreen = 0;
 #endif
 
@@ -272,11 +271,13 @@ int gfx_graphics_startup (void)
 		return 1;
 	}
 #endif
+
 	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, wnd_width, wnd_height);
 	if (!sdl_tex) {
 		ERROR_WINDOW("Cannot create texture: %s", SDL_GetError());
 		return 1;
 	}
+
 	if (SDL_SetRenderTarget(sdl_ren, sdl_tex)) {
 		ERROR_WINDOW("Cannot set render target: %s", SDL_GetError());
 		return 1;
@@ -299,6 +300,7 @@ int gfx_graphics_startup (void)
 		puts("SCANNER: defaulting to built-in scanner ...");
 		load_sprite(IMG_THE_SCANNER, "scanner.bmp",	&surface);
 	}
+
 	load_sprite(IMG_GREEN_DOT,	"greendot.bmp",	NULL);
 	load_sprite(IMG_RED_DOT,	"reddot.bmp",	NULL);
 	load_sprite(IMG_BIG_S,		"safe.bmp",	NULL);
@@ -339,8 +341,8 @@ int gfx_graphics_startup (void)
 	//clear (gfx_screen);
 
 	//blit (scanner_image, gfx_screen, 0, 0, GFX_X_OFFSET, 385+GFX_Y_OFFSET, scanner_image->w, scanner_image->h);
-	sprites[IMG_THE_SCANNER].rect.x = GFX_X_OFFSET;	// unlike other "sprites" the position is the same to put, always, so set it here ...
-	sprites[IMG_THE_SCANNER].rect.y = (wnd_height - 127) + GFX_Y_OFFSET;
+	sprites[IMG_THE_SCANNER].rect.x = 0;	// unlike other "sprites" the position is the same to put, always, so set it here ...
+	sprites[IMG_THE_SCANNER].rect.y = (wnd_height - 127);
 	//scanner_rect.x = GFX_X_OFFSET;
 	//scanner_rect.y = 385+GFX_Y_OFFSET;
 	//scanner_rect.w = sprites[IMG_THE_SCANNER].w;
@@ -366,6 +368,7 @@ int gfx_graphics_startup (void)
 	frame_count = 0;
 	install_int (frame_timer, speed_cap);
 #endif	
+
 	return 0;
 }
 
@@ -411,6 +414,11 @@ void gfx_update_screen (void)
 	//SDL_RenderClear(sdl_ren);
 	// FIXME:
 	// more sane framerate control
+    #ifdef __EMSCRIPTEN__
+        emscripten_sleep(speed_cap);
+    #else
+        SDL_Delay(speed_cap);
+    #endif
 
 }
 
@@ -426,22 +434,14 @@ void gfx_release_screen (void)
 	// puts("FIXME: gfx_release_screen() is not implemented");
 }
 
-void gfx_fast_plot_pixel (int x, int y, int col)
+void gfx_fast_plot_pixel (int x, int y, int circle_colour)
 {
-	/* _putpixel(gfx_screen, x, y, col); */
-	//gfx_screen->line[y][x] = col;
-	// FIXME really, it should be "FAST"?
-	putpixel(whatever, x, y, col);
+	pixelRGBA( sdl_ren, x, y, the_palette_r[circle_colour], the_palette_g[circle_colour], the_palette_b[circle_colour], 0xff);
 }
 
-void gfx_plot_pixel (int x, int y, int col)
+void gfx_plot_pixel (int x, int y, int circle_colour)
 {
-	putpixel (gfx_screen, x + GFX_X_OFFSET, y + GFX_Y_OFFSET, col);
-}
-
-void gfx_draw_filled_circle (int cx, int cy, int radius, int circle_colour)
-{
-	circlefill (gfx_screen, cx + GFX_X_OFFSET, cy + GFX_Y_OFFSET, radius, circle_colour);
+	pixelRGBA( sdl_ren, x, y, the_palette_r[circle_colour], the_palette_g[circle_colour], the_palette_b[circle_colour], 0xff);
 }
 
 #define AA_BITS 3
@@ -675,18 +675,14 @@ void gfx_draw_aa_line (int x1, int y1, int x2, int y2)
 #undef AA_AND
 #undef AA_BASE
 
-void gfx_draw_circle (int cx, int cy, int radius, int circle_colour)
+void gfx_draw_circle (int cx, int cy, int radius, Uint32 circle_colour)
 {
-	puts("gfx_draw_circle()");
-	//circle (gfx_screen, cx + GFX_X_OFFSET, cy + GFX_Y_OFFSET, radius, circle_colour);
+	circleRGBA(sdl_ren, cx, cy, radius, the_palette_r[circle_colour], the_palette_g[circle_colour], the_palette_b[circle_colour], 0xff);
+}
 
-//#if 0
-
-	if (anti_alias_gfx && (circle_colour == GFX_COL_WHITE))
-		gfx_draw_aa_circle (cx, cy, itofix(radius));
-	else	
-		circle (gfx_screen, cx + GFX_X_OFFSET, cy + GFX_Y_OFFSET, radius, circle_colour);
-//#endif
+void gfx_draw_filled_circle (int cx, int cy, int radius, Uint32 circle_colour)
+{
+	filledCircleRGBA(sdl_ren, cx, cy, radius, the_palette_r[circle_colour], the_palette_g[circle_colour], the_palette_b[circle_colour], 0xff);
 }
 
 void gfx_draw_line (int x1, int y1, int x2, int y2)
@@ -738,13 +734,13 @@ void gfx_draw_triangle (int x1, int y1, int x2, int y2, int x3, int y3, int col)
 void gfx_display_text (int x, int y, char *txt)
 {
 	//text_mode (-1);
-	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y, GFX_COL_WHITE);
+	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y + 5, GFX_COL_WHITE);
 }
 
 void gfx_display_colour_text (int x, int y, char *txt, int col)
 {
 	//text_mode (-1);
-	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y, col);
+	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y + 5, col);
 }
 
 void gfx_display_centre_text (int y, char *str, int psize, int col)
@@ -767,7 +763,7 @@ void gfx_display_centre_text (int y, char *str, int psize, int col)
 #endif
 	txt_colour = col;
 	//text_mode (-1);
-	textout_centre (gfx_screen,  datafile[txt_size].dat, str, (wnd_width / 2), y, txt_colour);
+	textout_centre (gfx_screen,  datafile[txt_size].dat, str, (wnd_width / 2), y + 5, txt_colour);
 }
 
 void gfx_clear_display (void)
@@ -777,7 +773,7 @@ void gfx_clear_display (void)
 
 void gfx_clear_text_area (void)
 {
-	rectfill (gfx_screen, GFX_X_OFFSET + 1, GFX_Y_OFFSET + 340, wnd_width - 2 + GFX_X_OFFSET, (wnd_height - 129) + GFX_Y_OFFSET, GFX_COL_BLACK);
+	rectfill (gfx_screen, GFX_X_OFFSET + 1, (wnd_height - 132 ) - 40, wnd_width - 2 + GFX_X_OFFSET, (wnd_height - 129) + GFX_Y_OFFSET, GFX_COL_BLACK);
 }
 
 void gfx_clear_area (int tx, int ty, int bx, int by)
@@ -832,7 +828,7 @@ void gfx_display_pretty_text (int tx, int ty, int bx, int by, char *txt)
 }
 
 
-static ETNK_INLINE void set_clip ( int x1, int y1, int x2, int y2 )
+static ETNK_INLINE void gfx_set_clip ( int x1, int y1, int x2, int y2 )
 {
 	SDL_Rect rect;
 	rect.x = x1;
@@ -875,7 +871,9 @@ void gfx_draw_scanner (void)
 
 void gfx_set_clip_region (int tx, int ty, int bx, int by)
 {
-	set_clip (/*gfx_screen,*/ tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET, bx + GFX_X_OFFSET, by + GFX_Y_OFFSET);
+
+	
+	gfx_set_clip (/*gfx_screen,*/ tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET, bx + GFX_X_OFFSET, by + GFX_Y_OFFSET);
 }
 
 
@@ -1169,7 +1167,7 @@ void handle_sdl_events ( void )
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			case SDL_QUIT:
-				exit(0);	// FIXME: do it nicer ....
+				exit(0);	// FIXME: do it nicer ...
 			case SDL_KEYUP:
 			case SDL_KEYDOWN:
 				/*

@@ -198,6 +198,7 @@ void remove_ship (int un)
 	if ((type == SHIP_CORIOLIS) || (type == SHIP_DODEC))
 	{
 		set_init_matrix (rotmat);
+		
 		px = universe[un].location.x;
 		py = universe[un].location.y;
 		pz = universe[un].location.z;

@@ -30,7 +30,7 @@
 #define GFX_X_OFFSET		(0)
 #define GFX_Y_OFFSET		(0)
 #define GFX_X_CENTRE		(wnd_width / 2)
-#define GFX_Y_CENTRE		(wnd_height / 2 - 128)
+#define GFX_Y_CENTRE		((wnd_height - 132) / 2)
 
 #define GFX_VIEW_TX		1
 #define GFX_VIEW_TY		1
@@ -114,8 +114,8 @@ extern void gfx_acquire_screen (void);
 extern void gfx_release_screen (void);
 extern void gfx_plot_pixel (int x, int y, int col);
 extern void gfx_fast_plot_pixel (int x, int y, int col);
-extern void gfx_draw_filled_circle (int cx, int cy, int radius, int circle_colour);
-extern void gfx_draw_circle (int cx, int cy, int radius, int circle_colour);
+extern void gfx_draw_filled_circle (int cx, int cy, int radius, Uint32 circle_colour);
+extern void gfx_draw_circle (int cx, int cy, int radius, Uint32 circle_colour);
 extern void gfx_draw_line (int x1, int y1, int x2, int y2);
 extern void gfx_draw_colour_line (int x1, int y1, int x2, int y2, int line_colour);
 extern void gfx_draw_triangle (int x1, int y1, int x2, int y2, int x3, int y3, int col);
