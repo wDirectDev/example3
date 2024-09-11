@@ -89,7 +89,7 @@ void update_intro1 (void)
 	
 	gfx_draw_sprite(IMG_ELITE_TXT, -1, 10);
 
-	if ( venablenamecalling == TRUE ) {
+	if ( venablescreenname == TRUE ) {
 		gfx_display_centre_text (310, "Re-engineered by C.J.Pinder.", 120, GFX_COL_WHITE);	
 		gfx_display_centre_text (330, "Special thanks for Sergey Zababurin", 120, GFX_COL_WHITE);
 	} else {

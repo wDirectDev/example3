@@ -69,7 +69,7 @@ int find_input;
 char find_name[20];
 
 int venableconsole = TRUE;
-int venablenamecalling = FALSE;
+int venablescreenname = FALSE;
 
 /*
  * Initialise the game parameters.
@@ -1601,8 +1601,8 @@ int enableconsole( int _state ) {
 	return TRUE;
 }
 
-int enablenamecalling( int _state ) {
-	venablenamecalling = _state;
+int enablescreenname( int _state ) {
+	venablescreenname = _state;
 	update_console();
 	gfx_update_screen();
 	return TRUE;
@@ -1619,11 +1619,11 @@ int SetGameParameter( char* _variable, char* _state ) {
 			return enableconsole( FALSE );
 		} 
 		return SBAD;
-	} if ( strcmp( _variable, "enablename-calling" ) == 0 ) {
+	} if ( strcmp( _variable, "enablescreen-name" ) == 0 ) {
 		if ( strcmp( _state, "enable" ) == 0 ) {
-			return enablenamecalling( TRUE );
+			return enablescreenname( TRUE );
 		} else if ( strcmp( _state, "disable" ) == 0 ) {
-			return enablenamecalling( FALSE );
+			return enablescreenname( FALSE );
 		} 
 		return SBAD;
 	}

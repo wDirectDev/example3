@@ -59,10 +59,10 @@ const componentInit = ( self, CONFIG ) =>
     e.addEventListener("click", async function(event) {	
 
         CONFIG.html.scope.parameters.showGameConsole = self.this.shadowRoot.querySelector("#showGameConsole").checked;
-		CONFIG.html.scope.parameters.showNameCalling = self.this.shadowRoot.querySelector("#showNameCalling").checked;
+	CONFIG.html.scope.parameters.showScreenName = self.this.shadowRoot.querySelector("#showScreenName").checked;
 
-		await globalThis["LEliteTG"].ccall('SetGameParameter','number',[ 'string', 'string' ],[ "enableconsole", ( CONFIG.html.scope.parameters.showGameConsole == true ) ? "enable" : "disable" ], { async: true } );
-		await globalThis["LEliteTG"].ccall('SetGameParameter','number',[ 'string', 'string' ],[ "enablename-calling", ( CONFIG.html.scope.parameters.showNameCalling == true ) ? "enable" : "disable" ], { async: true } );
+	await globalThis["LEliteTG"].ccall('SetGameParameter','number',[ 'string', 'string' ],[ "enableconsole", ( CONFIG.html.scope.parameters.showGameConsole == true ) ? "enable" : "disable" ], { async: true } );
+	await globalThis["LEliteTG"].ccall('SetGameParameter','number',[ 'string', 'string' ],[ "enablescreen-name", ( CONFIG.html.scope.parameters.showScreenName == true ) ? "enable" : "disable" ], { async: true } );
 
     });
 
@@ -85,7 +85,7 @@ export default async () => {
 					scope: { 
 						parameters: {
 							showGameConsole: undefined,
-							showNameCalling: undefined,
+							showScreenName: undefined,
 						},
 						canvas: undefined
 					}
