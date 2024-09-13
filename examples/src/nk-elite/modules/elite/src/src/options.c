@@ -76,7 +76,7 @@ void quit_screen (void)
 	gfx_clear_display();
 	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
 
-	gfx_display_centre_text (14, "GAME OPTIONS", 140, GFX_COL_GOLD);
+	gfx_display_centre_text (16, "GAME OPTIONS", 140, GFX_COL_GOLD);
 
 	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
 	gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
@@ -90,8 +90,12 @@ void restart_screen(void)
 	current_screen = SCR_RESTART;
 
 	gfx_clear_display();
-	gfx_display_centre_text (10, "GAME OPTIONS", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, wnd_width - 1, 36);
+	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
+
+	gfx_display_centre_text (16, "GAME OPTIONS", 140, GFX_COL_GOLD);
+
+	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
+	gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
 
 	gfx_display_centre_text (175, "RESTART GAME (Y/N)?", 140, GFX_COL_GOLD);		
 }  
@@ -279,7 +283,7 @@ void game_settings_screen (void)
 	gfx_clear_display();
 	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
 
-	gfx_display_centre_text (14, "GAME SETTINGS", 140, GFX_COL_GOLD);
+	gfx_display_centre_text (16, "GAME SETTINGS", 140, GFX_COL_GOLD);
 
 	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
 	gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
@@ -383,7 +387,7 @@ void display_options (void)
 	gfx_clear_display();
 	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
 
-	gfx_display_centre_text (14, "GAME OPTIONS", 140, GFX_COL_GOLD);
+	gfx_display_centre_text (16, "GAME OPTIONS", 140, GFX_COL_GOLD);
 
 	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
 	gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
@@ -393,8 +397,7 @@ void display_options (void)
 	gfx_display_centre_text (GFX_WINDOW_B_COORD - 80, "Written by Christian Pinder 1999-2001", 120, GFX_COL_WHITE); // 340
 	gfx_display_centre_text (GFX_WINDOW_B_COORD - 60, "Based on original code by Ian Bell & David Braben", 120, GFX_COL_WHITE); //360
 	
-	for (i = 0; i < NUM_OPTIONS; i++)
-		display_option_item (i);
+	for (i = 0; i < NUM_OPTIONS; i++) display_option_item (i);
 
 	hilite_item = -1;
 	highlight_option (0);

@@ -33,6 +33,7 @@
 #define GFX_FONT_SIZE         (10)
 
 #define GFX_BORDER_SIZE       (1)
+
 #define GFX_HEADER_SIZE       (34)
 #define GFX_FOOTER_SIZE       (43)
 
@@ -75,7 +76,7 @@
 #define GFX_FOOTER_LSIZE      (GFX_BORDER_SIZE + 16)
 
 #define GFX_FOOTER_L1         ((GFX_WINDOW_HEIGHT - SCANNER_HEIGHT - GFX_BORDER_SIZE - GFX_FOOTER_SIZE) + 10)
-#define GFX_FOOTER_L2         ((GFX_WINDOW_HEIGHT - SCANNER_HEIGHT - GFX_BORDER_SIZE - GFX_FOOTER_SIZE) + 24)
+#define GFX_FOOTER_L2         ((GFX_WINDOW_HEIGHT - SCANNER_HEIGHT - GFX_BORDER_SIZE - GFX_FOOTER_SIZE) + 22)
 
 #define GFX_VIEW_TX           1
 #define GFX_VIEW_TY           1
@@ -168,8 +169,12 @@ extern void gfx_draw_line (int x1, int y1, int x2, int y2);
 extern void gfx_draw_colour_line_logical (int x1, int y1, int x2, int y2, unsigned int line_colour, int logical_mode );
 extern void gfx_draw_colour_line (int x1, int y1, int x2, int y2, int line_colour);
 extern void gfx_draw_triangle (int x1, int y1, int x2, int y2, int x3, int y3, int col);
-extern void gfx_draw_simplerect (int tx, int ty, int bx, int by, int col);
+
+extern void gfx_draw_roundedsimplerect (int tx, int ty, int bx, int by, int col);
+extern void gfx_draw_roundedfilledrect (int tx, int ty, int bx, int by, int col);
 extern void gfx_draw_filledrect (int tx, int ty, int bx, int by, int col);
+extern void gfx_draw_simplerect (int tx, int ty, int bx, int by, int col);
+
 extern void gfx_display_text (int x, int y, char *txt);
 extern void gfx_display_colour_text (int x, int y, char *txt, int col);
 extern void gfx_display_centre_text (int y, char *str, int psize, int col);

@@ -71,14 +71,17 @@ static struct poly_data poly_chain[MAX_POLYS];
 
 // sdl2_gfx substitutions of allegro functions
 
-#define rectfill(ren,tx,ty,bx,by,c)			roundedBoxRGBA(sdl_ren,tx,ty,bx,by,6,RGBA_PARAM(c))
-#define rectnotfilled(ren,tx,ty,bx,by,c)	rectangleRGBA(sdl_ren,tx,ty,bx,by,RGBA_PARAM(c))
-#define	line(ren,x1,y1,x2,y2,c)				lineRGBA(sdl_ren,x1,y1,x2,y2,RGBA_PARAM(c))
-#define hline(ren,x1,y,x2,c)				hlineRGBA(sdl_ren,x1,x2,y,RGBA_PARAM(c))
-#define vline(ren,x1,y1,y2,c)				vlineRGBA(sdl_ren,x1,y1,y2,RGBA_PARAM(c))
+#define rectfilled(ren,tx,ty,bx,by,c)           boxRGBA(sdl_ren,tx,ty,bx,by,RGBA_PARAM(c))
+#define rectsimple(ren,tx,ty,bx,by,c)           rectangleRGBA(sdl_ren,tx,ty,bx,by,RGBA_PARAM(c))
+#define rectroundedfilled(ren,tx,ty,bx,by,c)    roundedBoxRGBA(sdl_ren,tx,ty,bx,by,6,RGBA_PARAM(c))
+#define rectroundedsimple(ren,tx,ty,bx,by,c)    roundedRectangleRGBA(sdl_ren,tx,ty,bx,by,6,RGBA_PARAM(c))
 
-#define putpixel(ren,x,y,c)					pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
-#define triangle(ren,x1,y1,x2,y2,x3,y3,c)	filledTrigonRGBA(sdl_ren,x1,y1,x2,y2,x3,y3,RGBA_PARAM(c))
+#define	line(ren,x1,y1,x2,y2,c)                 lineRGBA(sdl_ren,x1,y1,x2,y2,RGBA_PARAM(c))
+#define hline(ren,x1,y,x2,c)                    hlineRGBA(sdl_ren,x1,x2,y,RGBA_PARAM(c))
+#define vline(ren,x1,y1,y2,c)                   vlineRGBA(sdl_ren,x1,y1,y2,RGBA_PARAM(c))
+
+#define putpixel(ren,x,y,c)                     pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
+#define triangle(ren,x1,y1,x2,y2,x3,y3,c)       filledTrigonRGBA(sdl_ren,x1,y1,x2,y2,x3,y3,RGBA_PARAM(c))
 
 //#define textout(g,font,str,x,y,c)		fprintf(stderr,"FIXME: no string function (textout) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
 //#define textout_centre(g,font,str,x,y,c)	fprintf(stderr,"FIXME: no string function (textout_centre) for displaying string \"%s\" at pos %d,%d\n",str,x,y)
@@ -240,8 +243,8 @@ int gfx_graphics_startup (void)
 
 	emscripten_get_canvas_size(&wnd_width, &wnd_height, &wnd_fullscreen);
 //		emscripten_get_canvas_element_size("#canvas",&wnd_height, &wnd_height);
-	wnd_width = 512;
-	wnd_height = 512;
+	wnd_width = 800;
+	wnd_height = 600;
 	wnd_fullscreen = 0;
 
 #else
@@ -328,38 +331,36 @@ int gfx_graphics_startup (void)
 		sprites[a].tex = NULL;
 
 	SDL_Surface *surface = NULL;
+
 	if (*scanner_filename) {
 		printf("SCANNER: trying to use %s as the scanner\n", scanner_filename);
 		load_sprite(IMG_THE_SCANNER | IS_IMG_EXTERNAL, scanner_filename, &surface);
 	} else {
-		puts("SCANNER: no external scanner was specified");
+		printf("SCANNER: no external scanner was specified");
 	}
 
 	if (!surface) {
-		puts("SCANNER: defaulting to built-in scanner ...");
+		printf("SCANNER: defaulting to built-in scanner ...");
 		load_sprite(IMG_THE_SCANNER, "scanner.bmp",	&surface);
 	}
 
-	load_sprite(IMG_GREEN_DOT,	"greendot.bmp",	NULL);
-	load_sprite(IMG_RED_DOT,	"reddot.bmp",	NULL);
-	load_sprite(IMG_BIG_S,		"safe.bmp",	NULL);
-	load_sprite(IMG_ELITE_TXT,	"elitetx3.bmp",	NULL);
-	load_sprite(IMG_BIG_E,		"ecm.bmp",	NULL);
-	load_sprite(IMG_BLAKE,		"blake.bmp",	NULL);
-	load_sprite(IMG_MISSILE_GREEN,	"missgrn.bmp",	NULL);
-	load_sprite(IMG_MISSILE_YELLOW,	"missyell.bmp",	NULL);
-	load_sprite(IMG_MISSILE_RED,	"missred.bmp",	NULL);
-//	surface = SDL_LoadBMP(scanner_filename);
-//	if (!surface) {
-//		ERROR_WINDOW("Cannot load scanner: %s", SDL_GetError());
-//		return 1;
-//	}
+	load_sprite(IMG_GREEN_DOT,      "greendot.bmp", NULL);
+	load_sprite(IMG_RED_DOT,        "reddot.bmp",   NULL);
+	load_sprite(IMG_BIG_S,          "safe.bmp",     NULL);
+	load_sprite(IMG_ELITE_TXT,      "elitetx3.bmp", NULL);
+	load_sprite(IMG_BIG_E,          "ecm.bmp",      NULL);
+	load_sprite(IMG_BLAKE,          "blake.bmp",    NULL);
+	load_sprite(IMG_MISSILE_GREEN,  "missgrn.bmp",  NULL);
+	load_sprite(IMG_MISSILE_YELLOW, "missyell.bmp", NULL);
+	load_sprite(IMG_MISSILE_RED,    "missred.bmp",  NULL);
+
 	for (int a = 0; a < 0x100; a++) {
 		the_palette_r[a] = surface->format->palette->colors[a].r;
 		the_palette_g[a] = surface->format->palette->colors[a].g;
 		the_palette_b[a] = surface->format->palette->colors[a].b;
 		//the_palette32[a] = SDL_MapRGBA(pixfmt, the_palette_r[a], the_palette_g[a], the_palette_b[a], 0xFF);
 	}
+
 	SDL_FreeSurface(surface);
 //	scanner_texture = SDL_CreateTextureFromSurface(sdl_ren, surface);
 //	scanner_texture = sprites[0].tex;
@@ -370,39 +371,16 @@ int gfx_graphics_startup (void)
 		SDL_FreeSurface(surface);
 	}
 
-	/* select the scanner palette */
-	//set_palette(the_palette);
-
-	/* Create the screen buffer bitmap */
-	//gfx_screen = create_bitmap (SCREEN_W, SCREEN_H);
-	
-
-	//clear (gfx_screen);
-
-	//blit (scanner_image, gfx_screen, 0, 0, GFX_X_OFFSET, 385+GFX_Y_OFFSET, scanner_image->w, scanner_image->h);
-
 	scanner_width = sprites[IMG_THE_SCANNER].rect.w; 
 	scanner_height = sprites[IMG_THE_SCANNER].rect.h;
 
 	sprites[IMG_THE_SCANNER].rect.x = GFX_SCANNER_L_COORD;	// unlike other "sprites" the position is the same to put, always, so set it here ...
 	sprites[IMG_THE_SCANNER].rect.y = GFX_SCANNER_T_COORD;
 
-	//scanner_rect.x = GFX_X_OFFSET;
-	//scanner_rect.y = 385+GFX_Y_OFFSET;
-	//scanner_rect.w = sprites[IMG_THE_SCANNER].w;
-	//scanner_rect.h = sprites[IMG_THE_SCANNER].h;
-	//scanner_rect.w = scanner_texture->width;
-	//scanner_rect.h = scanner_texture->height;
-	//SDL_QueryTexture(scanner_texture,NULL,NULL,&scanner_rect.w,&scanner_rect.h);
-	//SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &scanner_rect);
-	//gfx_draw_scanner();
-	SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &sprites[IMG_THE_SCANNER].rect);	// render scanner without setting clipping (would be with gfx_draw_scanner ...)
 	
-	//gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
-
-	//gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
-	//gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD + GFX_VIEW_HSIZE, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD + GFX_VIEW_HSIZE);
-
+//  gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
+//  gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
+//  gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD + GFX_VIEW_HSIZE, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD + GFX_VIEW_HSIZE);
 //	gfx_draw_line (0, 0, 0, GFX_WINDOW_B_COORD);
 //	gfx_draw_line (0, 0, GFX_WINDOW_R_COORD, 0);
 //	gfx_draw_line (GFX_WINDOW_R_COORD, 0, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
@@ -879,33 +857,37 @@ void gfx_display_centre_text (int y, char *str, int psize, int col)
 
 void gfx_clear_display (void)
 {
-	rectfill (gfx_screen, GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_BLACK);
+	gfx_clear_area (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
 }
 
 void gfx_clear_text_area (void)
 {
-	rectfill (gfx_screen, GFX_VIEW_L_COORD, GFX_VIEW_B_COORD - 2 * GFX_BORDER_SIZE, GFX_VIEW_R_COORD, GFX_VIEW_B_COORD - 2 * GFX_BORDER_SIZE - GFX_FOOTER_SIZE, GFX_COL_BLACK);
-	// rectfill (gfx_screen, GFX_VIEW_L_COORD, GFX_VIEW_B_COORD - 2 * GFX_BORDER_SIZE, GFX_VIEW_R_COORD, GFX_WINDOW_B_COORD - GFX_BORDER_SIZE - GFX_FOOTER_SIZE, GFX_COL_BLACK);
+	gfx_clear_area (GFX_VIEW_L_COORD, GFX_WINDOW_B_COORD - GFX_FOOTER_SIZE, GFX_VIEW_R_COORD, GFX_WINDOW_B_COORD - GFX_BORDER_SIZE);
 }
 
 void gfx_clear_area (int tx, int ty, int bx, int by)
 {
-	rectfill (gfx_screen, tx, ty, bx, by, GFX_COL_BLACK);
+	gfx_draw_filledrect (tx, ty, bx, by, GFX_COL_BLACK);
+}
+
+void gfx_draw_roundedsimplerect (int tx, int ty, int bx, int by, int col)
+{
+	rectroundedsimple (gfx_screen, tx, ty, bx, by, col);	
+}
+
+void gfx_draw_roundedfilledrect (int tx, int ty, int bx, int by, int col)
+{
+	rectroundedfilled (gfx_screen, tx, ty, bx, by, col);	
 }
 
 void gfx_draw_filledrect (int tx, int ty, int bx, int by, int col)
 {
-	rectfill (gfx_screen, tx, ty, bx, by, col);	
+	rectfilled (gfx_screen, tx, ty, bx, by, col);	
 }
 
 void gfx_draw_simplerect (int tx, int ty, int bx, int by, int col)
 {
-	rectnotfilled (gfx_screen, tx, ty, bx, by, col);
-}
-
-void gfx_draw_rect (int tx, int ty, int bx, int by, int col)
-{
-	rectfill (gfx_screen, tx, ty, bx, by, col);
+	rectsimple (gfx_screen, tx, ty, bx, by, col);
 }
 
 void gfx_display_pretty_text (int tx, int ty, int bx, int by, char *txt)
@@ -948,7 +930,7 @@ void gfx_display_pretty_text (int tx, int ty, int bx, int by, char *txt)
 }
 
 
-static ETNK_INLINE void gfx_set_clip ( int x1, int y1, int x2, int y2 )
+static inline void gfx_set_clip ( int x1, int y1, int x2, int y2 )
 {
 	SDL_Rect rect;
 	rect.x = x1;
@@ -956,15 +938,14 @@ static ETNK_INLINE void gfx_set_clip ( int x1, int y1, int x2, int y2 )
 	rect.w = x2 - x1 + 1;
 	rect.h = y2 - y1 + 1;
 	// FIXME: check?
-	if (rect.w <= 0 || rect.h <=0 || rect.x < 0 || rect.y < 0)
-		fprintf(stderr, "SUSPECT clipping: set_clip(%d,%d,%d,%d)\n", x1,y1,x2,y2);
+	//if (rect.w <= 0 || rect.h <=0 || rect.x < 0 || rect.y < 0)
+	//	fprintf(stderr, "SUSPECT clipping: set_clip(%d,%d,%d,%d)\n", x1,y1,x2,y2);
 	SDL_RenderSetClipRect(sdl_ren, &rect);
 }
 
-
 void gfx_clear_scanner()
 {
-	gfx_set_clip(GFX_WINDOW_L_COORD, GFX_WINDOW_B_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_WHCOORD);
+	gfx_set_clip(GFX_SCANNER_L_COORD, GFX_SCANNER_T_COORD, GFX_SCANNER_R_COORD, GFX_SCANNER_B_COORD);
 	SDL_SetRenderDrawColor(sdl_ren, 0, 0, 0, 0xFF);
 	SDL_RenderClear(sdl_ren);
 }
@@ -977,9 +958,8 @@ void gfx_draw_scanner (void)
 
 void gfx_set_clip_region (int tx, int ty, int bx, int by)
 {
-	gfx_set_clip (/*gfx_screen,*/ tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET, bx + GFX_X_OFFSET, by + GFX_Y_OFFSET);
+	gfx_set_clip (tx, ty, bx, by);
 }
-
 
 void gfx_start_render (void)
 {
@@ -987,15 +967,13 @@ void gfx_start_render (void)
 	total_polys = 0;
 }
 
-
 void gfx_render_polygon (int num_points, int *point_list, int face_colour, int zavg)
 {
 	int i;
 	int x;
 	int nx;
 	
-	if (total_polys == MAX_POLYS)
-		return;
+	if (total_polys == MAX_POLYS) return;
 
 	x = total_polys;
 	total_polys++;
@@ -1022,8 +1000,7 @@ void gfx_render_polygon (int num_points, int *point_list, int face_colour, int z
 	{
 		nx = poly_chain[i].next;
 		
-		if (zavg > poly_chain[nx].z)
-		{
+		if (zavg > poly_chain[nx].z) {
 			poly_chain[i].next = x;
 			poly_chain[x].next = nx;
 			return;

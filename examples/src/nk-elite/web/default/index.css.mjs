@@ -26,7 +26,8 @@ return  `
 
 .game-newkind__canvas {
     cursor: default;
-    width: 512px;
+    width: 800px;
+    height: 600px;
 }
 
 .game-newkind__btn {

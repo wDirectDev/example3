@@ -132,17 +132,15 @@ void move_cross (int dx, int dy)
 		cross_x += (dx * 4);
 		cross_y += (dy * 4);
 		if (cross_x < GFX_VIEW_L_COORD) cross_x = GFX_VIEW_L_COORD;
-		if (cross_x > GFX_VIEW_R_COORD) cross_x = GFX_VIEW_R_COORD;
-		if (cross_y < GFX_VIEW_T_COORD) cross_y = GFX_VIEW_T_COORD;
+		if (cross_x > GFX_VIEW_R_COORD - 1) cross_x = GFX_VIEW_R_COORD - 1;
+		if (cross_y < GFX_VIEW_T_COORD + 1) cross_y = GFX_VIEW_T_COORD + 1;
 		if (cross_y > GFX_VIEW_B_COORD) cross_y = GFX_VIEW_B_COORD;
-		return;
-	}
-	if (current_screen == SCR_GALACTIC_CHART) {
+	} else if (current_screen == SCR_GALACTIC_CHART) {
 		cross_x += (dx * 2);
 		cross_y += (dy * 2);
 		if (cross_x < GFX_VIEW_L_COORD) cross_x = GFX_VIEW_L_COORD;
-		if (cross_x > GFX_VIEW_R_COORD) cross_x = GFX_VIEW_R_COORD;
-		if (cross_y < GFX_VIEW_T_COORD) cross_y = GFX_VIEW_T_COORD;
+		if (cross_x > GFX_VIEW_R_COORD - 1) cross_x = GFX_VIEW_R_COORD - 1;
+		if (cross_y < GFX_VIEW_T_COORD + 1) cross_y = GFX_VIEW_T_COORD + 1;
 		if (cross_y > GFX_VIEW_B_COORD) cross_y = GFX_VIEW_B_COORD;
 	}
 }

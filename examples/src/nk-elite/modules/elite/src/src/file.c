@@ -75,27 +75,17 @@ static FILE *pref_fopen ( const char *name, const char *mode )
 void write_config_file (void)
 {
 	FILE *fp;
-	
 	fp = pref_fopen (config_filename, "w");
-	if (fp == NULL)
-		return;
-
+	if (fp == NULL) return;
 	fprintf (fp, "%d\t\t# Game Speed, the lower the number the faster the game.\n", speed_cap);
-
 	fprintf (fp, "%d\t\t# Graphics: 0 = Solid, 1 = Wireframe\n", wireframe);
-
 	fprintf (fp, "%d\t\t# Anti-Alias Wireframe: 0 = Normal, 1 = Anti-Aliased\n", anti_alias_gfx);
-
 	fprintf (fp, "%d\t\t# Planet style: 0 = Wireframe, 1 = Green, 2 = SNES, 3 = Fractal\n", planet_render_style);
-	
 	fprintf (fp, "%d\t\t# Planet Descriptions: 0 = Tree Grubs, 1 = Hoopy Casinos\n", hoopy_casinos);
-
 	fprintf (fp, "%d\t\t# Instant dock: 0 = off, 1 = on\n", instant_dock);
-	
 	fprintf (fp, "newscan.cfg\t# Name of scanner config file to use.\n");
 	fprintf (fp, "%d\t\t# Run in a window: 0 = off, 1 = on\n", prefer_window);
 	fprintf (fp, "%d\t\t# Remap keys in alternate views: 0 = off, 1 = on\n", remap_keys);
-
 	fclose (fp);
 }
 
