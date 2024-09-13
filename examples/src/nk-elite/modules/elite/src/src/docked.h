@@ -15,10 +15,10 @@
 #ifndef ETNK_DOCKED_H
 #define ETNK_DOCKED_H
 
-void display_short_range_chart (void);
-void display_galactic_chart (void);
+void display_short_range_chart (int coord_init);
+void display_galactic_chart (int coord_init);
 void display_data_on_planet (void);
-void show_distance_to_planet (void);
+void show_distance_to_planet (int coord_init);
 void move_cursor_to_origin (void);
 void find_planet_by_name (char *find_name);
 void display_market_prices (void);

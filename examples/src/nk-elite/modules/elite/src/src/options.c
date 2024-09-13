@@ -34,7 +34,7 @@ static int hilite_item;
 #define NUM_SETTINGS 7
 
 #define OPTION_BAR_WIDTH	(400)
-#define OPTION_BAR_HEIGHT	(15)
+#define OPTION_BAR_HEIGHT	(12)
 
 struct option
 {
@@ -74,10 +74,14 @@ void quit_screen (void)
 	current_screen = SCR_QUIT;
 
 	gfx_clear_display();
-	gfx_display_centre_text (10, "GAME OPTIONS", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, wnd_width - 1, 36);
+	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
 
-	gfx_display_centre_text (175, "QUIT GAME (Y/N)?", 140, GFX_COL_GOLD);		
+	gfx_display_centre_text (14, "GAME OPTIONS", 140, GFX_COL_GOLD);
+
+	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
+	gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
+
+	gfx_display_centre_text (GFX_YWINDOW_CENTER, "QUIT GAME (Y/N)?", 140, GFX_COL_GOLD);		
 }
 
 
@@ -153,7 +157,7 @@ void highlight_setting (int item)
 	{
 		if (hilite_item == (NUM_SETTINGS - 1))
 		{
-			x = GFX_X_CENTRE - (OPTION_BAR_WIDTH / 2);
+			x = GFX_X_CENTER - (OPTION_BAR_WIDTH / 2);
 			y = ((NUM_SETTINGS + 1) / 2) * 30 + 96 + 32;
 			width = OPTION_BAR_WIDTH;
 		}
@@ -164,13 +168,13 @@ void highlight_setting (int item)
 			width = 100;
 		}
 
-		gfx_clear_area (x, y, x + width, y + OPTION_BAR_HEIGHT);
+		gfx_clear_area (x, y - 6, x + width, y + OPTION_BAR_HEIGHT);
 		display_setting_item (hilite_item);		
 	}
 
 	if (item == (NUM_SETTINGS - 1))
 	{
-		x = GFX_X_CENTRE - (OPTION_BAR_WIDTH / 2);
+		x = GFX_X_CENTER - (OPTION_BAR_WIDTH / 2);
 		y = ((NUM_SETTINGS + 1) / 2) * 30 + 96 + 32;
 		width = OPTION_BAR_WIDTH;
 	}
@@ -181,7 +185,7 @@ void highlight_setting (int item)
 		width = 100;
 	}
 	
-	gfx_draw_rectangle (x, y, x + width, y + OPTION_BAR_HEIGHT, GFX_COL_DARK_RED);
+	gfx_draw_filledrect (x, y - 6, x + width, y + 12, GFX_COL_DARK_RED);
 	display_setting_item (item);		
 	hilite_item = item;
 }
@@ -273,8 +277,12 @@ void game_settings_screen (void)
 	current_screen = SCR_SETTINGS;
 
 	gfx_clear_display();
-	gfx_display_centre_text (10, "GAME SETTINGS", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, wnd_width - 1, 36);
+	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
+
+	gfx_display_centre_text (14, "GAME SETTINGS", 140, GFX_COL_GOLD);
+
+	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
+	gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
 
 	for (i = 0; i < NUM_SETTINGS; i++)
 	{
@@ -306,18 +314,18 @@ void highlight_option (int i)
 	
 	if ((hilite_item != -1) && (hilite_item != i))
 	{
-		x = GFX_X_CENTRE - (OPTION_BAR_WIDTH / 2);
+		x = GFX_X_CENTER - (OPTION_BAR_WIDTH / 2);
 		y = ((wnd_height - 128) - (30 * NUM_OPTIONS)) / 2;
 		y += hilite_item * 30;
-		gfx_clear_area (x, y, x + OPTION_BAR_WIDTH, y + OPTION_BAR_HEIGHT);
+		gfx_clear_area (x, y - 6, x + OPTION_BAR_WIDTH, y + OPTION_BAR_HEIGHT);
 		display_option_item (hilite_item);		
 	}
 
-	x = GFX_X_CENTRE - (OPTION_BAR_WIDTH / 2);
+	x = GFX_X_CENTER - (OPTION_BAR_WIDTH / 2);
 	y = ((wnd_height - 128) - (30 * NUM_OPTIONS)) / 2;
 	y += i * 30;
 	
-	gfx_draw_rectangle (x, y, x + OPTION_BAR_WIDTH, y + OPTION_BAR_HEIGHT,
+	gfx_draw_filledrect (x, y - 6, x + OPTION_BAR_WIDTH, y + OPTION_BAR_HEIGHT,
 						GFX_COL_DARK_RED);
 	display_option_item (i);		
 
@@ -326,14 +334,12 @@ void highlight_option (int i)
 
 void select_previous_option (void)
 {
-	if (hilite_item > 0)
-		highlight_option (hilite_item - 1);
+	if (hilite_item > 0) highlight_option (hilite_item - 1);
 }
 
 void select_next_option (void)
 {
-	if (hilite_item < (NUM_OPTIONS - 1))
-		highlight_option (hilite_item + 1);
+	if (hilite_item < (NUM_OPTIONS - 1)) highlight_option (hilite_item + 1);
 }
 
 
@@ -373,14 +379,19 @@ void display_options (void)
 	int i;
 
 	current_screen = SCR_OPTIONS;
-	
+
 	gfx_clear_display();
-	gfx_display_centre_text (10, "GAME OPTIONS", 140, GFX_COL_GOLD);
-	gfx_draw_line (0, 36, wnd_width - 1, 36);
-	gfx_display_centre_text ((wnd_height - 132 ) - 80, "Version: Release 1.0", 120, GFX_COL_WHITE); // 300
-	gfx_display_centre_text ((wnd_height - 132 ) - 60, "www.newkind.co.uk", 120, GFX_COL_WHITE); // 320
-	gfx_display_centre_text ((wnd_height - 132 ) - 40, "Written by Christian Pinder 1999-2001", 120, GFX_COL_WHITE); // 340
-	gfx_display_centre_text ((wnd_height - 132 ) - 20, "Based on original code by Ian Bell & David Braben", 120, GFX_COL_WHITE); //360
+	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
+
+	gfx_display_centre_text (14, "GAME OPTIONS", 140, GFX_COL_GOLD);
+
+	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
+	gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
+
+	gfx_display_centre_text (GFX_WINDOW_B_COORD - 120, "Version: Release 1.0", 120, GFX_COL_WHITE); // 300
+	gfx_display_centre_text (GFX_WINDOW_B_COORD - 100, "www.newkind.co.uk", 120, GFX_COL_WHITE); // 320
+	gfx_display_centre_text (GFX_WINDOW_B_COORD - 80, "Written by Christian Pinder 1999-2001", 120, GFX_COL_WHITE); // 340
+	gfx_display_centre_text (GFX_WINDOW_B_COORD - 60, "Based on original code by Ian Bell & David Braben", 120, GFX_COL_WHITE); //360
 	
 	for (i = 0; i < NUM_OPTIONS; i++)
 		display_option_item (i);

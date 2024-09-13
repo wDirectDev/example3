@@ -276,8 +276,7 @@ void update_altitude (void)
 	
 	myship.altitude = 255;
 
-	if (witchspace)
-		return;
+	if (witchspace) return;
 	
 	x = fabs(universe[0].location.x);
 	y = fabs(universe[0].location.y);
@@ -524,41 +523,30 @@ void switch_to_view (struct univ_object *flip)
 		tmp = flip->location.x;
 		flip->location.x = flip->location.z;
 		flip->location.z = -tmp;
-
-		if (flip->type < 0)
-			return;
-		
+		if (flip->type < 0) return;
 		tmp = flip->rotmat[0].x;
 		flip->rotmat[0].x = flip->rotmat[0].z;
 		flip->rotmat[0].z = -tmp;		
-
 		tmp = flip->rotmat[1].x;
 		flip->rotmat[1].x = flip->rotmat[1].z;
 		flip->rotmat[1].z = -tmp;		
-
 		tmp = flip->rotmat[2].x;
 		flip->rotmat[2].x = flip->rotmat[2].z;
 		flip->rotmat[2].z = -tmp;		
 		return;
 	}
-
 	if (current_screen == SCR_RIGHT_VIEW)
 	{
 		tmp = flip->location.x;
 		flip->location.x = -flip->location.z;
 		flip->location.z = tmp;
-
-		if (flip->type < 0)
-			return;
-		
+		if (flip->type < 0) return;
 		tmp = flip->rotmat[0].x;
 		flip->rotmat[0].x = -flip->rotmat[0].z;
 		flip->rotmat[0].z = tmp;		
-
 		tmp = flip->rotmat[1].x;
 		flip->rotmat[1].x = -flip->rotmat[1].z;
 		flip->rotmat[1].z = tmp;		
-
 		tmp = flip->rotmat[2].x;
 		flip->rotmat[2].x = -flip->rotmat[2].z;
 		flip->rotmat[2].z = tmp;		
@@ -578,34 +566,22 @@ void update_universe (void)
 	int bounty;
 	char str[80];
 	struct univ_object flip;
-	
-	
-	gfx_start_render();
-				 	
-	for (i = 0; i < MAX_UNIV_OBJECTS; i++)
-	{
+	gfx_start_render();		 	
+	for (i = 0; i < MAX_UNIV_OBJECTS; i++) {
 		type = universe[i].type;
-		
-		if (type != 0)
-		{
-			if ((universe[i].flags & FLG_REMOVE) && type > 0)
-			{
+		if (type != 0) {
+			if ((universe[i].flags & FLG_REMOVE) && type > 0) {
 				if (!(universe[i].flags & FLG_TARGET))
 					cmdr.legal_status |= 64;
-			
 				bounty = ship_list[type]->bounty;
-				
-				if ((bounty != 0) && (!witchspace))
-				{
+				if ((bounty != 0) && (!witchspace)) {
 					cmdr.credits += bounty;
 					sprintf (str, "Bounty: %d.%d CR", bounty / 10, bounty % 10);
 					info_message (str);
 				}
-				
 				remove_ship (i);
 				continue;
 			}
-
 			if ((detonate_bomb) && ((universe[i].flags & FLG_DEAD) == 0) &&
 				(type != SHIP_PLANET) && (type != SHIP_SUN) &&
 				(type != SHIP_CONSTRICTOR) && (type != SHIP_COUGAR) &&
@@ -614,7 +590,6 @@ void update_universe (void)
 				snd_play_sample (SND_EXPLODE);
 				universe[i].flags |= FLG_DEAD;		
 			}
-
 			if ((current_screen != SCR_INTRO_ONE) &&
 				(current_screen != SCR_INTRO_TWO) &&
 				(current_screen != SCR_GAME_OVER) &&
@@ -622,14 +597,10 @@ void update_universe (void)
 			{
 				tactics (i);
 			} 
-		
 			move_univ_object (&universe[i]);
-
 			flip = universe[i];
 			switch_to_view (&flip);
-			
-			if (type == SHIP_PLANET)
-			{
+			if (type == SHIP_PLANET) {
 				if ((ship_count[SHIP_CORIOLIS] == 0) &&
 					(ship_count[SHIP_DODEC] == 0) &&
 					(universe[i].distance < 65792)) /* was 49152 */
@@ -640,41 +611,27 @@ void update_universe (void)
 				draw_ship (&flip);
 				continue;
 			}
-
-			if (type == SHIP_SUN)
-			{
+			if (type == SHIP_SUN) {
 				draw_ship (&flip);
 				continue;
 			}
-			
-			
-			if (universe[i].distance < 170)
-			{
+			if (universe[i].distance < 170) {
 				if ((type == SHIP_CORIOLIS) || (type == SHIP_DODEC))
 					check_docking (i);
 				else
 					scoop_item(i);
-				
 				continue;
 			}
-
-			if (universe[i].distance > 57344)
-			{
+			if (universe[i].distance > 57344) {
 				remove_ship (i);
 				continue;
 			}
-
 			draw_ship (&flip);
-
 			universe[i].flags = flip.flags;
 			universe[i].exp_seed = flip.exp_seed;
 			universe[i].exp_delta = flip.exp_delta;
-			
 			universe[i].flags &= ~FLG_FIRING;
-			
-			if (universe[i].flags & FLG_DEAD)
-				continue;
-
+			if (universe[i].flags & FLG_DEAD) continue;
 			check_target (i, &flip);
 		}
 	}
@@ -682,9 +639,6 @@ void update_universe (void)
 	gfx_finish_render();
 	detonate_bomb = 0;
 }
-
-
-
 
 /*
  * Update the scanner and draw all the lollipops.
@@ -696,55 +650,39 @@ void update_scanner (void)
 	int x,y,z;
 	int x1,y1,y2;
 	int colour;
-	
-	for (i = 0; i < MAX_UNIV_OBJECTS; i++)
-	{
+	for (i = 0; i < MAX_UNIV_OBJECTS; i++) {
 		if ((universe[i].type <= 0) ||
 			(universe[i].flags & FLG_DEAD) ||
 			(universe[i].flags & FLG_CLOAKED))
 			continue;
-	
 		x = universe[i].location.x * scanner_zoom / 256;
 		y = universe[i].location.y * scanner_zoom / 256;
 		z = universe[i].location.z * scanner_zoom / 256;
-
 		x1 = x;
 		y1 = -z / 4;
 		y2 = y1 - y / 2;
-
-		if ((y2 < -28) || (y2 > 28) ||
-			(x1 < -50) || (x1 > 50))
-			continue;
-
+		if ((y2 < -28) || (y2 > 28) || (x1 < -50) || (x1 > 50)) continue;
 		x1 += scanner_cx;
 		y1 += scanner_cy;
 		y2 += scanner_cy;
-
 		colour = (universe[i].flags & FLG_HOSTILE) ? GFX_COL_YELLOW_5 : GFX_COL_WHITE;
-			
-		switch (universe[i].type)
-		{
+		switch (universe[i].type) {
 			case SHIP_MISSILE:
 				colour = 137;
 				break;
-
 			case SHIP_DODEC:
 			case SHIP_CORIOLIS:
 				colour = GFX_COL_GREEN_1;
 				break;
-				
 			case SHIP_VIPER:
 				colour = 252;
 				break;
 		}
-
-		gfx_draw_colour_line (x1+2, y2,   x1-3, y2, colour);
+		gfx_draw_colour_line (x1+2, y2+0, x1-3, y2+0, colour);
 		gfx_draw_colour_line (x1+2, y2+1, x1-3, y2+1, colour);
 		gfx_draw_colour_line (x1+2, y2+2, x1-3, y2+2, colour);
 		gfx_draw_colour_line (x1+2, y2+3, x1-3, y2+3, colour);
-
-
-		gfx_draw_colour_line (x1,   y1, x1,   y2, colour);
+		gfx_draw_colour_line (x1+0, y1, x1+0, y2, colour);
 		gfx_draw_colour_line (x1+1, y1, x1+1, y2, colour);
 		gfx_draw_colour_line (x1+2, y1, x1+2, y2, colour);
 	}
@@ -761,27 +699,16 @@ void update_compass (void)
 	int compass_x;
 	int compass_y;
 	int un = 0;
-
-	if (witchspace)
-		return;
-	
-	if (ship_count[SHIP_CORIOLIS] || ship_count[SHIP_DODEC])
-		un = 1;
-	
+	if (witchspace) return;
+	if (ship_count[SHIP_CORIOLIS] || ship_count[SHIP_DODEC]) un = 1;
 	dest = unit_vector (&universe[un].location);
-	
 	compass_x = compass_centre_x + (dest.x * 16);
 	compass_y = compass_centre_y + (dest.y * -16);
-	
-	if (dest.z < 0)
-	{
+	if (dest.z < 0) {
 		gfx_draw_sprite (IMG_RED_DOT, compass_x, compass_y);
-	}
-	else
-	{
+	} else {
 		gfx_draw_sprite (IMG_GREEN_DOT, compass_x, compass_y);
-	}
-				
+	}			
 }
 
 
@@ -843,7 +770,6 @@ void display_shields (void)
 		display_dial_bar (aft_shield / 4, 31, 23);
 }
 
-
 void display_altitude (void)
 {
 	if (myship.altitude > 3)
@@ -856,13 +782,11 @@ void display_cabin_temp (void)
 		display_dial_bar (myship.cabtemp / 4, 31, 60);
 }
 
-
 void display_laser_temp (void)
 {
 	if (laser_temp > 0)
 		display_dial_bar (laser_temp / 4, 31, 76);
 }
-
 
 /*
  * Display the energy banks.
@@ -871,26 +795,15 @@ void display_laser_temp (void)
 void display_energy (void)
 {
 	int e1,e2,e3,e4;
-
 	e1 = energy > 64 ? 64 : energy;
 	e2 = energy > 128 ? 64 : energy - 64;
 	e3 = energy > 192 ? 64 : energy - 128;
 	e4 = energy - 192;  	
-	
-	if (e4 > 0)
-		display_dial_bar (e4, 416, 61);
-
-	if (e3 > 0)
-		display_dial_bar (e3, 416, 79);
-
-	if (e2 > 0)
-		display_dial_bar (e2, 416, 97);
-
-	if (e1 > 0)
-		display_dial_bar (e1, 416, 115);
+	if (e4 > 0) display_dial_bar (e4, 416, 61);
+	if (e3 > 0) display_dial_bar (e3, 416, 79);
+	if (e2 > 0) display_dial_bar (e2, 416, 97);
+	if (e1 > 0) display_dial_bar (e1, 416, 115);
 }
-
-
 
 void display_flight_roll (void)
 {
@@ -904,8 +817,7 @@ void display_flight_roll (void)
 	pos = sx - ((flight_roll * 28) / myship.max_roll);
 	pos += 32;
 
-	for (i = 0; i < 4; i++)
-	{
+	for (i = 0; i < 4; i++) {
 		gfx_draw_colour_line (pos + i, sy, pos + i, sy + 7, GFX_COL_GOLD);
 	}
 }
@@ -915,26 +827,20 @@ void display_flight_climb (void)
 	int sx,sy;
 	int i;
 	int pos;
-
 	sx = 416;
 	sy = (wnd_height - 128) + 9 + 14 + 16;
-
 	pos = sx + ((flight_climb * 28) / myship.max_climb);
 	pos += 32;
-
-	for (i = 0; i < 4; i++)
-	{
+	for (i = 0; i < 4; i++) {
 		gfx_draw_colour_line (pos + i, sy, pos + i, sy + 7, GFX_COL_GOLD);
 	}
 }
 
-
 void display_fuel (void)
 {
 	if (cmdr.fuel > 0)
-		display_dial_bar ((cmdr.fuel * 64) / myship.max_fuel, 31, 44);
+		display_dial_bar((cmdr.fuel * 64) / myship.max_fuel, 31, 44);
 }
-
 
 void display_missiles (void)
 {
@@ -964,8 +870,6 @@ void display_missiles (void)
 	}
 }
 
-
-
 void display_condition(void)
 {
   static const int cc[] = { GFX_COL_BLACK, GFX_COL_GREEN_1, GFX_COL_YELLOW_1,
@@ -978,12 +882,15 @@ void display_condition(void)
 
 void update_console (void)
 {	
-	if ( venablescreenname == TRUE ) {
+	if ( venablescreenname == TRUE ) 
+	{
 		gfx_display_centre_text (20, "Hello for Sergey Zababurin", 120, GFX_COL_GOLD);
 	}
 
-	if ( venableconsole == TRUE ) {
+	if ( venableconsole == TRUE ) 
+	{
 		gfx_draw_scanner();
+
 		display_speed();
 		display_flight_climb();
 		display_flight_roll();
@@ -998,7 +905,7 @@ void update_console (void)
 		update_condition();
 		
 		if (docked) {
-			gfx_set_clip_region (0, 0, wnd_width, wnd_height);
+			gfx_set_clip_region (0, 0, wnd_width - 1, wnd_height - 1);
 			return;
 		}
 
@@ -1006,24 +913,22 @@ void update_console (void)
 		update_compass();
 		display_condition();
 
-		{
 		char buf[5];
+
 		sprintf(buf, "x%d", scanner_zoom);
 		gfx_display_text(zoom_x, zoom_y, buf);
-		}
 
-		if (ship_count[SHIP_CORIOLIS] || ship_count[SHIP_DODEC])
-			gfx_draw_sprite (IMG_BIG_S, 387, 490);
+		if (ship_count[SHIP_CORIOLIS] || ship_count[SHIP_DODEC]) gfx_draw_sprite (IMG_BIG_S, 387, 490);
+		if (ecm_active) gfx_draw_sprite (IMG_BIG_E, 115, 490);
 
-		if (ecm_active)
-			gfx_draw_sprite (IMG_BIG_E, 115, 490);
-
-	} else {
-                gfx_clear_scanner();        
+	} 
+	else 
+	{
+        gfx_clear_scanner();        
 		gfx_display_centre_text (400, "Special thanks for Sergey Zababurin", 120, GFX_COL_GOLD);
-        }
+    }
 
-	gfx_set_clip_region (0, 0, wnd_width, wnd_height);
+	gfx_set_clip_region (0, 0, wnd_width - 1, wnd_height - 1);
 }
 
 void increase_flight_roll (void)
@@ -1055,19 +960,16 @@ void decrease_flight_climb (void)
 
 void start_hyperspace (void)
 {
-	if (hyper_ready)
-		return;
-		
-	hyper_distance = calc_distance_to_planet (docked_planet, hyperspace_planet);
+	if (hyper_ready) return;
 
+	hyper_distance = calc_distance_to_planet (docked_planet, hyperspace_planet);
 	if ((docked_planet.a == hyperspace_planet.a &&
 	     docked_planet.b == hyperspace_planet.b &&
 	     docked_planet.c == hyperspace_planet.c &&
 	     docked_planet.d == hyperspace_planet.d &&
 	     docked_planet.e == hyperspace_planet.e &&
 	     docked_planet.f == hyperspace_planet.f) ||
-	    (hyper_distance > cmdr.fuel))
-		return;
+	    (hyper_distance > cmdr.fuel)) return;
 
 	destination_planet = hyperspace_planet;
 	name_planet (hyper_name, destination_planet);
@@ -1082,12 +984,8 @@ void start_hyperspace (void)
 
 void start_galactic_hyperspace (void)
 {
-	if (hyper_ready)
-		return;
-
-	if (cmdr.galactic_hyperdrive == 0)
-		return;
-		
+	if (hyper_ready) return;
+	if (cmdr.galactic_hyperdrive == 0) return;
 	hyper_ready = 1;
 	hyper_countdown = 2;
 	hyper_galactic = 1;
@@ -1099,7 +997,6 @@ void start_galactic_hyperspace (void)
 void display_hyper_status (void)
 {
 	char str[80];
-
 	sprintf (str, "%d", hyper_countdown);	
 
 	if ((current_screen == SCR_FRONT_VIEW) || (current_screen == SCR_REAR_VIEW) ||

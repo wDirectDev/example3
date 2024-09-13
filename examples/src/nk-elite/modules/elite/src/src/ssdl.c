@@ -37,12 +37,15 @@
 #include "sound.h"
 #include "file.h"
 
+SDL_Texture		*sdl_tex_clone = NULL;
 SDL_Texture		*sdl_tex = NULL;
 SDL_Window		*sdl_win = NULL;
 SDL_Renderer	*sdl_ren = NULL;
 
 #define MAX_POLYS	100
 
+int scanner_width;
+int scanner_height;
 int wnd_width;
 int wnd_height;
 int wnd_fullscreen;
@@ -68,12 +71,12 @@ static struct poly_data poly_chain[MAX_POLYS];
 
 // sdl2_gfx substitutions of allegro functions
 
-#define rectfill(ren,tx,ty,bx,by,c)			boxRGBA(sdl_ren,tx,ty,bx,by,RGBA_PARAM(c))
+#define rectfill(ren,tx,ty,bx,by,c)			roundedBoxRGBA(sdl_ren,tx,ty,bx,by,6,RGBA_PARAM(c))
+#define rectnotfilled(ren,tx,ty,bx,by,c)	rectangleRGBA(sdl_ren,tx,ty,bx,by,RGBA_PARAM(c))
 #define	line(ren,x1,y1,x2,y2,c)				lineRGBA(sdl_ren,x1,y1,x2,y2,RGBA_PARAM(c))
 #define hline(ren,x1,y,x2,c)				hlineRGBA(sdl_ren,x1,x2,y,RGBA_PARAM(c))
 #define vline(ren,x1,y1,y2,c)				vlineRGBA(sdl_ren,x1,y1,y2,RGBA_PARAM(c))
-//#define circle(ren,x,y,r,c)					circleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
-//#define circlefill(ren,x,y,r,c)				filledCircleRGBA(sdl_ren,x,y,r,RGBA_PARAM(c))
+
 #define putpixel(ren,x,y,c)					pixelRGBA(sdl_ren,x,y,RGBA_PARAM(c))
 #define triangle(ren,x1,y1,x2,y2,x3,y3,c)	filledTrigonRGBA(sdl_ren,x1,y1,x2,y2,x3,y3,RGBA_PARAM(c))
 
@@ -92,8 +95,6 @@ Uint8 the_palette_b[0x100];
 static struct {
 	SDL_Texture *tex;
 	SDL_Rect rect;
-//	int w;
-//	int h;
 } sprites[IMG_NUM_OF];
 
 
@@ -165,9 +166,11 @@ static ETNK_INLINE fixed ftofix ( double x ) {
 	}
 	return (fixed)(x * 65536.0 + (x < 0 ? -0.5 : 0.5));
 }
+
 static ETNK_INLINE double fixtof ( fixed x ) {
 	return (double)x / 65536.0;
 }
+
 static ETNK_INLINE fixed fixmul ( fixed x, fixed y ) {
 	return ftofix(fixtof(x) * fixtof(y));
 #if 0
@@ -195,39 +198,35 @@ static ETNK_INLINE fixed fixdiv ( fixed x, fixed y ) {
 		return ftofix(fixtof(x) / fixtof(y));
 }
 
-SDL_Texture* gfx_texture_clone(SDL_Texture* tex, SDL_Renderer* renderer) 
+void gfx_texture_clone()
 {
     Uint32 format;
     int w, h;
     SDL_BlendMode blendmode;
     SDL_Texture* renderTarget;
-    SDL_Texture* newTex;
-
     // Get all properties from the texture we are duplicating
-    SDL_QueryTexture(tex, &format, NULL, &w, &h);
-    SDL_GetTextureBlendMode(tex, &blendmode);
-
+    SDL_QueryTexture(sdl_tex, &format, NULL, &w, &h);
+    SDL_GetTextureBlendMode(sdl_tex, &blendmode);
     // Save the current rendering target (will be NULL if it is the current window)
-    renderTarget = SDL_GetRenderTarget(renderer);
-
+    renderTarget = SDL_GetRenderTarget(sdl_ren);
     // Create a new texture with the same properties as the one we are duplicating
-    newTex = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, w, h);
-
+    sdl_tex_clone = SDL_CreateTexture(sdl_ren, format, SDL_TEXTUREACCESS_TARGET, w, h);
     // Set its blending mode and make it the render target
-    SDL_SetTextureBlendMode(newTex, SDL_BLENDMODE_NONE);
-    SDL_SetRenderTarget(renderer, newTex);
-
+    SDL_SetTextureBlendMode(sdl_tex_clone, SDL_BLENDMODE_NONE);
+    SDL_SetRenderTarget(sdl_ren, sdl_tex_clone);
     // Render the full original texture onto the new one
-    SDL_RenderCopy(renderer, tex, NULL, NULL);
-
+    SDL_RenderCopy(sdl_ren, sdl_tex, NULL, NULL);
     // Change the blending mode of the new texture to the same as the original one
-    SDL_SetTextureBlendMode(newTex, blendmode);
-
+    SDL_SetTextureBlendMode(sdl_tex_clone, blendmode);
     // Restore the render target
-    SDL_SetRenderTarget(renderer, renderTarget);
+    SDL_SetRenderTarget(sdl_ren, renderTarget);
+}
 
-    // Return the new texture
-    return newTex;
+void gfx_swap_textures()
+{
+	SDL_Texture	*sdl_tex_temp = sdl_tex;
+	sdl_tex = sdl_tex_clone;
+	sdl_tex_clone = sdl_tex_temp;
 }
 
 #define fmul(x,y)	fixmul(x,y)
@@ -238,15 +237,19 @@ int gfx_graphics_startup (void)
 	int status = 0;
 
 #ifdef __EMSCRIPTEN__
+
 	emscripten_get_canvas_size(&wnd_width, &wnd_height, &wnd_fullscreen);
 //		emscripten_get_canvas_element_size("#canvas",&wnd_height, &wnd_height);
 	wnd_width = 512;
 	wnd_height = 512;
 	wnd_fullscreen = 0;
+
 #else
+
 	wnd_width = 800;
 	wnd_height = 600;
 	wnd_fullscreen = 0;
+
 #endif
 
 	printf( "VIDEO: width: %d; height: %d; fullscreen: %d; scale: %f\n", wnd_width, wnd_height, wnd_fullscreen, wnd_scale);
@@ -307,7 +310,7 @@ int gfx_graphics_startup (void)
 	}
 #endif
 
-	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET /*| SDL_TEXTUREACCESS_STREAMING */, wnd_width, wnd_height);
+	sdl_tex = SDL_CreateTexture(sdl_ren, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET, wnd_width, wnd_height);
 	if (!sdl_tex) {
 		ERROR_WINDOW("Cannot create texture: %s", SDL_GetError());
 		return 1;
@@ -331,6 +334,7 @@ int gfx_graphics_startup (void)
 	} else {
 		puts("SCANNER: no external scanner was specified");
 	}
+
 	if (!surface) {
 		puts("SCANNER: defaulting to built-in scanner ...");
 		load_sprite(IMG_THE_SCANNER, "scanner.bmp",	&surface);
@@ -376,8 +380,13 @@ int gfx_graphics_startup (void)
 	//clear (gfx_screen);
 
 	//blit (scanner_image, gfx_screen, 0, 0, GFX_X_OFFSET, 385+GFX_Y_OFFSET, scanner_image->w, scanner_image->h);
-	sprites[IMG_THE_SCANNER].rect.x = 0;	// unlike other "sprites" the position is the same to put, always, so set it here ...
-	sprites[IMG_THE_SCANNER].rect.y = (wnd_height - 127);
+
+	scanner_width = sprites[IMG_THE_SCANNER].rect.w; 
+	scanner_height = sprites[IMG_THE_SCANNER].rect.h;
+
+	sprites[IMG_THE_SCANNER].rect.x = GFX_SCANNER_L_COORD;	// unlike other "sprites" the position is the same to put, always, so set it here ...
+	sprites[IMG_THE_SCANNER].rect.y = GFX_SCANNER_T_COORD;
+
 	//scanner_rect.x = GFX_X_OFFSET;
 	//scanner_rect.y = 385+GFX_Y_OFFSET;
 	//scanner_rect.w = sprites[IMG_THE_SCANNER].w;
@@ -388,12 +397,18 @@ int gfx_graphics_startup (void)
 	//SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &scanner_rect);
 	//gfx_draw_scanner();
 	SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &sprites[IMG_THE_SCANNER].rect);	// render scanner without setting clipping (would be with gfx_draw_scanner ...)
-	gfx_draw_line (0, 0, 0, (wnd_height - 128));
-	gfx_draw_line (0, 0, wnd_width - 1, 0);
-	gfx_draw_line (wnd_width - 1, 0, wnd_width - 1, (wnd_height - 128));
-	gfx_draw_line (wnd_width - 1, 0, wnd_width - 1, (wnd_height - 128));
-	gfx_draw_scanner();
+	
+	//gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
 
+	//gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD);
+	//gfx_draw_line (GFX_VIEW_L_COORD, GFX_VIEW_T_COORD + GFX_VIEW_HSIZE, GFX_VIEW_R_COORD, GFX_VIEW_T_COORD + GFX_VIEW_HSIZE);
+
+//	gfx_draw_line (0, 0, 0, GFX_WINDOW_B_COORD);
+//	gfx_draw_line (0, 0, GFX_WINDOW_R_COORD, 0);
+//	gfx_draw_line (GFX_WINDOW_R_COORD, 0, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
+//	gfx_draw_line (GFX_WINDOW_R_COORD, 0, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
+	
+	gfx_draw_scanner();
 
 #if 0
 	/* Install a timer to regulate the speed of the game... */
@@ -449,11 +464,11 @@ void gfx_update_screen (void)
 	//SDL_RenderClear(sdl_ren);
 	// FIXME:
 	// more sane framerate control
-    #ifdef __EMSCRIPTEN__
-        emscripten_sleep(speed_cap);
-    #else
-        SDL_Delay(speed_cap);
-    #endif
+//    #ifdef __EMSCRIPTEN__
+        //emscripten_sleep(speed_cap);
+//    #else
+//        SDL_Delay(speed_cap);
+//    #endif
 
 }
 
@@ -740,6 +755,69 @@ void gfx_draw_line (int x1, int y1, int x2, int y2)
 		line (gfx_screen, x1 + GFX_X_OFFSET, y1 + GFX_Y_OFFSET, x2 + GFX_X_OFFSET, y2 + GFX_Y_OFFSET, GFX_COL_WHITE);
 }
 
+int pixelGetRGBA( SDL_Surface *surface, int x, int y, Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a )
+{
+	int result = 0;
+	Uint32 *pixels = (Uint32 *)surface->pixels;
+	Uint32 pixel = pixels[ ( y * surface->w ) + x ];
+	*a = ((Uint8*)&pixel)[0];
+	*r = ((Uint8*)&pixel)[1];
+	*g = ((Uint8*)&pixel)[2];
+	*b = ((Uint8*)&pixel)[3];
+	return result;
+}
+
+void pixelPutRGBA( SDL_Surface *surface, int x, int y, Uint32 pixel )
+{    
+	Uint32 *pixels = (Uint32 *)surface->pixels;        
+	pixels[ ( y * surface->w ) + x ] = pixel;
+}
+
+
+int pixelRGBALogical(SDL_Renderer * renderer, Sint16 x, Sint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Sint32 logical_mode)
+{
+	int result = 0;
+	Uint8 _r,_g,_b,_a;
+	result |= SDL_SetRenderDrawBlendMode(renderer, (a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+	//SDL_SetRenderTarget
+	//SDL_Surface *surface = NULL;
+	//result |= SDL_LockTextureToSurface(texture, NULL, &surface);
+	//printf( "Render surface: %p\n", surface );
+	//result |= pixelGetRGBA(surface, x, y, &_r, &_g, &_b, &_a);
+	//SDL_UnlockTexture( texture );
+	printf( "Color: %d, %d, %d, %d\n", _r, _g, _b, _a );
+	if ( logical_mode == 1 )
+		result |= SDL_SetRenderDrawColor(renderer, r^_r, g^_g, b^_b, a);
+	else if ( logical_mode == 2 )
+		result |= SDL_SetRenderDrawColor(renderer, r|_r, g|_g, b|_b, a);
+	else 
+		result |= SDL_SetRenderDrawColor(renderer, _r, _g, _b, a);
+	result |= SDL_RenderDrawPoint(renderer, x, y);
+	return result;
+}
+
+
+void gfx_draw_colour_line_logical (int x1, int y1, int x2, int y2, unsigned int line_colour, int logical_mode )
+{
+	if ( x1 == x2 ) {
+		// vertical line
+		for ( int i = ((y1 >= y2) ? y2 : y1); i <= ((y1 <= y2) ? y2 : y1); i++ ) {
+			// pixelRGBALogical(sdl_ren, x1, i, the_palette_r[line_colour], the_palette_g[line_colour], the_palette_b[line_colour], 0xff, logical_mode);
+			pixelRGBA(sdl_ren, x1, i, the_palette_r[line_colour], the_palette_g[line_colour], the_palette_b[line_colour], 0xff);
+		}
+		return;
+	} else if ( y1 == y2 ) {
+		// horizontal line
+		for ( int i = ((x1 >= x2) ? x2 : x1); i <= ((x1 <= x2) ? x2 : x1); i++ ) {
+			// pixelRGBALogical(sdl_ren, i, y1, the_palette_r[line_colour], the_palette_g[line_colour], the_palette_b[line_colour], 0xff, logical_mode);
+			pixelRGBA(sdl_ren, i, y1, the_palette_r[line_colour], the_palette_g[line_colour], the_palette_b[line_colour], 0xff);
+		}
+		return;
+	}
+
+	gfx_draw_colour_line (x1, y1, x2, y2, line_colour);
+}
+
 void gfx_draw_colour_line (int x1, int y1, int x2, int y2, int line_colour)
 {
 	if (y1 == y2)
@@ -747,13 +825,11 @@ void gfx_draw_colour_line (int x1, int y1, int x2, int y2, int line_colour)
 		hline (gfx_screen, x1 + GFX_X_OFFSET, y1 + GFX_Y_OFFSET, x2 + GFX_X_OFFSET, line_colour);
 		return;
 	}
-
 	if (x1 == x2)
 	{
 		vline (gfx_screen, x1 + GFX_X_OFFSET, y1 + GFX_Y_OFFSET, y2 + GFX_Y_OFFSET, line_colour);
 		return;
 	}
-
 	if (anti_alias_gfx && (line_colour == GFX_COL_WHITE))
 		gfx_draw_aa_line (itofix(x1), itofix(y1), itofix(x2), itofix(y2));
 	else
@@ -769,13 +845,13 @@ void gfx_draw_triangle (int x1, int y1, int x2, int y2, int x3, int y3, int col)
 void gfx_display_text (int x, int y, char *txt)
 {
 	//text_mode (-1);
-	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y + 5, GFX_COL_WHITE);
+	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y, GFX_COL_WHITE);
 }
 
 void gfx_display_colour_text (int x, int y, char *txt, int col)
 {
 	//text_mode (-1);
-	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y + 5, col);
+	textout (gfx_screen, datafile[ELITE_1].dat, txt, x, y, col);
 }
 
 void gfx_display_centre_text (int y, char *str, int psize, int col)
@@ -798,29 +874,38 @@ void gfx_display_centre_text (int y, char *str, int psize, int col)
 #endif
 	txt_colour = col;
 	//text_mode (-1);
-	textout_centre (gfx_screen,  datafile[txt_size].dat, str, (wnd_width / 2), y + 5, txt_colour);
+	textout_centre (gfx_screen,  datafile[txt_size].dat, str, (wnd_width / 2), y, txt_colour);
 }
 
 void gfx_clear_display (void)
 {
-	rectfill (gfx_screen, GFX_X_OFFSET + 1, GFX_Y_OFFSET + 1, wnd_width - 2 + GFX_X_OFFSET, (wnd_height - 129) + GFX_Y_OFFSET, GFX_COL_BLACK);
+	rectfill (gfx_screen, GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_BLACK);
 }
 
 void gfx_clear_text_area (void)
 {
-	rectfill (gfx_screen, GFX_X_OFFSET + 1, (wnd_height - 132 ) - 40, wnd_width - 2 + GFX_X_OFFSET, (wnd_height - 129) + GFX_Y_OFFSET, GFX_COL_BLACK);
+	rectfill (gfx_screen, GFX_VIEW_L_COORD, GFX_VIEW_B_COORD - 2 * GFX_BORDER_SIZE, GFX_VIEW_R_COORD, GFX_VIEW_B_COORD - 2 * GFX_BORDER_SIZE - GFX_FOOTER_SIZE, GFX_COL_BLACK);
+	// rectfill (gfx_screen, GFX_VIEW_L_COORD, GFX_VIEW_B_COORD - 2 * GFX_BORDER_SIZE, GFX_VIEW_R_COORD, GFX_WINDOW_B_COORD - GFX_BORDER_SIZE - GFX_FOOTER_SIZE, GFX_COL_BLACK);
 }
 
 void gfx_clear_area (int tx, int ty, int bx, int by)
 {
-	rectfill (gfx_screen, tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET,
-				   bx + GFX_X_OFFSET, by + GFX_Y_OFFSET, GFX_COL_BLACK);
+	rectfill (gfx_screen, tx, ty, bx, by, GFX_COL_BLACK);
 }
 
-void gfx_draw_rectangle (int tx, int ty, int bx, int by, int col)
+void gfx_draw_filledrect (int tx, int ty, int bx, int by, int col)
 {
-	rectfill (gfx_screen, tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET,
-				   bx + GFX_X_OFFSET, by + GFX_Y_OFFSET, col);
+	rectfill (gfx_screen, tx, ty, bx, by, col);	
+}
+
+void gfx_draw_simplerect (int tx, int ty, int bx, int by, int col)
+{
+	rectnotfilled (gfx_screen, tx, ty, bx, by, col);
+}
+
+void gfx_draw_rect (int tx, int ty, int bx, int by, int col)
+{
+	rectfill (gfx_screen, tx, ty, bx, by, col);
 }
 
 void gfx_display_pretty_text (int tx, int ty, int bx, int by, char *txt)
@@ -857,8 +942,8 @@ void gfx_display_pretty_text (int tx, int ty, int bx, int by, char *txt)
 		*bptr = '\0';
 
 		//text_mode (-1);
-		textout (gfx_screen, datafile[ELITE_1].dat, strbuf, tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET, GFX_COL_WHITE);
-		ty += (8 * GFX_SCALE);
+		gfx_display_colour_text ( tx, ty, strbuf, GFX_COL_WHITE);
+		ty += 16;
 	}
 }
 
@@ -879,35 +964,19 @@ static ETNK_INLINE void gfx_set_clip ( int x1, int y1, int x2, int y2 )
 
 void gfx_clear_scanner()
 {
-		gfx_set_clip(/*gfx_screen,*/ GFX_X_OFFSET, (wnd_height - 127) + GFX_Y_OFFSET,
-			GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
-			GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + (wnd_height - 127));
-		SDL_SetRenderDrawColor(sdl_ren, 0, 0, 0, 0xFF);
-		SDL_RenderClear(sdl_ren);
+	gfx_set_clip(GFX_WINDOW_L_COORD, GFX_WINDOW_B_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_WHCOORD);
+	SDL_SetRenderDrawColor(sdl_ren, 0, 0, 0, 0xFF);
+	SDL_RenderClear(sdl_ren);
 }
-
-
 
 void gfx_draw_scanner (void)
 {
-	gfx_set_clip(/*gfx_screen,*/ GFX_X_OFFSET, (wnd_height - 127) + GFX_Y_OFFSET,
-		GFX_X_OFFSET + sprites[IMG_THE_SCANNER].rect.w,
-		GFX_Y_OFFSET + sprites[IMG_THE_SCANNER].rect.h + (wnd_height - 127));
-
+	gfx_set_clip(GFX_SCANNER_L_COORD, GFX_SCANNER_T_COORD, GFX_SCANNER_R_COORD, GFX_SCANNER_B_COORD);
 	SDL_RenderCopy(sdl_ren, sprites[IMG_THE_SCANNER].tex, NULL, &sprites[IMG_THE_SCANNER].rect);
-	#if 0
-		set_clip(/*gfx_screen,*/ GFX_X_OFFSET, 385 + GFX_Y_OFFSET,
-			GFX_X_OFFSET + scanner_image->w,
-			GFX_Y_OFFSET + scanner_image->h + 385);
-		blit (scanner_image, gfx_screen, 0, 0, GFX_X_OFFSET,
-			385+GFX_Y_OFFSET, scanner_image->w, scanner_image->h);
-	#endif
 }
 
 void gfx_set_clip_region (int tx, int ty, int bx, int by)
 {
-
-	
 	gfx_set_clip (/*gfx_screen,*/ tx + GFX_X_OFFSET, ty + GFX_Y_OFFSET, bx + GFX_X_OFFSET, by + GFX_Y_OFFSET);
 }
 

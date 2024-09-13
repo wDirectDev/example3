@@ -83,6 +83,9 @@ void update_intro1 (void)
 		universe[0].location.z = 512; 
 
 	gfx_clear_display();
+	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
+
+	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
 
 	flight_roll = 1;
 	update_universe();
@@ -145,8 +148,11 @@ void update_intro2 (void)
 	if (universe[0].location.z > 4500)
 	  next_ship(ship_bump);
 
-
 	gfx_clear_display();
+	gfx_set_clip_region (GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD);
+
+	gfx_draw_simplerect(GFX_WINDOW_L_COORD, GFX_WINDOW_T_COORD, GFX_WINDOW_R_COORD, GFX_WINDOW_B_COORD, GFX_COL_WHITE);
+	
 	update_starfield();
 	update_universe();
 
