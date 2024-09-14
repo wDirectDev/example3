@@ -57,8 +57,8 @@ void draw_fuel_limit_circle (int cx, int cy)
 	int cross_size;
 
 	if (current_screen == SCR_GALACTIC_CHART) {
-		radius = ( cmdr.fuel / 4 ) * GFX_VIEW_WSIZE / 256;
-		cross_size = 14 * ( ( GFX_VIEW_WSIZE + GFX_VIEW_HSIZE ) / 2 ) / 512;
+		radius = ( ( cmdr.fuel / 4 ) * GFX_VIEW_WSIZE ) / 256;
+		cross_size = ( ( 16 / 4 ) * GFX_VIEW_WSIZE ) / 256;
 	} else {
 		radius = cmdr.fuel * 2;
 		cross_size = 16 * 2;

@@ -3,9 +3,9 @@
 #
 
 CC	=	gcc
-RM	=	@del
-WRES	=	@windres
-ECHO	=	@echo
+RM	=	rm
+WRES	=	windres
+ECHO	=	echo
 
 LIBS	=	-lSDL2 -lSDL2_mixer -lkernel32 -lgdi32 -lcomdlg32 -luser32 -lole32 -lddraw -ldxguid -lwinmm -ldsound -ldinput
 CFLAGS	=	-s -mwindows -O2 -funroll-loops -Wall -DSDL_MAIN_HANDLED -I../external/SDL2/include -I../external/SDL2/include/SDL2

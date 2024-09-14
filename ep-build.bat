@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 rem Project's example batch build file
 rem Emscripten SDK...
 
-set EMSCRIPTENDIR=c:/emscripten/emsdk
+set EMSCRIPTENDIR=c:/tools/emscripten/emsdk
 set BUILDDIR=build
 
 set CC=emcc
